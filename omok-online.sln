@@ -7,20 +7,21 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "omok-online", ".", "{3642FB
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_52014"
-		Debug.AspNetCompiler.PhysicalPath = "..\..\repos-personal\omok-online\"
+		Debug.AspNetCompiler.PhysicalPath = "..\omok-online\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52014\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
 		Release.AspNetCompiler.VirtualPath = "/localhost_52014"
-		Release.AspNetCompiler.PhysicalPath = "..\..\repos-personal\omok-online\"
+		Release.AspNetCompiler.PhysicalPath = "..\omok-online\"
 		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_52014\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "52014"
+		SlnRelativePath = "..\omok-online\"
 	EndProjectSection
 EndProject
 Global
