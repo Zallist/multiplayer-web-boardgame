@@ -4,7 +4,10 @@ app.helpers = (function () {
     var helpers = {};
 
     helpers.generateColor = function (seed) {
-        return 'rgba(0,0,0,1)';
+        if (!seed) 
+            return 'rgba(0,0,0,1)';
+
+
     };
 
     helpers.pageReady = function ready(fn) {

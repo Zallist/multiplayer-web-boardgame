@@ -14,13 +14,57 @@ app.main = (function () {
         connections: [],
 
         events: {
-            dataReceived: function (data) {
-                var conn = this;
+            dataReceived: function (dataWrap) {
+                var conn = this,
+                    i,
+                    data, from,
+                    fromConnection;
+
+                from = dataWrap.from;
+                data = dataWrap.data;
 
                 // do something with data
-                console.log('Received data: %s', data);
-            },
+                console.log('Received data: %s', dataWrap);
 
+                if (viewModel.isHost) {
+                    // Send to all other connections
+                    for (i = 0; i < connection.connections.length; i++) {
+                        if (connection.connections[i] !== conn) {
+                            connection.sendData(connection.connections[i], data, from);
+                        }
+                    }
+                }
+
+                connection.handleData(fromConnection, data);
+            },
+        },
+
+        handleData: function (fromPeerId, data) {
+            var fromPlayer;
+
+            // TODO : Parse player
+            fromPlayer = { name: viewModel.playerName };
+
+            switch (_.trim(data.type).toLowerCase()) {
+                case 'message':
+                    viewModel.helpers.addMessage(fromPeerId, fromPlayer.name, data.message);
+                    break;
+            }
+        },
+
+        sendData: function (toConnection, data, fromPeerId) {
+            toConnection.send({
+                from: fromPeerId || viewModel.peerId,
+                data: data
+            });
+        },
+
+        sendToAllConnected: function (data) {
+            var i;
+
+            for (i = 0; i < connection.connections.length; i++) {
+                connection.sendData(connection.connections[i], data);
+            }
         },
 
         addConnection: function (conn) {
@@ -35,13 +79,19 @@ app.main = (function () {
         },
 
         makePeer: function () {
-            var peer = new Peer({});
+            var peer = new Peer({
+                host: 'peerjs-server-zallist.herokuapp.com',
+                secure: true,
+                port: 443
+            });
 
             connection.peer = peer;
 
             viewModel.connectionStatus = 'Connecting...';
 
             peer.on('open', function (id) {
+                var conn;
+
                 viewModel.peerId = id;
                 window.location.hash = 'peerId=' + id;
 
@@ -59,7 +109,13 @@ app.main = (function () {
                 else {
                     // connect to open game
                     viewModel.connectionStatus = 'Connecting to game...';
-                    connection.addConnection(peer.connect(viewModel.gameId));
+                    conn = peer.connect(viewModel.gameId, {
+                        label: viewModel.playerName,
+                        metadata: {
+
+                        }
+                    });
+                    connection.addConnection(conn);
                 }
             });
 
@@ -127,16 +183,24 @@ app.main = (function () {
 
             if (message.length > 0) {
                 viewModel.helpers.addMessage(viewModel.peerId, viewModel.playerName, message);
-
-                // TODO : Send to all players
+                connection.sendToAllConnected({
+                    type: 'message',
+                    message: message
+                });
             }
         };
 
         viewModel.helpers.getGameLink = function () {
             return window.location.origin + window.location.pathname + '?gameId=' + viewModel.gameId;
         };
+        viewModel.copyGameLinkText = 'Copy Link';
         viewModel.helpers.copyGameLink = function () {
             app.helpers.copyTextToClipboard(viewModel.helpers.getGameLink());
+            viewModel.copyGameLinkText = 'Copied!';
+
+            setTimeout(function () {
+                viewModel.copyGameLinkText = 'Copy Link';
+            }, 2000);
         };
 
         viewModel.helpers.createGame = function () {
