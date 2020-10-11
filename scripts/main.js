@@ -58,8 +58,10 @@ app.main = (function () {
                     break;
                 case 'player-disconnected':
                     fromPlayer = viewModel.helpers.getPlayer(data.playerId);
-                    viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
-                    fromPlayer.isDisconnected = true;
+                    if (!fromPlayer.isDisconnected) {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
+                        fromPlayer.isDisconnected = true;
+                    }
                     break;
                 case 'game-state':
                     if (viewModel.isHost) break;
