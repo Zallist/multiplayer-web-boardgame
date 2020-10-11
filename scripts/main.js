@@ -2,12 +2,16 @@
 /// <reference path="libs/peerjs.js" />
 /// <reference path="libs/vue.global.js" />
 
+/// <reference path="helpers.js" />
+/// <reference path="vue.directives.js" />
+
 var app = app || {};
 
 app.main = (function () {
     var page = {},
         viewModel,
-        connection;
+        connection,
+        viewModelFunctions;
 
     connection = {
         peer: null,
@@ -17,53 +21,91 @@ app.main = (function () {
             dataReceived: function (dataWrap) {
                 var conn = this,
                     i,
-                    data, from,
-                    fromConnection;
+                    data, from;
 
                 from = dataWrap.from;
                 data = dataWrap.data;
 
                 // do something with data
-                console.log('Received data: %s', dataWrap);
+                console.log('Received data', dataWrap);
 
                 if (viewModel.isHost) {
                     // Send to all other connections
                     for (i = 0; i < connection.connections.length; i++) {
                         if (connection.connections[i] !== conn) {
-                            connection.sendData(connection.connections[i], data, from);
+                            connection.sendToSpecificConnection(connection.connections[i], data, from);
                         }
                     }
                 }
 
-                connection.handleData(fromConnection, data);
+                connection.handleData(from, data);
             },
         },
 
-        handleData: function (fromPeerId, data) {
+        handleData: function (fromPlayerId, data) {
             var fromPlayer;
 
-            // TODO : Parse player
-            fromPlayer = { name: viewModel.playerName };
+            fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
             switch (_.trim(data.type).toLowerCase()) {
                 case 'message':
-                    viewModel.helpers.addMessage(fromPeerId, fromPlayer.name, data.message);
+                    viewModel.helpers.addMessage(fromPlayerId, data.message);
+                    break;
+                case 'player-joined':
+                    viewModel.players[data.playerId] = viewModel.makers.makePlayer(data.player);
+                    fromPlayer = viewModel.helpers.getPlayer(data.playerId);
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.color);
+                    break;
+                case 'player-disconnected':
+                    fromPlayer = viewModel.helpers.getPlayer(data.playerId);
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
+                    fromPlayer.isDisconnected = true;
+                    break;
+                case 'game-state':
+                    if (viewModel.isHost) break;
+                    viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
+
+                    // TODO : map game state
+                    viewModel.gameState = data.gameState;
+                    viewModel.gameState.received = true;
+                    break;
+                case 'ping':
+                    fromPlayer.lastPing = Date.now();
+                    break;
+                case 'ready-changed':
+                    fromPlayer.isReady = data.isReady;
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' is' + (data.isReady ? '' : ' not') + ' ready', fromPlayer.color);
+                    break;
+                case 'game-started':
+                    _.each(data.playerIds, function (id) {
+                        var player = viewModel.players[id];
+
+                        if (player) {
+                            player.isPlaying = true;
+                        }
+                    });
                     break;
             }
+
+            // TODO : Handle custom events
         },
 
-        sendData: function (toConnection, data, fromPeerId) {
+        sendToSpecificConnection: function (toConnection, data, fromPlayerId) {
             toConnection.send({
-                from: fromPeerId || viewModel.peerId,
+                from: fromPlayerId || viewModel.player.id,
                 data: data
             });
         },
 
-        sendToAllConnected: function (data) {
+        send: function (data, toSelf) {
             var i;
 
+            if (toSelf) {
+                connection.handleData(viewModel.player.id, data);
+            }
+
             for (i = 0; i < connection.connections.length; i++) {
-                connection.sendData(connection.connections[i], data);
+                connection.sendToSpecificConnection(connection.connections[i], data);
             }
         },
 
@@ -72,8 +114,53 @@ app.main = (function () {
                 viewModel.connectionStatus = '';
                 viewModel.isConnected = true;
                 viewModel.isConnecting = false;
+
                 conn.on('data', _.bind(connection.events.dataReceived, conn));
+
+                if (viewModel.isHost) {
+                    // Send game state
+                    connection.sendToSpecificConnection(conn, {
+                        type: 'game-state',
+                        players: viewModel.players,
+                        gameState: viewModel.gameState
+                    });
+                }
+                else {
+                    viewModel.helpers.addMessage(null, 'Joined game');
+                }
             });
+
+            conn.on('close', function () {
+                if (viewModel.isHost) {
+                    connection.send({
+                        type: 'player-disconnected',
+                        playerId: conn.peer
+                    }, true);
+                }
+                else {
+                    alert('Connection lost. Sorry.');
+                }
+            });
+
+            if (viewModel.isHost) {
+                // Tell all connected about the new connection
+                connection.send({
+                    type: 'player-joined',
+                    playerId: conn.peer,
+                    player: viewModel.makers.makePlayer({
+                        id: conn.peer,
+                        name: conn.label,
+                        metadata: conn.metadata
+                    })
+                }, true);
+            }
+            else {
+                setInterval(function () {
+                    connection.send({
+                        type: 'ping'
+                    });
+                }, 5000);
+            }
 
             connection.connections.push(conn);
         },
@@ -89,28 +176,53 @@ app.main = (function () {
 
             viewModel.connectionStatus = 'Connecting...';
 
-            peer.on('open', function (id) {
+            peer.on('open', function (playerId) {
                 var conn;
 
-                viewModel.peerId = id;
-                window.location.hash = 'peerId=' + id;
+                viewModel.player = viewModel.makers.makePlayer({
+                    id: playerId,
+                    name: viewModel.player.name,
+                    metadata: {}
+                });
+                viewModel.players[playerId] = viewModel.player;
+
+                window.location.hash = 'playerId=' + playerId;
 
                 if (!viewModel.gameId) {
-                    viewModel.gameId = viewModel.peerId;
+                    viewModel.gameId = viewModel.player.id;
 
                     viewModel.isHost = true;
                     viewModel.isConnected = true;
                     viewModel.isConnecting = false;
                     viewModel.connectionStatus = 'Waiting for players';
-                    viewModel.helpers.addMessage(null, null, 'Game created');
+                    viewModel.helpers.addMessage(null, 'Game created');
 
                     peer.on('connection', connection.addConnection);
+
+                    viewModel.gameState.ready = true;
+
+                    setInteval(function () {
+                        var connected;
+
+                        connected = _.reject(viewModel.players, { id: viewModel.player.id });
+                        connected = _.reject(connected, 'rejected');
+
+                        _.every(connected, function (player) {
+                            if (Date.now() - player.lastPing > 15000) {
+                                // Player disconnected
+                                connection.send({
+                                    type: 'player-disconnected',
+                                    playerId: player.id
+                                }, true);
+                            }
+                        });
+                    }, 5000);
                 }
                 else {
                     // connect to open game
                     viewModel.connectionStatus = 'Connecting to game...';
                     conn = peer.connect(viewModel.gameId, {
-                        label: viewModel.playerName,
+                        label: viewModel.player.name,
                         metadata: {
 
                         }
@@ -128,102 +240,222 @@ app.main = (function () {
         }
     };
 
+    viewModelFunctions = {
+        getHelpers: function (viewModel) {
+            var helpers = {};
+
+            helpers.addMessage = function (playerId, message, color) {
+                var doScroll = false,
+                    chatbox = document.getElementById('chat-box');
+
+                if (chatbox) {
+                    doScroll = chatbox.scrollHeight - 10 < chatbox.clientHeight + chatbox.scrollTop;
+                }
+
+                viewModel.messages.push({
+                    created: new Date(),
+                    playerId: playerId,
+                    message: message,
+                    color: color
+                });
+
+                if (doScroll) {
+                    page.pageVue.$nextTick(function () {
+                        chatbox.scrollTop = chatbox.scrollHeight;
+                    });
+                }
+            };
+
+            helpers.submitMyMessage = function () {
+                var message = _.trim(viewModel.myMessage);
+
+                viewModel.myMessage = '';
+
+                if (message.length > 0) {
+                    helpers.addMessage(viewModel.player.id, message);
+                    connection.send({
+                        type: 'message',
+                        message: message
+                    });
+                }
+            };
+            helpers.getGameLink = function () {
+                return window.location.origin + window.location.pathname + '?gameId=' + viewModel.gameId;
+            };
+            helpers.copyGameLink = function () {
+                app.helpers.copyTextToClipboard(helpers.getGameLink());
+                viewModel.copyGameLinkText = 'Copied!';
+
+                setTimeout(function () {
+                    viewModel.copyGameLinkText = 'Copy Link';
+                }, 2000);
+            };
+
+            helpers.createGame = function () {
+                viewModel.gameId = null;
+                helpers.connect();
+            };
+            helpers.joinGame = function () {
+                if (!viewModel.gameId) {
+                    alert('A game ID must be entered');
+                }
+                else {
+                    helpers.connect();
+                }
+            };
+            helpers.connect = function () {
+                if (!viewModel.player.name) {
+                    document.getElementById('name-form').reportValidity();
+                }
+                else {
+                    viewModel.isConnecting = true;
+                    viewModel.isConnected = false;
+                    connection.makePeer();
+                }
+            };
+
+            var unknownPlayer = null,
+                systemPlayer = null;
+
+            helpers.getPlayer = function (playerId) {
+                var player = null;
+
+                if (!playerId) {
+                    if (!systemPlayer) {
+                        systemPlayer = viewModel.makers.makePlayer({
+                            id: null,
+                            name: '[System]',
+                            color: '#f1c40f',
+                            metadata: {}
+                        });
+                    }
+
+                    player = systemPlayer;
+                }
+
+                if (!player) {
+                    player = viewModel.players[playerId];
+                }
+
+                if (!player) {
+                    if (!unknownPlayer) {
+                        unknownPlayer = viewModel.makers.makePlayer({
+                            id: '0',
+                            name: 'Unknown',
+                            metadata: {}
+                        });
+                    }
+
+                    player = unknownPlayer;
+                }
+                
+                return player;
+            };
+
+            return helpers;
+        },
+
+        getMakers: function (viewModel) {
+            var makers = {};
+
+            makers.makePlayer = function (player) {
+                player = _.extend({
+                    id: null,
+                    name: null,
+                    lastPing: Date.now(),
+                    isDisconnected: false,
+                    isReady: false,
+                    isPlaying: false
+                }, player);
+
+                player.color = player.color || app.helpers.generateColor(player.id);
+
+                return player;
+            };
+
+            return makers;
+        },
+
+        getEvents: function (viewModel) {
+            var events = {};
+
+            return events;
+        }
+    };
+
     function makeVM() {
         var viewModel = Vue.reactive({});
 
+        viewModel.events = {};
+        _.extend(viewModel.events, viewModelFunctions.getEvents(viewModel));
+
         viewModel.helpers = {};
+        _.extend(viewModel.helpers, viewModelFunctions.getHelpers(viewModel));
+
+        viewModel.makers = {};
+        _.extend(viewModel.makers, viewModelFunctions.getMakers(viewModel));
 
         viewModel.gameId = page.helpers.getUrlParameter('gameId');
-        viewModel.gameStarted = false;
-        viewModel.isReady = false;
-
-        viewModel.helpers.startGame = function () {
-            // TODO : check if ready
-            viewModel.gameStarted = true;
-        };
 
         viewModel.isHost = false;
         viewModel.isConnecting = false;
         viewModel.isConnected = false;
         viewModel.connectionStatus = '';
 
-        viewModel.peerId = null;
-        viewModel.playerName = '';
+        viewModel.player = viewModel.makers.makePlayer({
+            id: null,
+            name: chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ')
+        });
 
         viewModel.messages = [];
-        viewModel.helpers.addMessage = function (peerId, name, message) {
-            var color = app.helpers.generateColor(peerId),
-                doScroll = false,
-                chatbox = document.getElementById('chat-box');
-
-            if (chatbox) {
-                doScroll = chatbox.scrollHeight - 10 < chatbox.clientHeight + chatbox.scrollTop;
-            }
-
-            viewModel.messages.push({
-                created: new Date(),
-                peerId: peerId,
-                name: name,
-                message: message,
-                color: color
-            });
-
-            if (doScroll) {
-                page.pageVue.$nextTick(function () {
-                    chatbox.scrollTop = chatbox.scrollHeight;
-                });
-            }
-        };
 
         viewModel.myMessage = '';
-        viewModel.helpers.submitMyMessage = function () {
-            var message = _.trim(viewModel.myMessage);
-
-            viewModel.myMessage = '';
-
-            if (message.length > 0) {
-                viewModel.helpers.addMessage(viewModel.peerId, viewModel.playerName, message);
-                connection.sendToAllConnected({
-                    type: 'message',
-                    message: message
-                });
-            }
-        };
-
-        viewModel.helpers.getGameLink = function () {
-            return window.location.origin + window.location.pathname + '?gameId=' + viewModel.gameId;
-        };
         viewModel.copyGameLinkText = 'Copy Link';
-        viewModel.helpers.copyGameLink = function () {
-            app.helpers.copyTextToClipboard(viewModel.helpers.getGameLink());
-            viewModel.copyGameLinkText = 'Copied!';
+        viewModel.players = {};
 
-            setTimeout(function () {
-                viewModel.copyGameLinkText = 'Copy Link';
-            }, 2000);
+        // == game state ==
+        viewModel.gameState = {
+            ready: false,
+            started: false,
+            turnOrder: [],
+            currentTurn: null
+        };
+        // == /game state
+
+        viewModel.events.toggleReady = function () {
+            viewModel.player.isReady = !viewModel.player.isReady;
+            connection.send({
+                type: 'ready-changed',
+                isReady: viewModel.player.isReady
+            });
+        };
+        viewModel.events.startGame = function () {
+            var playersPlaying, playingIds;
+
+            viewModel.player.isReady = true;
+
+            playersPlaying = _.filter(viewModel.players, { isReady: true, isDisconnected: false });
+            playingIds = _.map(playersPlaying, 'id');
+
+            viewModel.gameState.turnOrder = _.shuffle(playingIds);
+            viewModel.gameState.currentTurn = _.sample(playingIds);
+
+            viewModel.gameState.started = true;
+
+            connection.send({
+                type: 'game-started',
+                playerIds: playingIds,
+                gameState: viewModel.gameState
+            }, true);
         };
 
-        viewModel.helpers.createGame = function () {
-            viewModel.gameId = null;
-            viewModel.helpers.connect();
-        };
-        viewModel.helpers.joinGame = function () {
-            if (!viewModel.gameId) {
-                alert('A game ID must be entered');
-            }
-            else {
-                viewModel.helpers.connect();
-            }
-        };
-        viewModel.helpers.connect = function () {
-            if (!viewModel.playerName) {
-                document.getElementById('name-form').reportValidity();
-            }
-            else {
-                viewModel.isConnecting = true;
-                viewModel.isConnected = false;
-                connection.makePeer();
-            }
+        viewModel.computed = viewModel.computed || {};
+        viewModel.computed.allReady = function () {
+            var players;
+
+            players = _.reject(viewModel.players, { id: viewModel.player.id });
+
+            return _.size(players) > 0 && _.every(players, { isReady: true });
         };
 
         return viewModel;

@@ -1,13 +1,24 @@
-﻿var app = app || {};
+﻿/// <reference path="libs/randomColor.js" />
+
+var app = app || {};
 
 app.helpers = (function () {
     var helpers = {};
 
     helpers.generateColor = function (seed) {
-        if (!seed) 
-            return 'rgba(0,0,0,1)';
+        var color;
 
+        if (!seed) {
+            color = 'rgba(0,0,0,1)';
+        }
+        else {
+            color = randomColor({
+                // TODO : luminosity: 'light/dark',
+                seed: seed
+            });
+        }
 
+        return color;
     };
 
     helpers.pageReady = function ready(fn) {

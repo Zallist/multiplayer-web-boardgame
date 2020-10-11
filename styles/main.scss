@@ -12,10 +12,22 @@ body {
 }
 
 .chat__box {
-    background-color: #F0F0F0;
     border: 1px solid #E0E0E0;
     font-size: .75rem;
     overflow: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 100%;
+    padding: 0 .25em;
+
+    .chat__message {
+        .chat__message-name {
+            font-weight: bold;
+            margin-right: 0.25em;
+            white-space: nowrap;
+        }
+
+        .chat__message-message {
+            word-break: break-word;
+        }
+    }
 }
