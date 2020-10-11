@@ -65,7 +65,6 @@ app.main = (function () {
                     if (viewModel.isHost) break;
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
 
-                    // TODO : map game state
                     viewModel.gameState = data.gameState;
                     viewModel.gameState.received = true;
                     break;
@@ -84,10 +83,45 @@ app.main = (function () {
                             player.isPlaying = true;
                         }
                     });
+
+                    viewModel.gameState = data.gameState;
+
+                    viewModel.helpers.doStartTurn();
+                    break;
+                case 'end-turn':
+                    if (viewModel.gameState.currentTurn !== fromPlayer.id) {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + " made a move when it wasn't their turn somehow", 'red');
+                        return;
+                    }
+
+                    if (data.skipped) {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' had their turn skipped', 'red');
+                    }
+
+                    if (data.isWin) {
+                        // You won
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
+                        viewModel.gameState.currentTurn = null;
+
+                        viewModel.helpers.stopTrackingTurnTime();
+                    }
+                    else {
+                        viewModel.gameState.currentTurn = data.nextPlayerId;
+                        viewModel.helpers.doStartTurn();
+                    }
                     break;
             }
 
-            // TODO : Handle custom events
+            // UNIQUE TO GAME
+            switch (_.trim(data.type).toLowerCase()) {
+                case 'end-turn':
+                    if (data.cellX !== null && data.cellY !== null) {
+                        viewModel.gameState.game.boardCells[data.cellX][data.cellY].ownedBy = fromPlayer.id;
+                        viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellX][data.cellY];
+                    }
+                    break;
+            }
+            // END OF UNIQUE TO GAME
         },
 
         sendToSpecificConnection: function (toConnection, data, fromPlayerId) {
@@ -201,7 +235,7 @@ app.main = (function () {
 
                     viewModel.gameState.ready = true;
 
-                    setInteval(function () {
+                    setInterval(function () {
                         var connected;
 
                         connected = _.reject(viewModel.players, { id: viewModel.player.id });
@@ -293,6 +327,7 @@ app.main = (function () {
 
             helpers.createGame = function () {
                 viewModel.gameId = null;
+                viewModel.events.gameEvents.setup();
                 helpers.connect();
             };
             helpers.joinGame = function () {
@@ -352,6 +387,121 @@ app.main = (function () {
                 return player;
             };
 
+            helpers.getNextPlayer = function () {
+                var playerIndex;
+
+                playerIndex = _.indexOf(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn);
+                playerIndex = (playerIndex + 1) % _.size(viewModel.gameState.turnOrder);
+
+                return viewModel.gameState.turnOrder[playerIndex];
+            };
+
+            var currentTurnStarted = null,
+                currentTurnTracker = null;
+
+            helpers.stopTrackingTurnTime = function () {
+                if (currentTurnTracker !== null)
+                    clearInterval(currentTurnTracker);
+
+                currentTurnTracker = null;
+                currentTurnStarted = null;
+            };
+
+            helpers.trackTurnTime = function () {
+                helpers.stopTrackingTurnTime();
+
+                currentTurnStarted = Date.now();
+                currentTurnTracker = setInterval(function () {
+                    var timeSpent = (Date.now() - currentTurnStarted) / 1000.0,
+                        timeRemaining = viewModel.gameState.turnTime - timeSpent;
+
+                    if (timeSpent < 0) {
+                        if (viewModel.gameState.currentTurn === viewModel.player.id) {
+                            // End my turn since I took too long
+                            helpers.stopTrackingTurnTime();
+
+                            // If all goes to plan, let's say we own it
+                            connection.send({
+                                type: 'end-turn',
+                                isWin: false,
+                                skipped: true,
+                                nextPlayerId: viewModel.helpers.getNextPlayer()
+                            }, true);
+                        }
+                    }
+
+                    viewModel.gameState.turnTimeRemaining = timeRemaining;
+                }, 50);
+            };
+
+            helpers.doStartTurn = function () {
+                var currentPlayer = helpers.getPlayer(viewModel.gameState.currentTurn);
+
+                if (currentPlayer.id) {
+                    helpers.addMessage(null, "It's " + currentPlayer.name + "'" + (_.endsWith(currentPlayer.name, 's') ? "" : "s") + " turn", currentPlayer.color);
+                }
+
+                helpers.trackTurnTime();
+            };
+
+            // UNIQUE TO GAME
+            helpers.gameHelpers = {
+                getCellsOwnedInARow: function (xStart, yStart, xDelta, yDelta) {
+                    // xyDelta = which direction to go to find start
+
+                    var gameState = viewModel.gameState,
+                        game = gameState.game,
+                        config = game.configurationAtStart,
+                        playerId,
+                        row, cell = null, firstOwnedCell = null,
+                        countedOwned;
+
+                    if (xDelta === 0 && yDelta === 0) return 0;
+
+                    function travel(x, y, xDelta, yDelta) {
+                        var cell = null;
+
+                        x += xDelta;
+                        y += yDelta;
+
+                        if (x >= 0 && x < config.gridWidth &&
+                            y >= 0 && y < config.gridHeight) {
+
+                            cell = game.boardCells[x][y];
+                        }
+
+                        return cell;
+                    }
+
+                    cell = game.boardCells[xStart][yStart];
+                    playerId = cell.ownedBy;
+                    firstOwnedCell = cell;
+
+                    while (cell && cell.ownedBy === playerId) {
+                        cell = travel(cell.x, cell.y, xDelta, yDelta);
+
+                        if (cell && cell.ownedBy === playerId) {
+                            firstOwnedCell = cell;
+                        }
+                    }
+
+                    countedOwned = 1;
+
+                    cell = firstOwnedCell;
+
+                    while (cell && cell.ownedBy === playerId) {
+                        cell = travel(cell.x, cell.y, xDelta * -1, yDelta * -1);
+
+                        if (cell && cell.ownedBy === playerId) {
+                            countedOwned += 1;
+                        }
+                    }
+
+                    return countedOwned;
+                }
+            };
+            // END OF UNIQUE TO GAME
+
             return helpers;
         },
 
@@ -373,11 +523,150 @@ app.main = (function () {
                 return player;
             };
 
+            makers.makeGame = function (game) {
+                // UNIQUE TO GAME
+                game = _.extend({
+                    configuration: {
+                        gridWidth: 19,
+                        gridHeight: 19,
+                        // In case you want to get more in a row
+                        numberInARowRequired: 5,
+                        // Double-threes
+                        allowEasyWins: false,
+                        // More than numberInARowRequired wins
+                        allowOverWins: false,
+                        // In seconds
+                        turnTime: 30,
+                        // true = do, false = dont, null = do if 4 or more players
+                        placeRandomStarts: null
+                    },
+                    // Array of rows, which is an array of cells
+                    boardCells: [],
+                    // So we know what we last placed
+                    lastPlacedCell: null
+                }, game);
+
+                // END OF UNIQUE TO GAME
+
+                return game;
+            };
+
             return makers;
         },
 
         getEvents: function (viewModel) {
             var events = {};
+
+            // UNIQUE TO GAME
+            events.gameEvents = {
+                setup: function () {
+                    var gameState = viewModel.gameState,
+                        game = gameState.game,
+                        config = game.configuration,
+                        x, y,
+                        row, cell;
+
+                    // Setup game
+
+                    // Store config just because
+                    game.configurationAtStart = config;
+                    game.boardCells = [];
+
+                    for (x = 0; x < config.gridWidth; x++) {
+                        row = [];
+                        game.boardCells.push(row);
+
+                        for (y = 0; y < config.gridHeight; y++) {
+                            cell = {
+                                x: x,
+                                y: y,
+                                ownedBy: null
+                            };
+
+                            row.push(cell);
+                        }
+                    }
+
+                    if (config.placeRandomStarts) {
+
+                    }
+
+                    gameState.turnTime = config.turnTime;
+
+                    return true;
+                },
+                cellClicked: function (cell) {
+                    var gameState = viewModel.gameState,
+                        game = gameState.game,
+                        config = game.configurationAtStart,
+                        countInDirection = [],
+                        isWin = false;
+
+                    // If the game's started
+                    if (!gameState.started) {
+                        return;
+                    }
+
+                    // If it's my turn
+                    if (gameState.currentTurn !== viewModel.player.id) {
+                        viewModel.helpers.addMessage(null, 'Not your turn');
+                        return;
+                    }
+
+                    // If it's already clicked
+                    if (cell.ownedBy) {
+                        viewModel.helpers.addMessage(null, 'Pick an empty space');
+                        return;
+                    }
+
+                    // Temporarily own it for calculations
+                    cell.ownedBy = viewModel.player.id;
+
+                    // Count how many we have in each direction if this is placed
+                    // up left
+                    countInDirection.push(viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x, cell.y, -1, -1));
+                    // up
+                    countInDirection.push(viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x, cell.y, 0, -1));
+                    // up right
+                    countInDirection.push(viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x, cell.y, 1, -1));
+                    // left
+                    countInDirection.push(viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x, cell.y, -1, 0));
+
+                    // Clear owner just in case validation fails
+                    cell.ownedBy = null;
+
+                    // Check if we fail validation
+                    if (!config.allowEasyWins) {
+                        if (_.size(_.groupBy(countInDirection)[game.configurationAtStart.numberInARowRequired - 2]) > 1) {
+                            viewModel.helpers.addMessage(null, 'No easy wins allowed (double ' + (game.configurationAtStart.numberInARowRequired - 2) + 's)');
+                            return;
+                        }
+                    }
+
+                    // Check if we won
+                    if (config.allowOverWins) {
+                        isWin = _.some(countInDirection, function (count) {
+                            return count >= config.numberInARowRequired;
+                        });
+                    }
+                    else {
+                        isWin = _.some(countInDirection, function (count) {
+                            return count === config.numberInARowRequired;
+                        });
+                    }
+
+                    // If all goes to plan, let's say we own it
+                    connection.send({
+                        type: 'end-turn',
+                        cellX: cell.x,
+                        cellY: cell.y,
+                        isWin: isWin,
+                        nextPlayerId: viewModel.helpers.getNextPlayer()
+                    }, true);
+
+                }
+            };
+            // END OF UNIQUE TO GAME
 
             return events;
         }
@@ -418,7 +707,11 @@ app.main = (function () {
             ready: false,
             started: false,
             turnOrder: [],
-            currentTurn: null
+            currentTurn: null,
+            turnTime: 30,
+            turnTimeRemaining: null,
+
+            game: viewModel.makers.makeGame()
         };
         // == /game state
 
@@ -432,13 +725,18 @@ app.main = (function () {
         viewModel.events.startGame = function () {
             var playersPlaying, playingIds;
 
+            if (!viewModel.events.gameEvents.setup()) {
+                // Something wrong
+                return false;
+            }
+
             viewModel.player.isReady = true;
 
             playersPlaying = _.filter(viewModel.players, { isReady: true, isDisconnected: false });
             playingIds = _.map(playersPlaying, 'id');
 
             viewModel.gameState.turnOrder = _.shuffle(playingIds);
-            viewModel.gameState.currentTurn = _.sample(playingIds);
+            viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[0];
 
             viewModel.gameState.started = true;
 

@@ -3,8 +3,10 @@
 <head>
     <title>Omok Online</title>
 
+    <link href="https://unpkg.com/normalize.css@8.0.1/normalize.css" type="text/css" rel="stylesheet" />
     <link href="https://unpkg.com/bootstrap@4.1.0/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
-    <link href="styles/main.css" type="text/css" rel="stylesheet" />
+    <link href="styles/main.min.css" rel="stylesheet" />
+    <link href="styles/omok.min.css" rel="stylesheet" />
 </head>
 <body class="h-100">
 
@@ -13,7 +15,22 @@
             <div class="container h-100">
                 <div class="row h-100">
                     <div id="game-panel" class="col-12 col-md-8 col-lg-9 h-100">
+                        <!-- UNIQUE TO GAME -->
+                        <div class="game__board">
+                            <div class="game__row" v-for="row in $data.gameState.game.boardCells">
+                                <div v-for="cell in row"
+                                     @click.prevent="$root.events.gameEvents.cellClicked(cell)"
+                                     :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
 
+                                    <div v-if="cell.ownedBy"
+                                         :style="{ 'background-color': $root.helpers.getPlayer(cell.ownedBy).color }"
+                                         style="height: 100%; width: 100%;">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- END OF UNIQUE TO GAME -->
                     </div>
                     <div id="setup-panel" class="col-12 col-md-4 col-lg-3 h-100">
                         <div v-if="$data.isConnected" class="d-flex h-100 flex-column">
