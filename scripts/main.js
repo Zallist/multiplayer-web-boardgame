@@ -117,7 +117,7 @@ app.main = (function () {
             // UNIQUE TO GAME
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
-                    if (data.cellX !== null && data.cellY !== null) {
+                    if (_.isNumber(data.cellX) && _.isNumber(data.cellY)) {
                         viewModel.gameState.game.boardCells[data.cellX][data.cellY].ownedBy = fromPlayer.id;
                         viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellX][data.cellY];
                     }
@@ -417,7 +417,7 @@ app.main = (function () {
                     var timeSpent = (Date.now() - currentTurnStarted) / 1000.0,
                         timeRemaining = viewModel.gameState.turnTime - timeSpent;
 
-                    if (timeSpent < 0) {
+                    if (timeRemaining < 0) {
                         if (viewModel.gameState.currentTurn === viewModel.player.id) {
                             // End my turn since I took too long
                             helpers.stopTrackingTurnTime();
@@ -754,6 +754,7 @@ app.main = (function () {
             var players;
 
             players = _.reject(viewModel.players, { id: viewModel.player.id });
+            players = _.reject(players, 'isDisconnected');
 
             return _.size(players) > 0 && _.every(players, { isReady: true });
         };

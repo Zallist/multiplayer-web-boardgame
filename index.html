@@ -2,9 +2,9 @@
 <html class="h-100">
 <head>
     <title>Omok Online</title>
-
-    <link href="https://unpkg.com/normalize.css@8.0.1/normalize.css" type="text/css" rel="stylesheet" />
-    <link href="https://unpkg.com/bootstrap@4.1.0/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha512-MoRNloxbStBcD8z3M/2BmnT+rg4IsMxPkXaGh2zD6LGNNFE80W3onsAhRcMAMrSoyWL9xD7Ert0men7vR8LUZg==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
     <link href="styles/main.min.css" rel="stylesheet" />
     <link href="styles/omok.min.css" rel="stylesheet" />
 </head>
@@ -31,6 +31,15 @@
                             </div>
                         </div>
                         <!-- END OF UNIQUE TO GAME -->
+                        <div class="game__footer">
+                            <div v-show="$root.connectionStatus.length > 0">
+                                Status: {{ $data.connectionStatus }}
+                            </div>
+                            <div v-if="$root.gameState.turnTimeRemaining !== null" class="game__footer__timer">
+                                <i class="fas fa-clock"></i>
+                                {{Math.round($root.gameState.turnTimeRemaining)}}s remaining
+                            </div>
+                        </div>
                     </div>
                     <div id="setup-panel" class="col-12 col-md-4 col-lg-3 h-100">
                         <div v-if="$data.isConnected" class="d-flex h-100 flex-column">
@@ -43,11 +52,8 @@
                                 </div>
                                 <div class="mt-1 small">
                                     <a @click.prevent="$data.helpers.copyGameLink" v-bind:href="$data.helpers.getGameLink()" class="text-decoration-none">
-                                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-clipboard" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" />
-                                            <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" />
-                                        </svg>
-                                        <span>{{ $data.copyGameLinkText }}</span>
+                                        <i class="fas fa-clipboard"></i>
+                                        {{ $data.copyGameLinkText }}
                                     </a>
                                 </div>
                             </div>
@@ -76,7 +82,9 @@
                                     <div class="input-group">
                                         <input type="text" class="form-control" v-model="$data.myMessage">
                                         <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="submit">Send</button>
+                                            <button class="btn btn-outline-secondary" type="submit" title="Send message">
+                                                <i class="fas fa-caret-right"></i>
+                                            </button>
                                         </div>
                                     </div>
                                 </form>
@@ -118,18 +126,14 @@
                     </div>
                 </div>
             </div>
-
-            <div class="connection__status" v-show="$data.connectionStatus.length > 0">
-                Status: {{ $data.connectionStatus }}
-            </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/lodash@4.17.20/lodash.min.js"></script>
-    <script src="https://unpkg.com/vue@3.0.0/dist/vue.global.js"></script>
-    <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
-    <script src="https://unpkg.com/randomcolor@0.6.2/randomColor.js"></script>
-    <script src="https://unpkg.com/chance@1.1.7/dist/chance.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.js" integrity="sha512-HBD0cOZJYcymSn0H0CnN3VBhQLdiH8imucm16ZQ792TT2n48u6nmX+T7hZTCwmzIrgMt76x4rHhR7KkZqhIGxA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.0/vue.global.js" integrity="sha512-pE0JXcdoj253JMM1FUIyWEAX1bOp/WOZ/02C2b+QbVf4T4M5iaP0gcP28Zrmqrn2gV0Ovjn+vWnMQP2D8yyLRw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.3.1/peerjs.js" integrity="sha512-lAE0sy5Z08UZ1+UGB9OcT0mhaVr0pF0aQFbX9FqSRqqpwbYiBomvDqgrg2P5dLogc8b26fisTcKcMpQ9rXxScA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.6.1/randomColor.js" integrity="sha512-rOS+dRWxckK6Ruh7+ybrHke9vr3WIqplzcu3Jg9C/BPxoEisNulj0kKjT9W6Byn/Gg817ENltr53/vWmA8GW6g==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.1.7/chance.min.js" integrity="sha512-dELYIOEzIECWdvsEdoywFOB4qKDmtQee33yD0dQnzAE7eBGKJ984VQXRLs/vlsP4Sb3VchbQL7iAy4NWqetCsw==" crossorigin="anonymous"></script>
 
     <script src="scripts/vue.directives.js"></script>
 

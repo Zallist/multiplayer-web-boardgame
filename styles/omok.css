@@ -1,8 +1,4 @@
-﻿#game-panel {
-  display: flex;
-  padding: 1em 0; }
-
-.game__board {
+﻿.game__board {
   display: flex;
   flex: 1;
   flex-direction: column;
