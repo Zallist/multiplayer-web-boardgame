@@ -218,7 +218,7 @@ app.main = (function () {
                 viewModel.player = viewModel.makers.makePlayer({
                     id: playerId,
                     name: viewModel.player.name,
-                    metadata: {}
+                    metadata: viewModel.player.metadata
                 });
                 viewModel.players[playerId] = viewModel.player;
 
@@ -259,9 +259,7 @@ app.main = (function () {
                     viewModel.connectionStatus = 'Connecting to game...';
                     conn = peer.connect(viewModel.gameId, {
                         label: viewModel.player.name,
-                        metadata: {
-
-                        }
+                        metadata: viewModel.player.metadata
                     });
                     connection.addConnection(conn);
                 }
@@ -517,7 +515,11 @@ app.main = (function () {
                     lastPing: Date.now(),
                     isDisconnected: false,
                     isReady: false,
-                    isPlaying: false
+                    isPlaying: false,
+                    metadata: {
+                        iconCssClass: null,
+                        iconId: null
+                    }
                 }, player);
 
                 player.color = player.color || app.helpers.generateColor(player.id);
@@ -724,6 +726,7 @@ app.main = (function () {
                 isReady: viewModel.player.isReady
             });
         };
+
         viewModel.events.startGame = function () {
             var playersPlaying, playingIds;
 
@@ -759,6 +762,73 @@ app.main = (function () {
             return _.size(players) > 0 && _.every(players, { isReady: true });
         };
 
+        // Config stuff
+        viewModel.availablePieces = [
+            { cssClass: 'fas fa-apple-alt', id: 'apple-alt' },
+            { cssClass: 'fas fa-atom', id: 'atom' },
+            { cssClass: 'fas fa-bacon', id: 'bacon' },
+            { cssClass: 'fas fa-bone', id: 'bone' },
+            { cssClass: 'fas fa-book-dead', id: 'book-dead' },
+            { cssClass: 'fas fa-bread-slice', id: 'bread-slice' },
+            { cssClass: 'fas fa-candy-cane', id: 'candy-cane' },
+            { cssClass: 'fas fa-carrot', id: 'carrot' },
+            { cssClass: 'fas fa-cat', id: 'cat' },
+            { cssClass: 'fas fa-cheese', id: 'cheese' },
+            { cssClass: 'fas fa-cloud-meatball', id: 'cloud-meatball' },
+            { cssClass: 'fas fa-cookie', id: 'cookie' },
+            { cssClass: 'fas fa-crow', id: 'crow' },
+            { cssClass: 'fas fa-dice-d20', id: 'dice-d20' },
+            { cssClass: 'fas fa-dice-d6', id: 'dice-d6' },
+            { cssClass: 'fas fa-dog', id: 'dog' },
+            { cssClass: 'fas fa-dove', id: 'dove' },
+            { cssClass: 'fas fa-dragon', id: 'dragon' },
+            { cssClass: 'fas fa-drumstick-bite', id: 'drumstick-bite' },
+            { cssClass: 'fas fa-dungeon', id: 'dungeon' },
+            { cssClass: 'fas fa-egg', id: 'egg' },
+            { cssClass: 'fas fa-feather', id: 'feather' },
+            { cssClass: 'fas fa-feather-alt', id: 'feather-alt' },
+            { cssClass: 'fas fa-fish', id: 'fish' },
+            { cssClass: 'fas fa-fist-raised', id: 'fist-raised' },
+            { cssClass: 'fas fa-frog', id: 'frog' },
+            { cssClass: 'fas fa-globe', id: 'globe' },
+            { cssClass: 'fas fa-hamburger', id: 'hamburger' },
+            { cssClass: 'fas fa-hand-spock', id: 'hand-spock' },
+            { cssClass: 'fas fa-hat-wizard', id: 'hat-wizard' },
+            { cssClass: 'fas fa-hippo', id: 'hippo' },
+            { cssClass: 'fas fa-horse', id: 'horse' },
+            { cssClass: 'fas fa-horse-head', id: 'horse-head' },
+            { cssClass: 'fas fa-hotdog', id: 'hotdog' },
+            { cssClass: 'fas fa-ice-cream', id: 'ice-cream' },
+            { cssClass: 'fas fa-jedi', id: 'jedi' },
+            { cssClass: 'fas fa-journal-whills', id: 'journal-whills' },
+            { cssClass: 'fas fa-kiwi-bird', id: 'kiwi-bird' },
+            { cssClass: 'fas fa-lemon', id: 'lemon' },
+            { cssClass: 'fas fa-meteor', id: 'meteor' },
+            { cssClass: 'fas fa-moon', id: 'moon' },
+            { cssClass: 'fas fa-otter', id: 'otter' },
+            { cssClass: 'fas fa-paw', id: 'paw' },
+            { cssClass: 'fas fa-pepper-hot', id: 'pepper-hot' },
+            { cssClass: 'fas fa-pizza-slice', id: 'pizza-slice' },
+            { cssClass: 'fas fa-ring', id: 'ring' },
+            { cssClass: 'fas fa-robot', id: 'robot' },
+            { cssClass: 'fas fa-rocket', id: 'rocket' },
+            { cssClass: 'fas fa-satellite', id: 'satellite' },
+            { cssClass: 'fas fa-satellite-dish', id: 'satellite-dish' },
+            { cssClass: 'fas fa-scroll', id: 'scroll' },
+            { cssClass: 'fas fa-seedling', id: 'seedling' },
+            { cssClass: 'fas fa-skull-crossbones', id: 'skull-crossbones' },
+            { cssClass: 'fas fa-space-shuttle', id: 'space-shuttle' },
+            { cssClass: 'fas fa-spider', id: 'spider' },
+            { cssClass: 'fas fa-stroopwafel', id: 'stroopwafel' },
+            { cssClass: 'fas fa-user-astronaut', id: 'astronaut' }
+        ];
+
+
+        var pieceToUse = _.sample(viewModel.availablePieces);
+
+        viewModel.player.metadata.iconCssClass = pieceToUse.cssClass;
+        viewModel.player.metadata.iconId = pieceToUse.id;
+        
         return viewModel;
     }
 
