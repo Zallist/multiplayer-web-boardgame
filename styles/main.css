@@ -43,3 +43,54 @@
     white-space: nowrap; }
   .chat__box .chat__message .chat__message-message {
     word-break: break-word; }
+
+.player__avatars {
+  display: flex;
+  flex-flow: row wrap;
+  max-height: 6em;
+  min-height: 3em;
+  overflow-y: auto;
+  overflow-x: hidden; }
+
+.player__avatar {
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  flex: 1;
+  height: 3em;
+  min-width: 3em;
+  align-items: center; }
+  .player__avatar > i {
+    font-size: 2em;
+    text-align: center;
+    display: block;
+    flex: 1; }
+  .player__avatar.player--spectating > i {
+    font-size: 1em; }
+  .player__avatar.player--turn {
+    border-radius: 4px;
+    border: 1px solid red; }
+    .player__avatar.player--turn:after {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      content: 'TURN';
+      font-size: 8px;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 0 2px;
+      background-color: rgba(127, 127, 127, 0.4); }
+  .player__avatar .player__avatar__name {
+    flex: 0;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 4px;
+    padding: 0 2px;
+    font-size: 8px;
+    font-weight: bold;
+    background-color: rgba(127, 127, 127, 0.4);
+    white-space: nowrap;
+    text-overflow: clip; }

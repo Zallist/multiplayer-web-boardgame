@@ -19,15 +19,11 @@ app.main = (function () {
 
         events: {
             dataReceived: function (dataWrap) {
-                var conn = this,
-                    i,
+                var conn = this, i,
                     data, from;
 
                 from = dataWrap.from;
                 data = dataWrap.data;
-
-                // do something with data
-                console.log('Received data', dataWrap);
 
                 if (viewModel.isHost) {
                     // Send to all other connections
@@ -61,6 +57,11 @@ app.main = (function () {
                     if (!fromPlayer.isDisconnected) {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
                         fromPlayer.isDisconnected = true;
+                        fromPlayer.isPlaying = false;
+
+                        if (_.some(viewModel.gameState.turnOrder, data.playerId)) {
+                            viewModel.gameState.turnOrder = _.reject(viewModel.gameState.turnOrder, data.playerId);
+                        }
                     }
                     break;
                 case 'game-state':
@@ -103,7 +104,17 @@ app.main = (function () {
                     if (data.isWin) {
                         // You won
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
+
                         viewModel.gameState.currentTurn = null;
+                        viewModel.gameState.started = false;
+
+                        _.forEach(viewModel.players, function (player) {
+                            player.isReady = false;
+                            player.isPlaying = false;
+                        });
+
+                        viewModel.player.isReady = false;
+                        viewModel.player.isPlaying = false;
 
                         viewModel.helpers.stopTrackingTurnTime();
                     }
@@ -222,10 +233,10 @@ app.main = (function () {
                 });
                 viewModel.players[playerId] = viewModel.player;
 
-                window.location.hash = 'playerId=' + playerId;
+                window.location.hash = 'playerId=' + app.helpers.shortenUUID(playerId);
 
                 if (!viewModel.gameId) {
-                    viewModel.gameId = viewModel.player.id;
+                    viewModel.gameId = app.helpers.shortenUUID(viewModel.player.id);
 
                     viewModel.isHost = true;
                     viewModel.isConnected = true;
@@ -257,7 +268,7 @@ app.main = (function () {
                 else {
                     // connect to open game
                     viewModel.connectionStatus = 'Connecting to game...';
-                    conn = peer.connect(viewModel.gameId, {
+                    conn = peer.connect(app.helpers.enlargeUUID(viewModel.gameId), {
                         label: viewModel.player.name,
                         metadata: viewModel.player.metadata
                     });
@@ -454,9 +465,14 @@ app.main = (function () {
                         config = game.configurationAtStart,
                         playerId,
                         row, cell = null, firstOwnedCell = null,
-                        countedOwned;
+                        ret;
 
-                    if (xDelta === 0 && yDelta === 0) return 0;
+                    ret = {
+                        count: 0,
+                        isBlocked: false
+                    };
+
+                    if (xDelta === 0 && yDelta === 0) return ret;
 
                     function travel(x, y, xDelta, yDelta) {
                         var cell = null;
@@ -483,9 +499,12 @@ app.main = (function () {
                         if (cell && cell.ownedBy === playerId) {
                             firstOwnedCell = cell;
                         }
+                        else if (!cell || !cell.ownedBy) {
+                            ret.isBlocked = true;
+                        }
                     }
 
-                    countedOwned = 1;
+                    ret.count = 1;
 
                     cell = firstOwnedCell;
 
@@ -493,11 +512,14 @@ app.main = (function () {
                         cell = travel(cell.x, cell.y, xDelta * -1, yDelta * -1);
 
                         if (cell && cell.ownedBy === playerId) {
-                            countedOwned += 1;
+                            ret.count += 1;
+                        }
+                        else if (!cell || !cell.ownedBy) {
+                            ret.isBlocked = true;
                         }
                     }
 
-                    return countedOwned;
+                    return ret;
                 }
             };
             // END OF UNIQUE TO GAME
@@ -517,8 +539,10 @@ app.main = (function () {
                     isReady: false,
                     isPlaying: false,
                     metadata: {
-                        iconCssClass: null,
-                        iconId: null
+                        avatar: {
+                            type: 'css-class',
+                            value: null
+                        }
                     }
                 }, player);
 
@@ -641,21 +665,24 @@ app.main = (function () {
 
                     // Check if we fail validation
                     if (!config.allowEasyWins) {
-                        if (_.size(_.groupBy(countInDirection)[game.configurationAtStart.numberInARowRequired - 2]) > 1) {
+                        if (_.size(_.groupBy(_.reject(countInDirection, 'isBlocked'), 'count')[game.configurationAtStart.numberInARowRequired - 2]) > 1) {
+                            // TODO : Maybe extra validation to allow double 3s if you're blocking a sure win? MapleStory rule?
+
                             viewModel.helpers.addMessage(null, 'No easy wins allowed (double ' + (game.configurationAtStart.numberInARowRequired - 2) + 's)');
                             return;
                         }
                     }
 
                     // Check if we won
+                    // TODO : Potentially need to discount blocked if we're implementing certain Renju rule sets
                     if (config.allowOverWins) {
                         isWin = _.some(countInDirection, function (count) {
-                            return count >= config.numberInARowRequired;
+                            return count.count >= config.numberInARowRequired;
                         });
                     }
                     else {
                         isWin = _.some(countInDirection, function (count) {
-                            return count === config.numberInARowRequired;
+                            return count.count === config.numberInARowRequired;
                         });
                     }
 
@@ -697,7 +724,7 @@ app.main = (function () {
 
         viewModel.player = viewModel.makers.makePlayer({
             id: null,
-            name: chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ')
+            name: null
         });
 
         viewModel.messages = [];
@@ -753,81 +780,95 @@ app.main = (function () {
         };
 
         viewModel.computed = viewModel.computed || {};
-        viewModel.computed.allReady = function () {
+        viewModel.computed.anyReady = Vue.computed(function () {
             var players;
 
             players = _.reject(viewModel.players, { id: viewModel.player.id });
             players = _.reject(players, 'isDisconnected');
+            players = _.filter(players, 'isReady');
 
-            return _.size(players) > 0 && _.every(players, { isReady: true });
-        };
+            return _.size(players) > 0;
+        });
+        viewModel.computed.playersSortedByImportance = Vue.computed(function () {
+            var players;
+
+            players = _.reject(viewModel.players, 'isDisconnected');
+            players = _.sortBy(players, [
+                function (player) {
+                    var index;
+
+                    index = _.indexOf(viewModel.gameState.turnOrder, player.id);
+
+                    if (index >= 0) {
+                        index = _.indexOf(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn) - index;
+
+                        if (index < 0) {
+                            index += _.size(viewModel.gameState.turnOrder);
+                        }
+
+                        return index;
+                    }
+                    else {
+                        return Infinity;
+                    }
+                },
+                function (player) { return player.isReady ? 0 : 1; }
+            ]);
+
+            return players;
+        });
 
         // Config stuff
-        viewModel.availablePieces = [
+        viewModel.availableAvatarCssClasses = [
             { cssClass: 'fas fa-apple-alt', id: 'apple-alt' },
-            { cssClass: 'fas fa-atom', id: 'atom' },
-            { cssClass: 'fas fa-bacon', id: 'bacon' },
-            { cssClass: 'fas fa-bone', id: 'bone' },
-            { cssClass: 'fas fa-book-dead', id: 'book-dead' },
             { cssClass: 'fas fa-bread-slice', id: 'bread-slice' },
             { cssClass: 'fas fa-candy-cane', id: 'candy-cane' },
-            { cssClass: 'fas fa-carrot', id: 'carrot' },
             { cssClass: 'fas fa-cat', id: 'cat' },
             { cssClass: 'fas fa-cheese', id: 'cheese' },
-            { cssClass: 'fas fa-cloud-meatball', id: 'cloud-meatball' },
             { cssClass: 'fas fa-cookie', id: 'cookie' },
             { cssClass: 'fas fa-crow', id: 'crow' },
-            { cssClass: 'fas fa-dice-d20', id: 'dice-d20' },
-            { cssClass: 'fas fa-dice-d6', id: 'dice-d6' },
             { cssClass: 'fas fa-dog', id: 'dog' },
             { cssClass: 'fas fa-dove', id: 'dove' },
             { cssClass: 'fas fa-dragon', id: 'dragon' },
-            { cssClass: 'fas fa-drumstick-bite', id: 'drumstick-bite' },
-            { cssClass: 'fas fa-dungeon', id: 'dungeon' },
             { cssClass: 'fas fa-egg', id: 'egg' },
-            { cssClass: 'fas fa-feather', id: 'feather' },
-            { cssClass: 'fas fa-feather-alt', id: 'feather-alt' },
             { cssClass: 'fas fa-fish', id: 'fish' },
-            { cssClass: 'fas fa-fist-raised', id: 'fist-raised' },
             { cssClass: 'fas fa-frog', id: 'frog' },
-            { cssClass: 'fas fa-globe', id: 'globe' },
             { cssClass: 'fas fa-hamburger', id: 'hamburger' },
-            { cssClass: 'fas fa-hand-spock', id: 'hand-spock' },
             { cssClass: 'fas fa-hat-wizard', id: 'hat-wizard' },
             { cssClass: 'fas fa-hippo', id: 'hippo' },
             { cssClass: 'fas fa-horse', id: 'horse' },
-            { cssClass: 'fas fa-horse-head', id: 'horse-head' },
-            { cssClass: 'fas fa-hotdog', id: 'hotdog' },
-            { cssClass: 'fas fa-ice-cream', id: 'ice-cream' },
-            { cssClass: 'fas fa-jedi', id: 'jedi' },
-            { cssClass: 'fas fa-journal-whills', id: 'journal-whills' },
             { cssClass: 'fas fa-kiwi-bird', id: 'kiwi-bird' },
             { cssClass: 'fas fa-lemon', id: 'lemon' },
-            { cssClass: 'fas fa-meteor', id: 'meteor' },
-            { cssClass: 'fas fa-moon', id: 'moon' },
             { cssClass: 'fas fa-otter', id: 'otter' },
-            { cssClass: 'fas fa-paw', id: 'paw' },
-            { cssClass: 'fas fa-pepper-hot', id: 'pepper-hot' },
             { cssClass: 'fas fa-pizza-slice', id: 'pizza-slice' },
-            { cssClass: 'fas fa-ring', id: 'ring' },
             { cssClass: 'fas fa-robot', id: 'robot' },
-            { cssClass: 'fas fa-rocket', id: 'rocket' },
-            { cssClass: 'fas fa-satellite', id: 'satellite' },
-            { cssClass: 'fas fa-satellite-dish', id: 'satellite-dish' },
-            { cssClass: 'fas fa-scroll', id: 'scroll' },
-            { cssClass: 'fas fa-seedling', id: 'seedling' },
-            { cssClass: 'fas fa-skull-crossbones', id: 'skull-crossbones' },
             { cssClass: 'fas fa-space-shuttle', id: 'space-shuttle' },
-            { cssClass: 'fas fa-spider', id: 'spider' },
-            { cssClass: 'fas fa-stroopwafel', id: 'stroopwafel' },
-            { cssClass: 'fas fa-user-astronaut', id: 'astronaut' }
+            { cssClass: 'fas fa-spider', id: 'spider' }
         ];
 
+        // Remember settings
+        function recordPlayerConfig() {
+            localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
+        }
 
-        var pieceToUse = _.sample(viewModel.availablePieces);
+        if (localStorage.getItem('saved-player-config')) {
+            try {
+                _.extend(viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
+            }
+            catch (ex) {}
+        }
 
-        viewModel.player.metadata.iconCssClass = pieceToUse.cssClass;
-        viewModel.player.metadata.iconId = pieceToUse.id;
+        if (viewModel.player.name === null) {
+            viewModel.player.name = chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
+        }
+
+        if (viewModel.player.metadata.avatar.value === null) {
+            viewModel.player.metadata.avatar.type = 'css-class';
+            viewModel.player.metadata.avatar.value = _.sample(viewModel.availableAvatarCssClasses).cssClass;
+        }
+
+        // Setup watchers for default states
+        Vue.watch(viewModel.player, recordPlayerConfig);
         
         return viewModel;
     }

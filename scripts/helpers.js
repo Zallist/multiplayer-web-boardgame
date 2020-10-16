@@ -5,6 +5,24 @@ var app = app || {};
 app.helpers = (function () {
     var helpers = {};
 
+    var uuidCharacters = '0123456789abcdef';
+    var shortUUIDCharacters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_.';
+
+    helpers.shortenUUID = function (uuid) {
+        // Translate to base16 (remove dashes)
+        uuid = uuid.replace(/\-/g, '').toLowerCase();
+
+        return baseConvert(uuid, uuidCharacters, shortUUIDCharacters);
+    };
+    helpers.enlargeUUID = function (shortUUID, toUpper) {
+        var uuid;
+
+        uuid = baseConvert(shortUUID, shortUUIDCharacters, uuidCharacters);
+        uuid = uuid.replace(/^(.{8})(.{4})(.{4})(.{4})(.+)$/, '$1-$2-$3-$4-$5');
+
+        return uuid;
+    };
+
     helpers.generateColor = function (seed) {
         var color;
 
