@@ -129,8 +129,8 @@ app.main = (function () {
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
                     if (_.isNumber(data.cellX) && _.isNumber(data.cellY)) {
-                        viewModel.gameState.game.boardCells[data.cellX][data.cellY].ownedBy = fromPlayer.id;
-                        viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellX][data.cellY];
+                        viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayer.id;
+                        viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
                     }
                     break;
             }
@@ -138,10 +138,12 @@ app.main = (function () {
         },
 
         sendToSpecificConnection: function (toConnection, data, fromPlayerId) {
-            toConnection.send({
-                from: fromPlayerId || viewModel.player.id,
-                data: data
-            });
+            if (toConnection.open) {
+                toConnection.send({
+                    from: fromPlayerId || viewModel.player.id,
+                    data: data
+                });
+            }
         },
 
         send: function (data, toSelf) {
@@ -162,8 +164,6 @@ app.main = (function () {
                 viewModel.isConnected = true;
                 viewModel.isConnecting = false;
 
-                conn.on('data', _.bind(connection.events.dataReceived, conn));
-
                 if (viewModel.isHost) {
                     // Send game state
                     connection.sendToSpecificConnection(conn, {
@@ -177,6 +177,8 @@ app.main = (function () {
                 }
             });
 
+            conn.on('data', _.bind(connection.events.dataReceived, conn));
+
             conn.on('close', function () {
                 if (viewModel.isHost) {
                     connection.send({
@@ -189,6 +191,14 @@ app.main = (function () {
                 }
             });
 
+            conn.on('error', function (error) {
+                var parsed = {};
+                _.extend(parsed, error);
+                parsed.message = error.toString();
+                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
+            });
+
             if (viewModel.isHost) {
                 // Tell all connected about the new connection
                 connection.send({
@@ -196,7 +206,7 @@ app.main = (function () {
                     playerId: conn.peer,
                     player: viewModel.makers.makePlayer({
                         id: conn.peer,
-                        name: conn.label,
+                        name: conn.metadata.playerName,
                         metadata: conn.metadata
                     })
                 }, true);
@@ -216,7 +226,8 @@ app.main = (function () {
             var peer = new Peer({
                 host: 'peerjs-server-zallist.herokuapp.com',
                 secure: true,
-                port: 443
+                port: 443,
+                debug: 3
             });
 
             connection.peer = peer;
@@ -269,11 +280,15 @@ app.main = (function () {
                     // connect to open game
                     viewModel.connectionStatus = 'Connecting to game...';
                     conn = peer.connect(app.helpers.enlargeUUID(viewModel.gameId), {
-                        label: viewModel.player.name,
-                        metadata: viewModel.player.metadata
+                        metadata: _.extend({}, viewModel.player.metadata, { playerName: viewModel.player.name }),
+                        reliable: true
                     });
                     connection.addConnection(conn);
                 }
+            });
+
+            peer.on('disconnected', function () {
+                viewModel.helpers.addMessage(null, "Unexpected disconnection - New connections will fail until you refresh.", 'red');
             });
 
             peer.on('error', function (error) {
@@ -281,6 +296,7 @@ app.main = (function () {
                 _.extend(parsed, error);
                 parsed.message = error.toString();
                 viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
             });
         }
     };
@@ -457,14 +473,73 @@ app.main = (function () {
 
             // UNIQUE TO GAME
             helpers.gameHelpers = {
-                getCellsOwnedInARow: function (xStart, yStart, xDelta, yDelta) {
+                isEasyWin: function (cell, playerId) {
+                    var gameState = viewModel.gameState,
+                        game = gameState.game,
+                        config = game.configurationAtStart,
+                        easyWinCount = 0;
+
+                    cell.ownedBy = playerId;
+
+                    function checkDir(xDir, yDir) {
+                        var count;
+
+                        count = viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
+
+                        if (!count.isBlocked && count.count === config.numberInARowRequired - 2) {
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    function checkSkipDir(xDir, yDir) {
+                        var count;
+
+                        count = viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
+
+                        if (!count.isBlocked && count.count === config.numberInARowRequired - 3) {
+                            count = viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x + (xDir * -2), cell.y + (yDir * -2), xDir, yDir, playerId);
+                            if (!count.isBlocked && count.count === config.numberInARowRequired - 4) {
+                                return true;
+                            }
+                            count = viewModel.helpers.gameHelpers.getCellsOwnedInARow(cell.x + (xDir * 2), cell.y + (yDir * 2), xDir, yDir, playerId);
+                            if (!count.isBlocked && count.count === config.numberInARowRequired - 4) {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    }
+
+                    if (checkDir(-1, -1) || checkSkipDir(-1, -1) || checkSkipDir(1, 1)) {
+                        easyWinCount += 1;
+                    }
+                    if (checkDir(0, -1) || checkSkipDir(0, -1) || checkSkipDir(0, 1)) {
+                        easyWinCount += 1;
+                    }
+                    if (checkDir(1, -1) || checkSkipDir(1, -1) || checkSkipDir(-1, 1)) {
+                        easyWinCount += 1;
+                    }
+                    if (checkDir(-1, 0) || checkSkipDir(-1, 0) || checkSkipDir(1, 0)) {
+                        easyWinCount += 1;
+                    }
+
+                    cell.ownedBy = null;
+
+                    if (easyWinCount > 1) {
+                        return true;
+                    }
+
+                    return false;
+                },
+
+                getCellsOwnedInARow: function (xStart, yStart, xDelta, yDelta, playerId) {
                     // xyDelta = which direction to go to find start
 
                     var gameState = viewModel.gameState,
                         game = gameState.game,
                         config = game.configurationAtStart,
-                        playerId,
-                        row, cell = null, firstOwnedCell = null,
+                        cell = null, firstOwnedCell = null,
                         ret;
 
                     ret = {
@@ -483,28 +558,32 @@ app.main = (function () {
                         if (x >= 0 && x < config.gridWidth &&
                             y >= 0 && y < config.gridHeight) {
 
-                            cell = game.boardCells[x][y];
+                            cell = game.boardCells[y][x];
                         }
 
                         return cell;
                     }
 
-                    cell = game.boardCells[xStart][yStart];
-                    playerId = cell.ownedBy;
+                    cell = game.boardCells[yStart][xStart];
+
+                    if (!playerId) {
+                        playerId = cell.ownedBy;
+                    }
+
                     firstOwnedCell = cell;
 
                     while (cell && cell.ownedBy === playerId) {
+                        ret.count = 1;
+
                         cell = travel(cell.x, cell.y, xDelta, yDelta);
 
                         if (cell && cell.ownedBy === playerId) {
                             firstOwnedCell = cell;
                         }
-                        else if (!cell || !cell.ownedBy) {
+                        else if (!cell || cell.ownedBy) {
                             ret.isBlocked = true;
                         }
                     }
-
-                    ret.count = 1;
 
                     cell = firstOwnedCell;
 
@@ -514,7 +593,7 @@ app.main = (function () {
                         if (cell && cell.ownedBy === playerId) {
                             ret.count += 1;
                         }
-                        else if (!cell || !cell.ownedBy) {
+                        else if (!cell || cell.ownedBy) {
                             ret.isBlocked = true;
                         }
                     }
@@ -600,11 +679,11 @@ app.main = (function () {
                     game.configurationAtStart = config;
                     game.boardCells = [];
 
-                    for (x = 0; x < config.gridWidth; x++) {
+                    for (y = 0; y < config.gridHeight; y++) {
                         row = [];
                         game.boardCells.push(row);
 
-                        for (y = 0; y < config.gridHeight; y++) {
+                        for (x = 0; x < config.gridWidth; x++) {
                             cell = {
                                 x: x,
                                 y: y,
@@ -647,6 +726,14 @@ app.main = (function () {
                         return;
                     }
 
+                    // Check if we fail validation
+                    if (!config.allowEasyWins) {
+                        if (viewModel.helpers.gameHelpers.isEasyWin(cell, viewModel.player.id)) {
+                            viewModel.helpers.addMessage(null, 'No easy wins allowed (double ' + (game.configurationAtStart.numberInARowRequired - 2) + 's)');
+                            return;
+                        }
+                    }
+
                     // Temporarily own it for calculations
                     cell.ownedBy = viewModel.player.id;
 
@@ -662,16 +749,6 @@ app.main = (function () {
 
                     // Clear owner just in case validation fails
                     cell.ownedBy = null;
-
-                    // Check if we fail validation
-                    if (!config.allowEasyWins) {
-                        if (_.size(_.groupBy(_.reject(countInDirection, 'isBlocked'), 'count')[game.configurationAtStart.numberInARowRequired - 2]) > 1) {
-                            // TODO : Maybe extra validation to allow double 3s if you're blocking a sure win? MapleStory rule?
-
-                            viewModel.helpers.addMessage(null, 'No easy wins allowed (double ' + (game.configurationAtStart.numberInARowRequired - 2) + 's)');
-                            return;
-                        }
-                    }
 
                     // Check if we won
                     // TODO : Potentially need to discount blocked if we're implementing certain Renju rule sets
