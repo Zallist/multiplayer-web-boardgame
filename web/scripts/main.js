@@ -1,40 +1,157 @@
-/// <reference path="libs/lodash.js" />
-/// <reference path="libs/peerjs.js" />
-/// <reference path="libs/vue.global.js" />
-
-/// <reference path="helpers.js" />
-/// <reference path="vue.directives.js" />
-
 var app = app || {};
 
 app.main = (function () {
     var page = {},
         viewModel,
         connection,
-        viewModelFunctions;
+        viewModelFunctions,
+        apiUrl;
 
     connection = {
-        peer: null,
-        connections: [],
+        // TODO : Change to real azure
+        apiUrl: 'http://192.168.1.5:7071',
+
+        hub: null,
+        userId: null,
+
+        getUserId: function () {
+            if (!connection.userId) {
+                connection.userId = app.helpers.shortenUUID(chance.guid());
+                viewModel.player = viewModel.makers.makePlayer({
+                    id: connection.userId,
+                    name: viewModel.player.name,
+                    metadata: viewModel.player.metadata
+                });
+                viewModel.players[viewModel.player.id] = viewModel.player;
+                window.location.hash = 'userId=' + connection.userId;
+            }
+
+            return connection.userId;
+        },
+
+        getConfig: function () {
+            return {
+                headers: {
+                    'x-ms-signalr-userid': connection.getUserId(),
+                    'x-userid': connection.getUserId(),
+                    'x-roomId': viewModel.roomId
+                }
+            };
+        },
+
+        throwError: function (error) {
+            var parsed = {};
+            _.extend(parsed, error);
+            parsed.message = error.toString();
+            viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+            viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
+            alert('Network error: ' + viewModel.connectionStatus);
+        },
+
+        connect: function () {
+            function connected() {
+                // Tell everyone we joined
+
+                viewModel.isConnected = true;
+                viewModel.isConnecting = false;
+                viewModel.connectionStatus = '';
+
+                if (viewModel.isHost) {
+                    viewModel.helpers.addMessage(null, 'Game created');
+                    viewModel.gameState.ready = true;
+
+                    setInterval(function () {
+                        var connected;
+
+                        connected = _.reject(viewModel.players, { id: viewModel.player.id });
+                        connected = _.reject(connected, 'isDisconnected');
+
+                        _.every(connected, function (player) {
+                            if (Date.now() - player.lastPing > 15000) {
+                                // Player disconnected
+                                connection.send({
+                                    type: 'player-disconnected',
+                                    playerId: player.id
+                                }, true);
+                            }
+                        });
+                    }, 5000);
+                }
+                else {
+                    viewModel.helpers.addMessage(null, 'Game joined');
+                }
+
+                connection.send({
+                    type: 'player-joined',
+                    player: viewModel.player
+                });
+
+                setInterval(function () {
+                    connection.send({
+                        type: 'ping'
+                    });
+                }, 5000);
+            }
+
+            function joinRoom() {
+                viewModel.connectionStatus = 'Joining Room...';
+
+                axios.post(connection.apiUrl + '/api/addToRoom', {
+                    from: connection.getUserId(),
+                    roomId: viewModel.gameId
+                }, connection.getConfig())
+                    .then(function (resp) {
+                        connected();
+                    })
+                    .catch(connection.throwError);
+            }
+
+            function startHub(info) {
+                viewModel.connectionStatus = 'Connecting...';
+
+                info.accessToken = info.accessToken || info.accessKey;
+                info.url = info.url || info.endpoint;
+
+                connection.hub = new signalR.HubConnectionBuilder()
+                    .withUrl(info.url, {
+                        accessTokenFactory: function () {
+                            return info.accessToken;
+                        }
+                    })
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+
+                connection.hub.on('newMessage', connection.events.dataReceived);
+                connection.hub.onclose(function () {
+                    viewModel.connectionStatus = 'Disconnected'
+                    viewModel.helpers.addMessage(null, "Game disconnected.", 'red');
+                });
+
+                connection.hub.start()
+                    .then(joinRoom)
+                    .catch(connection.throwError);
+            }
+
+            function negotiate() {
+                viewModel.connectionStatus = 'Negotiating...';
+
+                axios.post(connection.apiUrl + '/api/negotiate?userid=' + encodeURIComponent(connection.getUserId()) + '&hubname=game', null, connection.getConfig())
+                    .then(function (resp) { startHub(resp.data); })
+                    .catch(connection.throwError);
+            }
+
+            viewModel.isConnected = false;
+            viewModel.isConnecting = true;
+
+            negotiate();
+        },
 
         events: {
             dataReceived: function (dataWrap) {
-                var conn = this, i,
-                    data, from;
-
-                from = dataWrap.from;
-                data = dataWrap.data;
-
-                if (viewModel.isHost) {
-                    // Send to all other connections
-                    for (i = 0; i < connection.connections.length; i++) {
-                        if (connection.connections[i] !== conn) {
-                            connection.sendToSpecificConnection(connection.connections[i], data, from);
-                        }
-                    }
+                if (dataWrap.from !== connection.getUserId()) {
+                    // Don't need to handle our own calls since we do that magically
+                    connection.handleData(dataWrap.from, dataWrap.data);
                 }
-
-                connection.handleData(from, data);
             },
         },
 
@@ -48,12 +165,25 @@ app.main = (function () {
                     viewModel.helpers.addMessage(fromPlayerId, data.message);
                     break;
                 case 'player-joined':
-                    viewModel.players[data.playerId] = viewModel.makers.makePlayer(data.player);
-                    fromPlayer = viewModel.helpers.getPlayer(data.playerId);
+                    viewModel.players[fromPlayerId] = viewModel.makers.makePlayer(data.player);
+                    fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
                     viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.color);
+
+                    // Let's distribute the game state to this person too
+                    if (viewModel.isHost) {
+                        connection.send({
+                            type: 'game-state',
+                            players: viewModel.players,
+                            gameState: viewModel.gameState
+                        });
+                    }
+                    break;
+                case 'ping':
+                    fromPlayer.lastPing = Date.now();
                     break;
                 case 'player-disconnected':
                     fromPlayer = viewModel.helpers.getPlayer(data.playerId);
+
                     if (!fromPlayer.isDisconnected) {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
                         fromPlayer.isDisconnected = true;
@@ -70,9 +200,6 @@ app.main = (function () {
 
                     viewModel.gameState = data.gameState;
                     viewModel.gameState.received = true;
-                    break;
-                case 'ping':
-                    fromPlayer.lastPing = Date.now();
                     break;
                 case 'ready-changed':
                     fromPlayer.isReady = data.isReady;
@@ -137,167 +264,22 @@ app.main = (function () {
             // END OF UNIQUE TO GAME
         },
 
-        sendToSpecificConnection: function (toConnection, data, fromPlayerId) {
-            if (toConnection.open) {
-                toConnection.send({
-                    from: fromPlayerId || viewModel.player.id,
-                    data: data
-                });
-            }
-        },
-
         send: function (data, toSelf) {
-            var i;
-
             if (toSelf) {
                 connection.handleData(viewModel.player.id, data);
             }
 
-            for (i = 0; i < connection.connections.length; i++) {
-                connection.sendToSpecificConnection(connection.connections[i], data);
-            }
-        },
+            return axios.post(connection.apiUrl + '/api/messages', {
+                from: connection.getUserId(),
+                roomId: viewModel.gameId,
+                data: data
+            }, connection.getConfig())
+                .then(function (resp) {
 
-        addConnection: function (conn) {
-            conn.on('open', function () {
-                viewModel.connectionStatus = '';
-                viewModel.isConnected = true;
-                viewModel.isConnecting = false;
-
-                if (viewModel.isHost) {
-                    // Send game state
-                    connection.sendToSpecificConnection(conn, {
-                        type: 'game-state',
-                        players: viewModel.players,
-                        gameState: viewModel.gameState
-                    });
-                }
-                else {
-                    viewModel.helpers.addMessage(null, 'Joined game');
-                }
-            });
-
-            conn.on('data', _.bind(connection.events.dataReceived, conn));
-
-            conn.on('close', function () {
-                if (viewModel.isHost) {
-                    connection.send({
-                        type: 'player-disconnected',
-                        playerId: conn.peer
-                    }, true);
-                }
-                else {
-                    alert('Connection lost. Sorry.');
-                }
-            });
-
-            conn.on('error', function (error) {
-                var parsed = {};
-                _.extend(parsed, error);
-                parsed.message = error.toString();
-                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
-                viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
-            });
-
-            if (viewModel.isHost) {
-                // Tell all connected about the new connection
-                connection.send({
-                    type: 'player-joined',
-                    playerId: conn.peer,
-                    player: viewModel.makers.makePlayer({
-                        id: conn.peer,
-                        name: conn.metadata.playerName,
-                        metadata: conn.metadata
-                    })
-                }, true);
-            }
-            else {
-                setInterval(function () {
-                    connection.send({
-                        type: 'ping'
-                    });
-                }, 5000);
-            }
-
-            connection.connections.push(conn);
-        },
-
-        makePeer: function () {
-            var peer = new Peer({
-                host: 'peerjs-server-zallist.herokuapp.com',
-                secure: true,
-                port: 443,
-                debug: 3
-            });
-
-            connection.peer = peer;
-
-            viewModel.connectionStatus = 'Connecting...';
-
-            peer.on('open', function (playerId) {
-                var conn;
-
-                viewModel.player = viewModel.makers.makePlayer({
-                    id: playerId,
-                    name: viewModel.player.name,
-                    metadata: viewModel.player.metadata
+                })
+                .catch(function (error) {
+                    console.error('An error occurred in network request');
                 });
-                viewModel.players[playerId] = viewModel.player;
-
-                window.location.hash = 'playerId=' + app.helpers.shortenUUID(playerId);
-
-                if (!viewModel.gameId) {
-                    viewModel.gameId = app.helpers.shortenUUID(viewModel.player.id);
-
-                    viewModel.isHost = true;
-                    viewModel.isConnected = true;
-                    viewModel.isConnecting = false;
-                    viewModel.connectionStatus = 'Waiting for players';
-                    viewModel.helpers.addMessage(null, 'Game created');
-
-                    peer.on('connection', connection.addConnection);
-
-                    viewModel.gameState.ready = true;
-
-                    setInterval(function () {
-                        var connected;
-
-                        connected = _.reject(viewModel.players, { id: viewModel.player.id });
-                        connected = _.reject(connected, 'rejected');
-
-                        _.every(connected, function (player) {
-                            if (Date.now() - player.lastPing > 15000) {
-                                // Player disconnected
-                                connection.send({
-                                    type: 'player-disconnected',
-                                    playerId: player.id
-                                }, true);
-                            }
-                        });
-                    }, 5000);
-                }
-                else {
-                    // connect to open game
-                    viewModel.connectionStatus = 'Connecting to game...';
-                    conn = peer.connect(app.helpers.enlargeUUID(viewModel.gameId), {
-                        metadata: _.extend({}, viewModel.player.metadata, { playerName: viewModel.player.name }),
-                        reliable: true
-                    });
-                    connection.addConnection(conn);
-                }
-            });
-
-            peer.on('disconnected', function () {
-                viewModel.helpers.addMessage(null, "Unexpected disconnection - New connections will fail until you refresh.", 'red');
-            });
-
-            peer.on('error', function (error) {
-                var parsed = {};
-                _.extend(parsed, error);
-                parsed.message = error.toString();
-                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
-                viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
-            });
         }
     };
 
@@ -353,11 +335,16 @@ app.main = (function () {
             };
 
             helpers.createGame = function () {
-                viewModel.gameId = null;
+                viewModel.isHost = true;
+                viewModel.gameId = app.helpers.shortenUUID(chance.guid());
+
                 viewModel.events.gameEvents.setup();
+
                 helpers.connect();
             };
             helpers.joinGame = function () {
+                viewModel.isHost = false;
+
                 if (!viewModel.gameId) {
                     alert('A game ID must be entered');
                 }
@@ -372,7 +359,8 @@ app.main = (function () {
                 else {
                     viewModel.isConnecting = true;
                     viewModel.isConnected = false;
-                    connection.makePeer();
+
+                    connection.connect();
                 }
             };
 
@@ -973,13 +961,6 @@ app.main = (function () {
             data: function () { return page.viewModel; },
             directives: customVueDirectives
         }).mount('#app');
-
-        window.addEventListener('beforeunload', function (e) {
-            if (connection.peer) {
-                connection.peer.destroy();
-                connection.peer = null;
-            }
-        });
     };
 
     return page;

@@ -24,7 +24,12 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "web\", "{3642FBC2-54
 		SlnRelativePath = "web\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server-azure", "server-azure\server-azure.csproj", "{C6688971-3243-42B0-B237-FB113F950516}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "server-azure", "server-azure\server-azure.csproj", "{C6688971-3243-42B0-B237-FB113F950516}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{5E01D1C6-D373-4923-BB2E-83C2EDFF1AE1}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
