@@ -333,10 +333,10 @@
 
         assets.sounds = {
             'my_piece_placed': new Howl({
-                src: ['assets/game/omok/sounds/222058__waveplay__custom-hat-1.mp3', 'assets/game/omok/sounds/222058__waveplay__custom-hat-1.wav']
+                src: ['assets/game/omok/sounds/242737__supafrycook2__tap.wav']
             }),
             'other_piece_placed': new Howl({
-                src: ['assets/game/omok/sounds/222058__waveplay__custom-hat-1.mp3', 'assets/game/omok/sounds/222058__waveplay__custom-hat-1.wav']
+                src: ['assets/game/omok/sounds/242737__supafrycook2__tap.wav']
             }),
             'my_win': new Howl({
                 src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3', 'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav']
