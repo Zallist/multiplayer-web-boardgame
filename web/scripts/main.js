@@ -8,8 +8,8 @@ app.main = (function () {
         apiUrl;
 
     connection = {
-        // TODO : Change to real azure
-        apiUrl: 'http://192.168.1.5:7071',
+        apiUrl: 'https://omok-server-zallist.azurewebsites.net',
+        //apiUrl: 'http://localhost:7071',
 
         hub: null,
         userId: null,
@@ -60,6 +60,7 @@ app.main = (function () {
                     viewModel.helpers.addMessage(null, 'Game created');
                     viewModel.gameState.ready = true;
 
+                    /*
                     setInterval(function () {
                         var connected;
 
@@ -76,6 +77,7 @@ app.main = (function () {
                             }
                         });
                     }, 5000);
+                    */
                 }
                 else {
                     viewModel.helpers.addMessage(null, 'Game joined');
@@ -86,11 +88,13 @@ app.main = (function () {
                     player: viewModel.player
                 });
 
+                /*
                 setInterval(function () {
                     connection.send({
                         type: 'ping'
                     });
                 }, 5000);
+                */
             }
 
             function joinRoom() {

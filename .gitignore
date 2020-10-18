@@ -340,3 +340,7 @@ ASALocalRun/
 healthchecksdb
 
 local.settings.*.json
+/server-azure/Properties/ServiceDependencies/omok-server - Zip Deploy
+/server-azure/Properties/serviceDependencies.omok-server - Zip Deploy.json
+/server-azure/Properties/ServiceDependencies/omok-server-zallist - Zip Deploy
+/server-azure/Properties/serviceDependencies.omok-server-zallist - Zip Deploy.json

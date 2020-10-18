@@ -8,7 +8,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.EventGrid.Models;
+using Microsoft.Azure.SignalR.Management;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 using Microsoft.Extensions.Logging;
@@ -17,18 +20,22 @@ using Newtonsoft.Json.Linq;
 
 namespace server_azure
 {
-    public static class Functions
+    public class Functions : ServerlessHub
     {
-        [FunctionName("negotiate")]
-        public static SignalRConnectionInfo GetSignalRInfo(
+        public Functions(IServiceHubContext hubContext = null, IServiceManager serviceManager = null) : base(hubContext, serviceManager)
+        {
+        }
+
+        [FunctionName(nameof(Negotiate))]
+        public SignalRConnectionInfo Negotiate(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [SignalRConnectionInfo(HubName = "game", UserId = "{headers.x-ms-signalr-userid}")] SignalRConnectionInfo connectionInfo)
         {
             return connectionInfo;
         }
 
-        [FunctionName("messages")]
-        public static Task SendMessage(
+        [FunctionName(nameof(Messages))]
+        public Task Messages(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
@@ -43,8 +50,8 @@ namespace server_azure
                 });
         }
 
-        [FunctionName("addToRoom")]
-        public static Task AddToGroup(
+        [FunctionName(nameof(AddToRoom))]
+        public Task AddToRoom(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
             [SignalR(HubName = "game")] IAsyncCollector<SignalRGroupAction> signalRGroupActions)
         {
@@ -59,6 +66,34 @@ namespace server_azure
                 });
         }
 
+        [FunctionName("onDisconnection")]
+        public static Task EventGridEvent([EventGridTrigger] EventGridEvent eventGridEvent,
+            [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
+        {
+            if (StringComparer.OrdinalIgnoreCase.Equals(eventGridEvent.EventType, "Microsoft.SignalRService.ClientConnectionDisconnected"))
+            {
+                dynamic connection = new JsonSerializer().Deserialize(new JsonTextReader(new StringReader(eventGridEvent.Data.ToString())));
+
+                return signalRMessages.AddAsync(
+                    new SignalRMessage()
+                    {
+                        Target = "newMessage",
+                        Arguments = new[] { new {
+                            from = connection.userId,
+                            data = new
+                            {
+                                type = "player-disconnected",
+                                playerId = connection.userId
+                            }
+                        }}
+                    });
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
+        }
+
         public class BaseMessage
         {
             public string from { get; set; }
@@ -67,33 +102,5 @@ namespace server_azure
 
             public string type { get; set; }
         }
-
-        /*
-        public static class EventGridTriggerCSharp
-        {
-            [FunctionName("onConnection")]
-            public static Task EventGridOnConnection([EventGridTrigger] EventGridEvent eventGridEvent,
-                [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
-            {
-                if (eventGridEvent.EventType == "Microsoft.SignalRService.ClientConnectionConnected")
-                {
-
-                }
-
-                return Task.CompletedTask;
-            }
-            [FunctionName("onDisconnection")]
-            public static Task EventGridOnDisconnection([EventGridTrigger] EventGridEvent eventGridEvent,
-                [SignalR(HubName = "game")] IAsyncCollector<SignalRMessage> signalRMessages)
-            {
-                if (eventGridEvent.EventType == "Microsoft.SignalRService.ClientConnectionConnected")
-                {
-
-                }
-
-                return Task.CompletedTask;
-            }
-        }
-        */
     }
 }
