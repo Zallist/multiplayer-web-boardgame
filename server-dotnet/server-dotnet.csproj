@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>server_dotnet</RootNamespace>
+    <UserSecretsId>16b675ed-4f07-4980-afdc-e6a002750313</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\omok-zallist - Web Deploy.pubxml.user" />
+  </ItemGroup>
 
 </Project>

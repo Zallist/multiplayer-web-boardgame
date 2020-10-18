@@ -344,3 +344,4 @@ local.settings.*.json
 /server-azure/Properties/serviceDependencies.omok-server - Zip Deploy.json
 /server-azure/Properties/ServiceDependencies/omok-server-zallist - Zip Deploy
 /server-azure/Properties/serviceDependencies.omok-server-zallist - Zip Deploy.json
+/server-dotnet/Properties/ServiceDependencies/omok-zallist - Web Deploy
