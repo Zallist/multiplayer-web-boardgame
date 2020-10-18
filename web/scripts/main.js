@@ -650,10 +650,31 @@ app.main = (function () {
     viewModel = new makeVM();
     page.viewModel = viewModel;
 
+    page.replaceHtmlElements = function () {
+        // Replaces html elements so we can lazy load in game components
+        // Could be done with vue components but would require more effort
+        var elementsToReplace = document.getElementsByClassName('replace_with_html');
+
+        _.each(elementsToReplace, function (element) {
+            var replaceWithText, replaceWithNode, i;
+
+            replaceWithText = _.get(window, element.getAttribute('data-replace-with'));
+            replaceWithNode = document.createElement('div');
+            replaceWithNode.innerHTML = replaceWithText;
+
+            for (i = replaceWithNode.childNodes.length - 1; i >= 0; i--) {
+                element.parentNode.insertBefore(replaceWithNode.childNodes[i], element.nextSibling);
+            }
+            element.parentNode.removeChild(element);
+        });
+    };
+
     page.initialise = function () {
         app.game = makeGameObject(connection, app, page.viewModel);
         page.viewModel.gameState.game = app.game.hooks.makeGame();
         page.viewModel.game = app.game;
+
+        page.replaceHtmlElements();
 
         page.pageVue = Vue.createApp({
             data: function () { return page.viewModel; },

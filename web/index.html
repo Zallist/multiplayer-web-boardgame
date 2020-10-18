@@ -18,35 +18,10 @@
             <div class="container h-100">
                 <div class="row h-100">
                     <div id="game-panel" class="col-12 col-md-8 col-lg-9 h-100">
-                        <!-- UNIQUE TO GAME -->
-                        <div class="game__board">
-                            <div class="game__row" v-for="row in $root.gameState.game.boardCells">
-                                <div v-for="cell in row"
-                                     @click.prevent="$root.game.events.cellClicked(cell)"
-                                     :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
+                        <!-- UNIQUE TO GAME & HOOKED -->
+                        <div class="replace_with_html" data-replace-with="app.game.html.gamePanel"></div>
+                        <!-- END OF UNIQUE TO GAME & HOOKED -->
 
-                                    <div v-if="cell.ownedBy"
-                                         v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
-                                         :class="[
-                                            'omok__piece',
-                                            { 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }
-                                         ]"
-                                         :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridHeight) * 0.75) + 'vh' }"
-                                         :title="'Owned by ' + player.name">
-
-                                        <i v-if="player.metadata.avatar.type=='css-class'"
-                                           :class="player.metadata.avatar.value"
-                                           :style="{ 'color': player.color }"></i>
-
-                                        <i v-else class="fas fa-question"
-                                           :style="{ 'color': player.color }"></i>
-
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- END OF UNIQUE TO GAME -->
                         <div class="game__footer">
                             <div v-show="$root.connectionStatus.length > 0">
                                 Status: {{ $root.connectionStatus }}

@@ -1,13 +1,61 @@
 ﻿var makeGameObject = function (connection, app, viewModel) {
     var omokGame = {};
 
+    omokGame.html = {
+        gamePanel: `
+    <div class="game__board">
+        <div class="game__row" v-for="row in $root.gameState.game.boardCells">
+            <div v-for="cell in row"
+                 @click.prevent="$root.game.events.cellClicked(cell)"
+                 :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
+
+                <div v-if="cell.ownedBy"
+                     v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
+                     :class="[
+                            'omok__piece',
+                            { 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }
+                        ]"
+                     :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridHeight) * 0.75) + 'vh' }"
+                     :title="'Owned by ' + player.name">
+
+                    <i v-if="player.metadata.avatar.type=='css-class'"
+                       :class="player.metadata.avatar.value"
+                       :style="{ 'color': player.color }"></i>
+
+                    <i v-else class="fas fa-question"
+                       :style="{ 'color': player.color }"></i>
+
+                </div>
+            </div>
+        </div>
+    </div>
+`
+    };
+
     omokGame.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
                     if (_.isNumber(data.cellX) && _.isNumber(data.cellY)) {
-                        viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayer.id;
+                        viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayerId
                         viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
+
+                        if (fromPlayerId === viewModel.player.id) {
+                            if (data.isWin) {
+                                omokGame.assets.sounds['my_win'].play();
+                            }
+                            else {
+                                omokGame.assets.sounds['my_piece_placed'].play();
+                            }
+                        }
+                        else {
+                            if (data.isWin) {
+                                omokGame.assets.sounds['other_win'].play();
+                            }
+                            else {
+                                omokGame.assets.sounds['other_piece_placed'].play();
+                            }
+                        }
                     }
                     break;
             }
@@ -278,6 +326,28 @@
             return ret;
         }
     };
+
+    // initialise
+    omokGame.assets = (function () {
+        var assets = {};
+
+        assets.sounds = {
+            'my_piece_placed': new Howl({
+                src: ['assets/game/omok/sounds/222058__waveplay__custom-hat-1.wav']
+            }),
+            'other_piece_placed': new Howl({
+                src: ['assets/game/omok/sounds/222058__waveplay__custom-hat-1.wav']
+            }),
+            'my_win': new Howl({
+                src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav']
+            }),
+            'other_win': new Howl({
+                src: ['assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.wav']
+            })
+        };
+
+        return assets;
+    })();
 
     return omokGame;
 };
