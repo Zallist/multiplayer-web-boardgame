@@ -17,7 +17,7 @@
   background-position: center center; }
 
 .game__cell {
-  display: flex;
+  position: relative;
   flex: 1;
   cursor: pointer;
   min-height: 10px;
@@ -29,8 +29,11 @@
   .game__cell.game__cell--owned {
     cursor: default; }
   .game__cell .omok__piece {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
-    flex: 1;
     flex-flow: row;
     align-items: center;
     text-align: center; }
@@ -44,5 +47,5 @@
     transform: rotate(-4deg); }
   100% {
     transform: rotate(4deg); } }
-    .game__cell .omok__piece.omok__piece--last-placed {
+    .game__cell .omok__piece.omok__piece--last-placed > i {
       animation: wiggle 0.5s infinite; }

@@ -26,7 +26,7 @@
 }
 
 .game__cell {
-    display: flex;
+    position: relative;
     flex: 1;
     cursor: pointer;
     min-height: 10px;
@@ -43,15 +43,16 @@
     }
 
     .omok__piece {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%,-50%);
+
         display: flex;
-        flex: 1;
         flex-flow: row;
         align-items: center;
         text-align: center;
 
-        & > i {
-            flex: 1;
-        }
+        & > i { flex: 1; }
 
         @keyframes wiggle {
             0% {
@@ -68,7 +69,7 @@
         }
 
         &.omok__piece--last-placed {
-            animation: wiggle 0.5s infinite;
+            & > i { animation: wiggle 0.5s infinite; }
         }
     }
 }

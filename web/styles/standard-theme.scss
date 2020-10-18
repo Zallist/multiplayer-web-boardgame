@@ -8,20 +8,32 @@ button, h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
+@mixin padChild($top,$bottom,$left,$right) {
+    position: relative;
+    & > *:nth-child(1) {
+        position: absolute;
+        top: $top; bottom: $bottom;
+        left: $left; right: $right;
+        height: auto !important;
+    }
+}
+
 body {
     background-color: #192E58;
     background-image: url('images/standard/background.svg');
     background-repeat: no-repeat;
     background-size: 98% 98%;
     background-position: center center;
-    padding: 2%;
+
+    @include padChild(4%,4%,4%,4%);
 }
 
 #game-panel {
     background-image: url('images/standard/game_panel_background.svg');
     background-repeat: no-repeat;
     background-size: 100% 100%;
-    padding: 4% 5% 5% 5%;
+
+    @include padChild(6%,8%,6%,7%);
 }
 
 .game__row, .game__cell {
@@ -64,7 +76,7 @@ body {
     background-repeat: no-repeat;
     background-size: 100% 100%;
     border: none;
-    padding: 9% 9% 14% 7%;
+    @include padChild(8%,12%,7%,9%);
 }
 
 /* customize scrollbar css */

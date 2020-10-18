@@ -11,13 +11,27 @@ body {
   background-repeat: no-repeat;
   background-size: 98% 98%;
   background-position: center center;
-  padding: 2%; }
+  position: relative; }
+  body > *:nth-child(1) {
+    position: absolute;
+    top: 4%;
+    bottom: 4%;
+    left: 4%;
+    right: 4%;
+    height: auto !important; }
 
 #game-panel {
   background-image: url("images/standard/game_panel_background.svg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  padding: 4% 5% 5% 5%; }
+  position: relative; }
+  #game-panel > *:nth-child(1) {
+    position: absolute;
+    top: 6%;
+    bottom: 8%;
+    left: 6%;
+    right: 7%;
+    height: auto !important; }
 
 .game__row, .game__cell {
   background-image: linear-gradient(#CCC, #CCC) !important; }
@@ -52,7 +66,14 @@ body {
   background-repeat: no-repeat;
   background-size: 100% 100%;
   border: none;
-  padding: 9% 9% 14% 7%; }
+  position: relative; }
+  .chat__box > *:nth-child(1) {
+    position: absolute;
+    top: 8%;
+    bottom: 12%;
+    left: 7%;
+    right: 9%;
+    height: auto !important; }
 
 /* customize scrollbar css */
 *::-webkit-scrollbar {
