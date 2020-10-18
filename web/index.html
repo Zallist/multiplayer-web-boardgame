@@ -20,9 +20,9 @@
                     <div id="game-panel" class="col-12 col-md-8 col-lg-9 h-100">
                         <!-- UNIQUE TO GAME -->
                         <div class="game__board">
-                            <div class="game__row" v-for="row in $data.gameState.game.boardCells">
+                            <div class="game__row" v-for="row in $root.gameState.game.boardCells">
                                 <div v-for="cell in row"
-                                     @click.prevent="$root.events.gameEvents.cellClicked(cell)"
+                                     @click.prevent="$root.game.events.cellClicked(cell)"
                                      :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
 
                                     <div v-if="cell.ownedBy"
@@ -181,6 +181,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.js" integrity="sha512-HBD0cOZJYcymSn0H0CnN3VBhQLdiH8imucm16ZQ792TT2n48u6nmX+T7hZTCwmzIrgMt76x4rHhR7KkZqhIGxA==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.0/vue.global.js" integrity="sha512-pE0JXcdoj253JMM1FUIyWEAX1bOp/WOZ/02C2b+QbVf4T4M5iaP0gcP28Zrmqrn2gV0Ovjn+vWnMQP2D8yyLRw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.0/howler.min.js" integrity="sha512-ALoawPS0JxHQ+8dGL7htZIlVNRaE/SN9gHD4G8pJJTi9H4BQ/3PjdvhggSGR34g00mvTPFkxQuveQUsJA5664Q==" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aspnet-signalr/1.1.4/signalr.min.js" integrity="sha512-hqwtOj6waHZZoLRoJoLn0tq34JS97tR1QmhM69uvyrt3LVBiR1o0xeOVAskjUFL1L1fahQH2W7IdcMaFbqCEaw==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
@@ -193,6 +194,10 @@
     <script src="scripts/vue.directives.js"></script>
 
     <script src="scripts/helpers.js"></script>
+
+    <!-- custom games swap these tag -->
+    <script src="scripts/game/omok.js"></script>
+
     <script src="scripts/main.js"></script>
 </body>
 </html>
