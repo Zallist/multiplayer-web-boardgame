@@ -159,7 +159,7 @@ app.main = (function () {
                 case 'player-disconnected':
                     fromPlayer = viewModel.helpers.getPlayer(data.playerId);
 
-                    if (!fromPlayer.isDisconnected) {
+                    if (fromPlayer.id && !fromPlayer.isDisconnected) {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
                         fromPlayer.isDisconnected = true;
                         fromPlayer.isPlaying = false;
@@ -302,7 +302,7 @@ app.main = (function () {
 
             helpers.createGame = function () {
                 viewModel.isHost = true;
-                viewModel.gameId = app.helpers.shortenUUID(chance.guid());
+                viewModel.gameId = chance.word({ length: 6 }).toLowerCase();
 
                 app.game.hooks.setup();
 
