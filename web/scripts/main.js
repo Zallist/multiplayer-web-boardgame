@@ -7,27 +7,32 @@ app.main = (function () {
         viewModelFunctions;
 
     connection = {
-        apiUrl: 'https://omok-server-zallist.azurewebsites.net',
+        //serverUrl: 'https://omok-server-zallist.azurewebsites.net',
+        serverUrl: 'http://localhost:5000',
 
         hub: null,
         userId: null,
 
+        setUserId: function (userId) {
+            connection.userId = userId;
+            viewModel.player = viewModel.makers.makePlayer({
+                id: connection.userId,
+                name: viewModel.player.name,
+                metadata: viewModel.player.metadata
+            });
+            viewModel.players[viewModel.player.id] = viewModel.player;
+            window.location.hash = 'userId=' + connection.userId;
+        },
+
         getUserId: function () {
             if (!connection.userId) {
-                connection.userId = app.helpers.shortenUUID(chance.guid());
-                viewModel.player = viewModel.makers.makePlayer({
-                    id: connection.userId,
-                    name: viewModel.player.name,
-                    metadata: viewModel.player.metadata
-                });
-                viewModel.players[viewModel.player.id] = viewModel.player;
-                window.location.hash = 'userId=' + connection.userId;
+                connection.setUserId(app.helpers.shortenUUID(chance.guid()));
             }
 
             return connection.userId;
         },
 
-        getConfig: function () {
+        getApiConfig: function () {
             return {
                 headers: {
                     'x-ms-signalr-userid': connection.getUserId(),
@@ -37,16 +42,16 @@ app.main = (function () {
             };
         },
 
-        throwError: function (error) {
-            var parsed = {};
-            _.extend(parsed, error);
-            parsed.message = error.toString();
-            viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
-            viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
-            alert('Network error: ' + viewModel.connectionStatus);
-        },
+        connectUsingApi: function () {
+            function throwError(error) {
+                var parsed = {};
+                _.extend(parsed, error);
+                parsed.message = error.toString();
+                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
+                alert('Network error: ' + viewModel.connectionStatus);
+            }
 
-        connect: function () {
             function connected() {
                 // Tell everyone we joined
 
@@ -71,14 +76,14 @@ app.main = (function () {
             function joinRoom() {
                 viewModel.connectionStatus = 'Joining Room...';
 
-                axios.post(connection.apiUrl + '/api/addToRoom', {
+                axios.post(connection.serverUrl + '/api/addToRoom', {
                     from: connection.getUserId(),
                     roomId: viewModel.gameId
-                }, connection.getConfig())
+                }, connection.getApiConfig())
                     .then(function (resp) {
                         connected();
                     })
-                    .catch(connection.throwError);
+                    .catch(throwError);
             }
 
             function startHub(info) {
@@ -104,21 +109,137 @@ app.main = (function () {
 
                 connection.hub.start()
                     .then(joinRoom)
-                    .catch(connection.throwError);
+                    .catch(throwError);
             }
 
             function negotiate() {
                 viewModel.connectionStatus = 'Negotiating...';
 
-                axios.post(connection.apiUrl + '/api/negotiate?userid=' + encodeURIComponent(connection.getUserId()) + '&hubname=game', null, connection.getConfig())
+                axios.post(connection.serverUrl + '/api/negotiate?userid=' + encodeURIComponent(connection.getUserId()) + '&hubname=game', null, connection.getApiConfig())
                     .then(function (resp) { startHub(resp.data); })
-                    .catch(connection.throwError);
+                    .catch(throwError);
             }
 
             viewModel.isConnected = false;
             viewModel.isConnecting = true;
 
             negotiate();
+        },
+        connectUsingSignalR: function () {
+            function throwError(error) {
+                var parsed = {};
+                _.extend(parsed, error);
+                parsed.message = error.toString();
+                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
+                alert('Network error: ' + viewModel.connectionStatus);
+            }
+
+            function connected() {
+                // Tell everyone we joined
+
+                viewModel.isConnected = true;
+                viewModel.isConnecting = false;
+                viewModel.connectionStatus = '';
+
+                if (viewModel.isHost) {
+                    viewModel.helpers.addMessage(null, 'Game created');
+                    viewModel.gameState.ready = true;
+                }
+                else {
+                    viewModel.helpers.addMessage(null, 'Game joined');
+                }
+
+                connection.send({
+                    type: 'player-joined',
+                    player: viewModel.player
+                });
+            }
+
+            function joinRoom() {
+                viewModel.connectionStatus = 'Joining Room...';
+
+                connection.hub.invoke('AddToRoom', {
+                    roomId: viewModel.gameId
+                })
+                    .then(function (resp) {
+                        connected();
+                    })
+                    .catch(throwError);
+            }
+
+            function startHub() {
+                viewModel.connectionStatus = 'Connecting...';
+
+                connection.hub = new signalR.HubConnectionBuilder()
+                    .withUrl(connection.serverUrl, {
+
+                    })
+                    .configureLogging(signalR.LogLevel.Information)
+                    .build();
+
+                connection.hub.on('getConnectionId', function (data) {
+                    connection.hub.off('getConnectionId');
+                    connection.setUserId(data.connectionId);
+                    joinRoom();
+                });
+                connection.hub.on('newMessage', connection.events.dataReceived);
+
+                connection.hub.onclose(function () {
+                    viewModel.connectionStatus = 'Disconnected'
+                    viewModel.helpers.addMessage(null, "Game disconnected.", 'red');
+                });
+
+                connection.hub.start()
+                    .then(function () {
+                        viewModel.connectionStatus = 'Waiting for id...'
+                    })
+                    .catch(throwError);
+            }
+
+            viewModel.isConnected = false;
+            viewModel.isConnecting = true;
+
+            startHub();
+        },
+        connect: function () {
+            //connection.connectUsingApi();
+            connection.connectUsingSignalR();
+        },
+
+        sendUsingApi: function (data) {
+            return axios.post(connection.serverUrl + '/api/messages', {
+                from: connection.getUserId(),
+                roomId: viewModel.gameId,
+                data: data
+            }, connection.getApiConfig())
+                .then(function (resp) {
+
+                })
+                .catch(function (error) {
+                    console.error('An error occurred in network request');
+                });
+        },
+        sendUsingSignalR: function (data) {
+            return connection.hub.invoke('SendMessage', {
+                from: connection.getUserId(),
+                roomId: viewModel.gameId,
+                data: data
+            })
+                .then(function (resp) {
+
+                })
+                .catch(function (error) {
+                    console.error('An error occurred in network request');
+                });
+        },
+        send: function (data, toSelf) {
+            if (toSelf) {
+                connection.handleData(viewModel.player.id, data);
+            }
+
+            //return connection.sendUsingApi(data);
+            return connection.sendUsingSignalR(data);
         },
 
         events: {
@@ -228,24 +349,6 @@ app.main = (function () {
             }
 
             app.game.hooks.handleData(fromPlayerId, data, fromPlayer);
-        },
-
-        send: function (data, toSelf) {
-            if (toSelf) {
-                connection.handleData(viewModel.player.id, data);
-            }
-
-            return axios.post(connection.apiUrl + '/api/messages', {
-                from: connection.getUserId(),
-                roomId: viewModel.gameId,
-                data: data
-            }, connection.getConfig())
-                .then(function (resp) {
-
-                })
-                .catch(function (error) {
-                    console.error('An error occurred in network request');
-                });
         }
     };
 
