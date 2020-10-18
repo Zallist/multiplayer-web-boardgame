@@ -17,8 +17,12 @@
     flex-flow: row nowrap;
     align-items: stretch;
 
-    border-top: 1px solid #F0F0F0;
-    &:last-child { border-bottom: 1px solid #F0F0F0; }
+    background-image: linear-gradient(#F0F0F0, #F0F0F0);
+    background-size: 100% 1px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    //border-top: 1px solid #F0F0F0;
+    //&:last-child { border-bottom: 1px solid #F0F0F0;  }
 }
 
 .game__cell {
@@ -27,12 +31,13 @@
     cursor: pointer;
     min-height: 10px;
     min-width: 10px;
-    border-left: 1px solid #F0F0F0;
 
-    &:last-child {
-        border-right: 1px solid #F0F0F0;
-    }
-
+    background-image: linear-gradient(#F0F0F0, #F0F0F0);
+    background-size: 1px 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+    //border-left: 1px solid #F0F0F0;
+    //&:last-child { border-right: 1px solid #F0F0F0; }
     &.game__cell--owned {
         cursor: default;
     }
@@ -49,10 +54,19 @@
         }
 
         @keyframes wiggle {
-	        0% {transform:rotate(4deg);}
-	        50% {transform:rotate(-4deg);}
-	        100% {transform:rotate(4deg);}
+            0% {
+                transform: rotate(4deg);
+            }
+
+            50% {
+                transform: rotate(-4deg);
+            }
+
+            100% {
+                transform: rotate(4deg);
+            }
         }
+
         &.omok__piece--last-placed {
             animation: wiggle 0.5s infinite;
         }

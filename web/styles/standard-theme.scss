@@ -1,0 +1,102 @@
+﻿// Default fonts
+button, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Luckiest Guy', sans-serif;
+}
+
+.input-group-text, label {
+    font-family: 'Fredoka One', sans-serif;
+    font-weight: normal;
+}
+
+body {
+    background-color: #192E58;
+    background-image: url('images/standard/background.svg');
+    background-repeat: no-repeat;
+    background-size: 98% 98%;
+    background-position: center center;
+    padding: 2%;
+}
+
+#game-panel {
+    background-image: url('images/standard/game_panel_background.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding: 4% 5% 5% 5%;
+}
+
+.game__row, .game__cell {
+    background-image: linear-gradient(#CCC, #CCC) !important;
+}
+
+.btn {
+    background-color: transparent;
+    background-image: url('images/standard/button_full.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border: none;
+    background-color: transparent;
+
+    &:hover:not(:disabled) {
+        background-color: transparent;
+        background-image: url('images/standard/button_full_hover.svg');
+    }
+
+    &:active {
+        background-color: transparent;
+        background-image: url('images/standard/button_full_active.svg');
+    }
+}
+
+.player__avatars__box {
+    background-image: url('images/standard/avatar_box_background.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    padding: 0.5em 1.5em;
+}
+.player__avatar {
+    background-image: url('images/standard/avatar_box.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+.chat__box {
+    background-image: url('images/standard/chat_box.svg');
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border: none;
+    padding: 9% 9% 14% 7%;
+}
+
+/* customize scrollbar css */
+* {
+    &::-webkit-scrollbar {
+        width: 12px;
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar:horizontal {
+        height: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: #083a4f;
+        border: none;
+        border-radius: 16px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #277EBC;
+        border: none;
+        border-radius: 16px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #1386b5;
+        border: none;
+    }
+
+    &::-webkit-scrollbar-thumb:active {
+        background-color: #005c82;
+        border: none;
+    }
+}

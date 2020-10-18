@@ -255,7 +255,7 @@ app.main = (function () {
 
             helpers.addMessage = function (playerId, message, color) {
                 var doScroll = false,
-                    chatbox = document.getElementById('chat-box');
+                    chatbox = document.getElementById('chat-messages');
 
                 if (chatbox) {
                     doScroll = chatbox.scrollHeight - 10 < chatbox.clientHeight + chatbox.scrollTop;

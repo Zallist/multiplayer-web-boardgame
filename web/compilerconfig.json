@@ -6,5 +6,9 @@
   {
     "outputFile": "styles/omok.css",
     "inputFile": "styles/omok.scss"
+  },
+  {
+    "outputFile": "styles/standard-theme.css",
+    "inputFile": "styles/standard-theme.scss"
   }
 ]

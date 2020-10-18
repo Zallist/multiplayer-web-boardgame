@@ -14,15 +14,6 @@ body {
 
 }
 
-// Default fonts
-button, h1, h2, h3, h4, h5, h6 {
-    font-family: 'Luckiest Guy', sans-serif;
-}
-.input-group-text, label {
-    font-family: 'Fredoka One', sans-serif;
-    font-weight: normal;
-}
-
 #game-panel {
     display: flex;
     flex: 1;
@@ -52,10 +43,15 @@ button, h1, h2, h3, h4, h5, h6 {
 .chat__box {
     border: 1px solid #E0E0E0;
     font-size: .75rem;
-    overflow: hidden;
-    overflow-y: auto;
     height: 100%;
+    max-height: 300px;
     padding: 0 .25em;
+
+    .chat__messages {
+        overflow: hidden;
+        overflow-y: auto;
+        height: 100%;
+    }
 
     .chat__message {
         .chat__message-name {
@@ -73,10 +69,11 @@ button, h1, h2, h3, h4, h5, h6 {
 .player__avatars {
     display: flex;
     flex-flow: row wrap;
-    max-height: 6em;
+    max-height: 7em;
     min-height: 3em;
     overflow-y: auto;
     overflow-x: hidden;
+    justify-content: space-around;
 }
 .player__avatar {
     position: relative;
@@ -85,10 +82,11 @@ button, h1, h2, h3, h4, h5, h6 {
     flex: 1;
     height: 3em;
     min-width: 3em;
+    margin: 0 0.25em 0.5em 0.25em;
     align-items: center;
 
     & > i {
-        font-size: 2em;
+        font-size: 1.5em;
         text-align: center;
         display: block;
         flex: 1;
