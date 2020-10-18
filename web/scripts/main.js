@@ -8,7 +8,7 @@ app.main = (function () {
 
     connection = {
         //serverUrl: 'https://omok-server-zallist.azurewebsites.net',
-        serverUrl: 'http://omok-zallist.azurewebsites.net/',
+        serverUrl: 'https://omok-zallist.azurewebsites.net/',
 
         hub: null,
         userId: null,
