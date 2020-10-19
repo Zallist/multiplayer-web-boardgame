@@ -10,10 +10,7 @@ namespace server_dotnet
     {
         public override async Task OnConnectedAsync()
         {
-            await this.Clients.Client(this.Context.ConnectionId).SendAsync("getConnectionId", new
-            {
-                ConnectionId = this.Context.ConnectionId
-            });
+            await this.Clients.Client(this.Context.ConnectionId).SendAsync("getConnectionId", this.Context.ConnectionId);
             await base.OnConnectedAsync();
         }
 
@@ -31,18 +28,13 @@ namespace server_dotnet
             await base.OnDisconnectedAsync(exception);
         }
 
-        public Task SendMessage(System.Text.Json.JsonElement messageElement)
+        public Task SendMessage(string roomId, object message)
         {
-            string roomId = messageElement.GetProperty("roomId").GetString();
-
-            var room = this.Clients.Group(roomId);
-            return room.SendAsync("newMessage", messageElement);
+            return this.Clients.Group(roomId).SendAsync("newMessage", message);
         }
 
-        public Task AddToRoom(System.Text.Json.JsonElement messageElement)
+        public Task AddToRoom(string roomId)
         {
-            string roomId = messageElement.GetProperty("roomId").GetString();
-
             return this.Groups.AddToGroupAsync(this.Context.ConnectionId, roomId);
         }
     }

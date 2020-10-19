@@ -159,9 +159,7 @@ app.main = (function () {
             function joinRoom() {
                 viewModel.connectionStatus = 'Joining Room...';
 
-                connection.hub.invoke('AddToRoom', {
-                    roomId: viewModel.gameId
-                })
+                connection.hub.invoke('AddToRoom', roomId)
                     .then(function (resp) {
                         connected();
                     })
@@ -178,9 +176,9 @@ app.main = (function () {
                     .configureLogging(signalR.LogLevel.Information)
                     .build();
 
-                connection.hub.on('getConnectionId', function (data) {
+                connection.hub.on('getConnectionId', function (connectionId) {
                     connection.hub.off('getConnectionId');
-                    connection.setUserId(data.connectionId);
+                    connection.setUserId(connectionId);
                     joinRoom();
                 });
                 connection.hub.on('newMessage', connection.events.dataReceived);
@@ -221,9 +219,8 @@ app.main = (function () {
                 });
         },
         sendUsingSignalR: function (data) {
-            return connection.hub.invoke('SendMessage', {
+            return connection.hub.invoke('SendMessage', roomId, {
                 from: connection.getUserId(),
-                roomId: viewModel.gameId,
                 data: data
             })
                 .then(function (resp) {
