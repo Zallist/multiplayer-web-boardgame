@@ -29,8 +29,6 @@
     position: relative;
     flex: 1;
     cursor: pointer;
-    min-height: 10px;
-    min-width: 10px;
 
     background-image: linear-gradient(#F0F0F0, #F0F0F0);
     background-size: 1px 100%;
@@ -56,15 +54,15 @@
 
         @keyframes wiggle {
             0% {
-                transform: rotate(4deg);
+                transform: rotate(8deg);
             }
 
             50% {
-                transform: rotate(-4deg);
+                transform: rotate(-8deg);
             }
 
             100% {
-                transform: rotate(4deg);
+                transform: rotate(8deg);
             }
         }
 

@@ -15,7 +15,7 @@
                             'omok__piece',
                             { 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }
                         ]"
-                     :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridHeight) * 0.75) + 'vh' }"
+                     :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'vh' }"
                      :title="'Owned by ' + player.name">
 
                     <i v-if="player.metadata.avatar.type=='css-class'"
@@ -64,12 +64,13 @@
         makeGame: function (game) {
             game = _.extend({
                 configuration: {
-                    gridWidth: 19,
-                    gridHeight: 19,
+                    gridSize: 19,
                     // In case you want to get more in a row
                     numberInARowRequired: 5,
-                    // Double-threes
-                    allowEasyWins: false,
+                    // Double-threes (unblocked)
+                    allowDoubleThrees: false,
+                    // Double-fours (incl blocked)
+                    allowDoubleFours: true,
                     // More than numberInARowRequired wins
                     allowOverWins: false,
                     // In seconds
@@ -93,17 +94,34 @@
                 x, y,
                 row, cell;
 
-            // Setup game
+            // Validation checks
+            config.turnTime = Number(config.turnTime);
+            config.gridSize = Number(config.gridSize);
+            config.numberInARowRequired = Number(config.numberInARowRequired);
+
+            if (!_.isFinite(config.turnTime) || config.turnTime < 0.25) {
+                alert('Invalid turn time');
+                return false;
+            }
+            if (!_.isFinite(config.gridSize) || config.gridSize < 1 || config.gridSize > 250) {
+                // 250 max because we need SOME max and that's about the limit of where I reckon your browser will crash
+                alert('Invalid grid size');
+                return false;
+            }
+            if (!_.isFinite(config.numberInARowRequired) || config.numberInARowRequired < 1 || config.numberInARowRequired > config.gridSize) {
+                alert('Invalid number in a row required');
+                return false;
+            }
 
             // Store config just because
             game.configurationAtStart = config;
             game.boardCells = [];
 
-            for (y = 0; y < config.gridHeight; y++) {
+            for (y = 0; y < config.gridSize; y++) {
                 row = [];
                 game.boardCells.push(row);
 
-                for (x = 0; x < config.gridWidth; x++) {
+                for (x = 0; x < config.gridSize; x++) {
                     cell = {
                         x: x,
                         y: y,
@@ -150,7 +168,7 @@
             }
 
             // Check if we fail validation
-            if (!config.allowEasyWins) {
+            if (!config.allowDoubleThrees) {
                 if (omokGame.helpers.isEasyWin(cell, viewModel.player.id)) {
                     viewModel.helpers.addMessage(null, 'No easy wins allowed (double ' + (game.configurationAtStart.numberInARowRequired - 2) + 's)');
                     return;
@@ -212,6 +230,10 @@
                 count = omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
 
                 if (!count.isBlocked && count.count === config.numberInARowRequired - 2) {
+                    return true;
+                }
+
+                if (config.allowDoubleFours && count.count === config.numberInARowRequired - 1) {
                     return true;
                 }
 
@@ -280,8 +302,8 @@
                 x += xDelta;
                 y += yDelta;
 
-                if (x >= 0 && x < config.gridWidth &&
-                    y >= 0 && y < config.gridHeight) {
+                if (x >= 0 && x < config.gridSize &&
+                    y >= 0 && y < config.gridSize) {
 
                     cell = game.boardCells[y][x];
                 }

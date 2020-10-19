@@ -312,6 +312,11 @@ app.main = (function () {
 
                     // Let's distribute the game state to this person too
                     if (viewModel.isHost) {
+                        // Send players first just in case gameState is massive, so the person knows the room exists & state is likely being sent
+                        connection.send({
+                            type: 'players',
+                            players: viewModel.players
+                        });
                         connection.send({
                             type: 'game-state',
                             players: viewModel.players,
@@ -344,6 +349,10 @@ app.main = (function () {
                     else {
                         viewModel.helpers.addMessage(null, fromPlayer.name + " tried to skip a turn but wasn't host", 'red');
                     }
+                    break;
+                case 'players':
+                    if (viewModel.isHost) break;
+                    viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
                     break;
                 case 'game-state':
                     if (viewModel.isHost) break;
@@ -469,7 +478,7 @@ app.main = (function () {
             helpers.joinGame = function () {
                 viewModel.isHost = false;
 
-                if (!viewModel.gameId) {
+                if (!_.trim(viewModel.gameId).length) {
                     alert('A game ID must be entered');
                 }
                 else {
@@ -481,6 +490,7 @@ app.main = (function () {
                     document.getElementById('name-form').reportValidity();
                 }
                 else {
+                    viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
                     viewModel.isConnected = false;
 
@@ -670,6 +680,8 @@ app.main = (function () {
             game: null
         };
         // == /game state
+
+        viewModel.viewGameConfig = false;
 
         viewModel.events.toggleReady = function () {
             viewModel.player.isReady = !viewModel.player.isReady;

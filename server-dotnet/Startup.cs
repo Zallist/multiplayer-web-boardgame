@@ -12,11 +12,16 @@ namespace server_dotnet
 {
     public class Startup
     {
+        const long MAX_MESSAGE_SIZE = 1024 * 1024;
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
+            services.AddSignalR(options =>
+            {
+                options.MaximumReceiveMessageSize = MAX_MESSAGE_SIZE;
+            });
             services.AddCors((options) =>
             {
                 options.AddDefaultPolicy(builder =>
