@@ -471,8 +471,6 @@ app.main = (function () {
                 viewModel.isHost = true;
                 viewModel.gameId = chance.word({ length: 6 }).toLowerCase();
 
-                app.game.hooks.setup();
-
                 helpers.connect();
             };
             helpers.joinGame = function () {
@@ -490,6 +488,8 @@ app.main = (function () {
                     document.getElementById('name-form').reportValidity();
                 }
                 else {
+                    app.game.hooks.setup();
+
                     viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
                     viewModel.isConnected = false;
