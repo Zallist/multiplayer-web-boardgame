@@ -1,6 +1,4 @@
-﻿/// <reference path="libs/randomColor.js" />
-
-var app = app || {};
+﻿var app = app || {};
 
 app.helpers = (function () {
     var helpers = {};
@@ -21,6 +19,18 @@ app.helpers = (function () {
         uuid = uuid.replace(/^(.{8})(.{4})(.{4})(.{4})(.+)$/, '$1-$2-$3-$4-$5');
 
         return uuid;
+    };
+
+    helpers.removeFromArray = function (array, item) {
+        var index;
+
+        index = array.indexOf(item);
+
+        if (index >= 0) {
+            array.splice(index, 1);
+        }
+
+        return array;
     };
 
     helpers.generateColor = function (seed) {

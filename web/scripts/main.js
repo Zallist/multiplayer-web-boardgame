@@ -17,6 +17,7 @@ app.main = (function () {
             connection.userId = userId;
             viewModel.player = viewModel.makers.makePlayer({
                 id: connection.userId,
+                isHost: viewModel.isHost,
                 name: viewModel.player.name,
                 metadata: viewModel.player.metadata
             });
@@ -42,7 +43,7 @@ app.main = (function () {
             };
         },
 
-        connectUsingApi: function () {
+        connectUsingApi: function (onConnected) {
             function throwError(error) {
                 var parsed = {};
                 _.extend(parsed, error);
@@ -71,6 +72,10 @@ app.main = (function () {
                     type: 'player-joined',
                     player: viewModel.player
                 });
+
+                if (_.isFunction(onConnected)) {
+                    onConnected();
+                }
             }
 
             function joinRoom() {
@@ -125,7 +130,7 @@ app.main = (function () {
 
             negotiate();
         },
-        connectUsingSignalR: function () {
+        connectUsingSignalR: function (onConnected) {
             function throwError(error) {
                 var parsed = {};
                 _.extend(parsed, error);
@@ -154,6 +159,10 @@ app.main = (function () {
                     type: 'player-joined',
                     player: viewModel.player
                 });
+
+                if (_.isFunction(onConnected)) {
+                    onConnected();
+                }
             }
 
             function joinRoom() {
@@ -201,8 +210,47 @@ app.main = (function () {
             startHub();
         },
         connect: function () {
-            //connection.connectUsingApi();
-            connection.connectUsingSignalR();
+            function onConnected() {
+                setInterval(function () {
+                    var hostPlayer, currentPlayer;
+
+                    if (viewModel.gameState.started) {
+                        if (viewModel.isHost) {
+                            currentPlayer = viewModel.helpers.getPlayer(viewModel.gameState.currentTurn);
+
+                            // Check if the current turn is owned by someone not in the turnOrder, if so pick a random player
+                            if (currentPlayer.isDisconnected || _.indexOf(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn) < 0) {
+                                connection.send({
+                                    type: 'reset-turn-to-player',
+                                    skipPlayerId: viewModel.gameState.currentTurn,
+                                    playerId: _.sample(_.reject(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn))
+                                }, true);
+                            }
+                        }
+                    }
+
+
+                    // If host is connected and I'm the first in the list of hosts, I become host
+                    // This should be the LAST check since host stuff happens above, and we need people to know we're host before we pretend to be host
+                    hostPlayer = _.find(viewModel.players, { isHost: true, isDisconnected: false });
+                    if (!hostPlayer) {
+                        hostPlayer = _.find(viewModel.players, { isDisconnected: false });
+                        if (hostPlayer.id === viewModel.player.id) {
+                            viewModel.isHost = true;
+                            hostPlayer.isHost = true;
+
+                            // Tell everyone we're the host now
+                            connection.send({
+                                type: 'player-promote-to-host',
+                                playerId: hostPlayer.id
+                            }, true);
+                        }
+                    }
+                }, 5000);
+            }
+
+            //connection.connectUsingApi(onConnected);
+            connection.connectUsingSignalR(onConnected);
         },
 
         sendUsingApi: function (data) {
@@ -271,20 +319,30 @@ app.main = (function () {
                         });
                     }
                     break;
-                case 'ping':
-                    fromPlayer.lastPing = Date.now();
-                    break;
                 case 'player-disconnected':
-                    fromPlayer = viewModel.helpers.getPlayer(data.playerId);
+                    fromPlayer = viewModel.helpers.getPlayer(data.playerId, true);
 
-                    if (fromPlayer.id && !fromPlayer.isDisconnected) {
+                    if (fromPlayer && !fromPlayer.isDisconnected) {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
                         fromPlayer.isDisconnected = true;
                         fromPlayer.isPlaying = false;
 
-                        if (_.some(viewModel.gameState.turnOrder, data.playerId)) {
-                            viewModel.gameState.turnOrder = _.reject(viewModel.gameState.turnOrder, data.playerId);
-                        }
+                        app.helpers.removeFromArray(viewModel.gameState.turnOrder, data.playerId);
+                    }
+                    break;
+                case 'player-promote-to-host':
+                    fromPlayer = viewModel.helpers.getPlayer(data.playerId);
+                    fromPlayer.isHost = true;
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' was promoted to host due to disconnection', fromPlayer.color);
+                    break;
+                case 'reset-turn-to-player':
+                    if (fromPlayer.isHost) {
+                        viewModel.helpers.addMessage(null, 'Turn skipped because of disconnection', 'red');
+                        viewModel.gameState.currentTurn = data.playerId;
+                        viewModel.helpers.doStartTurn();
+                    }
+                    else {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + " tried to skip a turn but wasn't host", 'red');
                     }
                     break;
                 case 'game-state':
@@ -389,7 +447,7 @@ app.main = (function () {
                 }
             };
             helpers.getGameLink = function () {
-                return window.location.origin + window.location.pathname + '?gameId=' + viewModel.gameId;
+                return window.location.origin + window.location.pathname + '?gameId=' + encodeURIComponent(viewModel.gameId);
             };
             helpers.copyGameLink = function () {
                 app.helpers.copyTextToClipboard(helpers.getGameLink());
@@ -433,7 +491,7 @@ app.main = (function () {
             var unknownPlayer = null,
                 systemPlayer = null;
 
-            helpers.getPlayer = function (playerId) {
+            helpers.getPlayer = function (playerId, returnNullIfNotFound) {
                 var player = null;
 
                 if (!playerId) {
@@ -454,6 +512,10 @@ app.main = (function () {
                 }
 
                 if (!player) {
+                    if (returnNullIfNotFound) {
+                        return null;
+                    }
+
                     if (!unknownPlayer) {
                         unknownPlayer = viewModel.makers.makePlayer({
                             id: '0',
@@ -472,7 +534,11 @@ app.main = (function () {
                 var playerIndex;
 
                 playerIndex = _.indexOf(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn);
-                playerIndex = (playerIndex + 1) % _.size(viewModel.gameState.turnOrder);
+                playerIndex += 1;
+
+                if (playerIndex >= _.size(viewModel.gameState.turnOrder)) {
+                    playerIndex = 0;
+                }
 
                 return viewModel.gameState.turnOrder[playerIndex];
             };
@@ -535,7 +601,7 @@ app.main = (function () {
                 player = _.extend({
                     id: null,
                     name: null,
-                    lastPing: Date.now(),
+                    isHost: false,
                     isDisconnected: false,
                     isReady: false,
                     isPlaying: false,
@@ -656,10 +722,10 @@ app.main = (function () {
                 function (player) {
                     var index;
 
-                    index = _.indexOf(viewModel.gameState.turnOrder, player.id);
+                    index = viewModel.gameState.turnOrder.indexOf(player.id);
 
                     if (index >= 0) {
-                        index = _.indexOf(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn) - index;
+                        index = index - viewModel.gameState.turnOrder.indexOf(viewModel.gameState.currentTurn);
 
                         if (index < 0) {
                             index += _.size(viewModel.gameState.turnOrder);
