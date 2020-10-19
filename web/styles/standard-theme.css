@@ -5,14 +5,14 @@
   font-family: 'Fredoka One', sans-serif;
   font-weight: normal; }
 
-body {
+#app {
   background-color: #192E58;
   background-image: url("images/standard/background.svg");
   background-repeat: no-repeat;
   background-size: 98% 98%;
   background-position: center center;
   position: relative; }
-  body > *:nth-child(1) {
+  #app > *:nth-child(1) {
     position: absolute;
     top: 4%;
     bottom: 4%;
@@ -74,6 +74,29 @@ body {
     left: 7%;
     right: 9%;
     height: auto !important; }
+
+.config__help-text {
+  color: #222 !important; }
+
+.modal__dialog-wrap .modal__dialog {
+  height: 90%;
+  width: 81vh;
+  background-color: transparent;
+  background-image: url("images/standard/game_config_panel.svg");
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position: center center;
+  border: none;
+  position: relative; }
+  .modal__dialog-wrap .modal__dialog > *:nth-child(1) {
+    position: absolute;
+    top: 34%;
+    bottom: 6%;
+    left: 6%;
+    right: 6%;
+    height: auto !important; }
+  .modal__dialog-wrap .modal__dialog .modal__dialog__content {
+    padding: 0; }
 
 /* customize scrollbar css */
 *::-webkit-scrollbar {

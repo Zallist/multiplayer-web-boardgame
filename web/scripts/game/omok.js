@@ -233,7 +233,7 @@
                     return true;
                 }
 
-                if (config.allowDoubleFours && count.count === config.numberInARowRequired - 1) {
+                if (!config.allowDoubleFours && count.count === config.numberInARowRequired - 1) {
                     return true;
                 }
 

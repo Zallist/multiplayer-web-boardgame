@@ -18,7 +18,7 @@ button, h1, h2, h3, h4, h5, h6 {
     }
 }
 
-body {
+#app {
     background-color: #192E58;
     background-image: url('images/standard/background.svg');
     background-repeat: no-repeat;
@@ -77,6 +77,28 @@ body {
     background-size: 100% 100%;
     border: none;
     @include padChild(8%,12%,7%,9%);
+}
+
+.config__help-text {
+    color: #222 !important;
+}
+
+.modal__dialog-wrap {
+    .modal__dialog {
+        height: 90%;
+        width: 81vh; // hey we can use vh if we want to keep aspect ratio
+        background-color: transparent;
+        background-image: url('images/standard/game_config_panel.svg');
+        background-repeat: no-repeat;
+        background-size: auto 100%;
+        background-position: center center;
+        border: none;
+        @include padChild(34%,6%,6%,6%);
+
+        .modal__dialog__content {
+            padding: 0;
+        }
+    }
 }
 
 /* customize scrollbar css */
