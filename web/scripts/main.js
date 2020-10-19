@@ -159,7 +159,7 @@ app.main = (function () {
             function joinRoom() {
                 viewModel.connectionStatus = 'Joining Room...';
 
-                connection.hub.invoke('AddToRoom', roomId)
+                connection.hub.invoke('AddToRoom', viewModel.gameId)
                     .then(function (resp) {
                         connected();
                     })
@@ -219,7 +219,7 @@ app.main = (function () {
                 });
         },
         sendUsingSignalR: function (data) {
-            return connection.hub.invoke('SendMessage', roomId, {
+            return connection.hub.invoke('SendMessage', viewModel.gameId, {
                 from: connection.getUserId(),
                 data: data
             })
