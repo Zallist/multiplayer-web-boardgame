@@ -294,7 +294,9 @@
                 isBlocked: false
             };
 
-            if (xDelta === 0 && yDelta === 0) return ret;
+            if ((xDelta === 0 && yDelta === 0) ||
+                xStart < 0 || yStart < 0 ||
+                xStart >= config.gridSize || yStart >= config.gridSize) return ret;
 
             function travel(x, y, xDelta, yDelta) {
                 var cell = null;
@@ -361,10 +363,12 @@
                 src: ['assets/game/omok/sounds/242737__supafrycook2__tap.wav']
             }),
             'my_win': new Howl({
-                src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3', 'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav']
+                src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3', 'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav'],
+                volume: 0.5
             }),
             'other_win': new Howl({
-                src: ['assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.mp3', 'assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.wav']
+                src: ['assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.mp3', 'assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.wav'],
+                volume: 0.5
             })
         };
 
