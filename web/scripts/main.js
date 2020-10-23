@@ -83,7 +83,7 @@ app.main = (function () {
 
                 axios.post(connection.serverUrl + '/api/addToRoom', {
                     from: connection.getUserId(),
-                    roomId: viewModel.gameId
+                    roomId: viewModel.roomId
                 }, connection.getApiConfig())
                     .then(function (resp) {
                         connected();
@@ -168,7 +168,7 @@ app.main = (function () {
             function joinRoom() {
                 viewModel.connectionStatus = 'Joining Room...';
 
-                connection.hub.invoke('AddToRoom', viewModel.gameId)
+                connection.hub.invoke('AddToRoom', viewModel.roomId)
                     .then(function (resp) {
                         connected();
                     })
@@ -256,7 +256,7 @@ app.main = (function () {
         sendUsingApi: function (data) {
             return axios.post(connection.serverUrl + '/api/messages', {
                 from: connection.getUserId(),
-                roomId: viewModel.gameId,
+                roomId: viewModel.roomId,
                 data: data
             }, connection.getApiConfig())
                 .then(function (resp) {
@@ -267,7 +267,7 @@ app.main = (function () {
                 });
         },
         sendUsingSignalR: function (data) {
-            return connection.hub.invoke('SendMessage', viewModel.gameId, {
+            return connection.hub.invoke('SendMessage', viewModel.roomId, {
                 from: connection.getUserId(),
                 data: data
             })
@@ -436,7 +436,7 @@ app.main = (function () {
                 });
 
                 if (doScroll) {
-                    page.pageVue.$nextTick(function () {
+                    Vue.nextTick(function () {
                         chatbox.scrollTop = chatbox.scrollHeight;
                     });
                 }
@@ -456,7 +456,7 @@ app.main = (function () {
                 }
             };
             helpers.getGameLink = function () {
-                return window.location.origin + window.location.pathname + '?gameId=' + encodeURIComponent(viewModel.gameId);
+                return window.location.origin + window.location.pathname + '?roomId=' + encodeURIComponent(viewModel.roomId);
             };
             helpers.copyGameLink = function () {
                 app.helpers.copyTextToClipboard(helpers.getGameLink());
@@ -469,14 +469,14 @@ app.main = (function () {
 
             helpers.createGame = function () {
                 viewModel.isHost = true;
-                viewModel.gameId = chance.word({ length: 6 }).toLowerCase();
+                viewModel.roomId = chance.word({ length: 6 }).toLowerCase();
 
                 helpers.connect();
             };
             helpers.joinGame = function () {
                 viewModel.isHost = false;
 
-                if (!_.trim(viewModel.gameId).length) {
+                if (!_.trim(viewModel.roomId).length) {
                     alert('A game ID must be entered');
                 }
                 else {
@@ -650,7 +650,7 @@ app.main = (function () {
         viewModel.makers = {};
         _.extend(viewModel.makers, viewModelFunctions.getMakers(viewModel));
 
-        viewModel.gameId = page.helpers.getUrlParameter('gameId');
+        viewModel.roomId = page.helpers.getUrlParameter('roomId');
 
         viewModel.isHost = false;
         viewModel.isConnecting = false;
@@ -828,36 +828,21 @@ app.main = (function () {
     viewModel = new makeVM();
     page.viewModel = viewModel;
 
-    page.replaceHtmlElements = function () {
-        // Replaces html elements so we can lazy load in game components
-        // Could be done with vue components but would require more effort
-        var elementsToReplace = document.getElementsByClassName('replace_with_html');
-
-        _.each(elementsToReplace, function (element) {
-            var replaceWithText, replaceWithNode, i;
-
-            replaceWithText = _.get(window, element.getAttribute('data-replace-with'));
-            replaceWithNode = document.createElement('div');
-            replaceWithNode.innerHTML = replaceWithText;
-
-            for (i = replaceWithNode.childNodes.length - 1; i >= 0; i--) {
-                element.parentNode.insertBefore(replaceWithNode.childNodes[i], element.nextSibling);
-            }
-            element.parentNode.removeChild(element);
-        });
-    };
-
     page.initialise = function () {
         app.game = makeGameObject(connection, app, page.viewModel);
         page.viewModel.gameState.game = app.game.hooks.makeGame();
         page.viewModel.game = app.game;
 
-        page.replaceHtmlElements();
-
         page.pageVue = Vue.createApp({
             data: function () { return page.viewModel; },
             directives: customVueDirectives
-        }).mount('#app');
+        });
+
+        _.each(app.game.vueComponents, function (component, key) {
+            page.pageVue.component(key, component);
+        });
+        
+        page.pageVue.mount('#app');
     };
 
     return page;

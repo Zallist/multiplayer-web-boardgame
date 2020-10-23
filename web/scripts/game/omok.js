@@ -1,35 +1,127 @@
-﻿var makeGameObject = function (connection, app, viewModel) {
+﻿
+var makeGameObject = function (connection, app, viewModel) {
     var omokGame = {};
 
-    omokGame.html = {
-        gamePanel: `
-    <div class="game__board">
-        <div class="game__row" v-for="row in $root.gameState.game.boardCells">
-            <div v-for="cell in row"
-                 @click.prevent="$root.game.events.cellClicked(cell)"
-                 :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
+    // Components get injected into the right place, so this is where we write custom HTML
+    omokGame.vueComponents = {
+        'game-panel': {
+            data: function () { return viewModel; },
+            template: `
+<div class="game__board">
+    <div class="game__row" v-for="row in $root.gameState.game.boardCells">
+        <div v-for="cell in row"
+             @click.prevent="$root.game.events.cellClicked(cell)"
+             :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
 
-                <div v-if="cell.ownedBy"
-                     v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
-                     :class="[
+            <div v-if="cell.ownedBy"
+                 v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
+                 :class="[
                             'omok__piece',
                             { 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }
                         ]"
-                     :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'vh' }"
-                     :title="'Owned by ' + player.name">
+                 :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'vh' }"
+                 :title="'Owned by ' + player.name">
 
-                    <i v-if="player.metadata.avatar.type=='css-class'"
-                       :class="player.metadata.avatar.value"
-                       :style="{ 'color': player.color }"></i>
+                <i v-if="player.metadata.avatar.type=='css-class'"
+                   :class="player.metadata.avatar.value"
+                   :style="{ 'color': player.color }"></i>
 
-                    <i v-else class="fas fa-question"
-                       :style="{ 'color': player.color }"></i>
+                <i v-else class="fas fa-question"
+                   :style="{ 'color': player.color }"></i>
 
-                </div>
             </div>
         </div>
     </div>
+</div>
 `
+        },
+        'config-panel': {
+            data: function () { return viewModel; },
+            template: `
+<div>
+    <div class="">
+        <label>Turn Time (seconds)</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" :min="$root.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$root.gameState.game.configuration.turnTime" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model="$root.gameState.game.configuration.turnTime" />
+            </div>
+        </div>
+
+        <small class="form-text text-danger" v-show="$root.gameState.game.configuration.turnTime < 3">
+            Turns this short may get affected by latency and people may miss their turns without realising
+        </small>
+    </div>
+    <div class="mt-3">
+        <label>Grid Size</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="1" max="100" step="1" v-model="$root.gameState.game.configuration.gridSize" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model="$root.gameState.game.configuration.gridSize" />
+            </div>
+        </div>
+
+        <small class="form-text text-danger" v-show="$root.gameState.game.configuration.gridSize > 40">
+            Playing with a grid this size is likely to make it laggy. Good luck.
+        </small>
+    </div>
+    <div class="mt-3">
+        <label>Number In A Row To Win</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="1" :max="$root.gameState.game.configuration.gridSize" step="1" v-model="$root.gameState.game.configuration.numberInARowRequired" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="1" :max="$root.gameState.game.configuration.gridSize" step="1" v-model="$root.gameState.game.configuration.numberInARowRequired" />
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowOverWins">
+                Allow Over Wins (overlines)
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            Can you win by placing more than the number required in a row?
+        </small>
+    </div>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowDoubleThrees">
+                Allow Easy Wins (double 3s)
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            Easy Wins are based on the "double-threes" rule. You can't place pieces where you would get 2 <strong>unblocked</strong> {{$root.gameState.game.configuration.numberInARowRequired - 2}}s in a row.
+        </small>
+    </div>
+    <div class="mt-3" v-show="!$root.gameState.game.configuration.allowDoubleThrees">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowDoubleFours">
+                Allow 2x N-1 (double 4s)
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            Based on the "double-fours" rule. You can't place pieces where you would get 2 {{$root.gameState.game.configuration.numberInARowRequired - 1}}s in a row.
+        </small>
+    </div>
+</div>
+`
+        }
     };
 
     omokGame.hooks = {
@@ -56,6 +148,11 @@
                                 omokGame.assets.sounds['other_piece_placed'].play();
                             }
                         }
+                    }
+                    break;
+                case 'player-joined':
+                    if (fromPlayerId !== viewModel.player.id) {
+                        omokGame.assets.sounds['player_joined'].play();
                     }
                     break;
             }
@@ -361,6 +458,9 @@
             }),
             'other_piece_placed': new Howl({
                 src: ['assets/game/omok/sounds/242737__supafrycook2__tap.wav']
+            }),
+            'player_joined': new Howl({
+                src: ['assets/game/omok/sounds/270304__littlerobotsoundfactory__collect-point-00.wav']
             }),
             'my_win': new Howl({
                 src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3', 'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav'],
