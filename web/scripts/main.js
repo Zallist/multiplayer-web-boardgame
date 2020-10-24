@@ -22,7 +22,6 @@ app.main = (function () {
                 metadata: viewModel.player.metadata
             });
             viewModel.players[viewModel.player.id] = viewModel.player;
-            window.location.hash = 'userId=' + connection.userId;
         },
 
         getUserId: function () {
@@ -62,7 +61,6 @@ app.main = (function () {
 
                 if (viewModel.isHost) {
                     viewModel.helpers.addMessage(null, 'Game created');
-                    viewModel.gameState.ready = true;
                 }
                 else {
                     viewModel.helpers.addMessage(null, 'Game joined');
@@ -359,7 +357,6 @@ app.main = (function () {
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
 
                     viewModel.gameState = data.gameState;
-                    viewModel.gameState.received = true;
                     break;
                 case 'ready-changed':
                     fromPlayer.isReady = data.isReady;
@@ -391,24 +388,23 @@ app.main = (function () {
                     if (data.isWin) {
                         // You won
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
-
-                        viewModel.gameState.currentTurn = null;
-                        viewModel.gameState.started = false;
-
-                        _.forEach(viewModel.players, function (player) {
-                            player.isReady = false;
-                            player.isPlaying = false;
-                        });
-
-                        viewModel.player.isReady = false;
-                        viewModel.player.isPlaying = false;
-
-                        viewModel.helpers.stopTrackingTurnTime();
+                        viewModel.helpers.endGame();
                     }
                     else {
                         viewModel.gameState.currentTurn = data.nextPlayerId;
                         viewModel.helpers.doStartTurn();
                     }
+                    break;
+                case 'game-tie':
+                    // Anyone can tie, but if not isAutomatic we probably need some confirmation
+                    if (data.isAutomatic) {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' triggered a tie', fromPlayer.color);
+                    }
+                    else {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' called a tie', 'red');
+                    }
+
+                    viewModel.helpers.endGame();
                     break;
             }
 
@@ -456,7 +452,7 @@ app.main = (function () {
                 }
             };
             helpers.getGameLink = function () {
-                return window.location.origin + window.location.pathname + '?roomId=' + encodeURIComponent(viewModel.roomId);
+                return window.location.origin + window.location.pathname + '?game=' + app.gameName + '&roomId=' + encodeURIComponent(viewModel.roomId);
             };
             helpers.copyGameLink = function () {
                 app.helpers.copyTextToClipboard(helpers.getGameLink());
@@ -489,6 +485,8 @@ app.main = (function () {
                 }
                 else {
                     app.game.hooks.setup();
+                                        
+                    localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
 
                     viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
@@ -601,6 +599,21 @@ app.main = (function () {
                 helpers.trackTurnTime();
             };
 
+            helpers.endGame = function () {
+                viewModel.gameState.currentTurn = null;
+                viewModel.gameState.started = false;
+
+                _.forEach(viewModel.players, function (player) {
+                    player.isReady = false;
+                    player.isPlaying = false;
+                });
+
+                viewModel.player.isReady = false;
+                viewModel.player.isPlaying = false;
+
+                viewModel.helpers.stopTrackingTurnTime();
+            };
+
             return helpers;
         },
 
@@ -670,7 +683,6 @@ app.main = (function () {
 
         // == game state ==
         viewModel.gameState = {
-            ready: false,
             started: false,
             turnOrder: [],
             currentTurn: null,
@@ -688,7 +700,7 @@ app.main = (function () {
             connection.send({
                 type: 'ready-changed',
                 isReady: viewModel.player.isReady
-            });
+            }, true);
         };
 
         viewModel.events.startGame = function () {
@@ -783,18 +795,6 @@ app.main = (function () {
             { cssClass: 'fas fa-spider', id: 'spider' }
         ];
 
-        // Remember settings
-        function recordPlayerConfig() {
-            localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
-        }
-
-        if (localStorage.getItem('saved-player-config')) {
-            try {
-                _.extend(viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
-            }
-            catch (ex) {}
-        }
-
         if (viewModel.player.name === null) {
             viewModel.player.name = chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
         }
@@ -804,9 +804,6 @@ app.main = (function () {
             viewModel.player.metadata.avatar.value = _.sample(viewModel.availableAvatarCssClasses).cssClass;
         }
 
-        // Setup watchers for default states
-        Vue.watch(viewModel.player, recordPlayerConfig);
-        
         return viewModel;
     }
 
@@ -833,9 +830,27 @@ app.main = (function () {
         page.viewModel.gameState.game = app.game.hooks.makeGame();
         page.viewModel.game = app.game;
 
+        if (localStorage.getItem('saved-player-config')) {
+            try {
+                _.extend(page.viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
+            }
+            catch (ex) { }
+        }
+
         page.pageVue = Vue.createApp({
             data: function () { return page.viewModel; },
             directives: customVueDirectives
+        });
+
+        page.pageVue.component('player-avatar', {
+            props: ['player'],
+            template: `
+<i v-if="player.metadata.avatar.type=='css-class'"
+    :class="player.metadata.avatar.value"
+    :style="{ 'color': player.color }"></i>
+
+<i v-else class="fas fa-question"
+    :style="{ 'color': player.color }"></i>`
         });
 
         _.each(app.game.vueComponents, function (component, key) {

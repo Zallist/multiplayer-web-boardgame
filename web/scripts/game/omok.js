@@ -22,13 +22,7 @@ var makeGameObject = function (connection, app, viewModel) {
                  :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'vh' }"
                  :title="'Owned by ' + player.name">
 
-                <i v-if="player.metadata.avatar.type=='css-class'"
-                   :class="player.metadata.avatar.value"
-                   :style="{ 'color': player.color }"></i>
-
-                <i v-else class="fas fa-question"
-                   :style="{ 'color': player.color }"></i>
-
+                <player-avatar :player="player"></player-avatar>
             </div>
         </div>
     </div>
@@ -38,8 +32,16 @@ var makeGameObject = function (connection, app, viewModel) {
         'config-panel': {
             data: function () { return viewModel; },
             template: `
-<div>
-    <div class="">
+<fieldset :disabled="$root.isConnecting || $root.isConnected">
+    <div class="mb-3" v-show="!$root.isConnected">
+        <label>Use a preset</label>
+        <div>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'omok\')">Omok</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'gomoku\')">Gomoku</button>
+            <button type="button" class="btn btn-outline-primary" @click="$root.game.events.setPreset(\'tic-tac-toe\')">Tic-Tac-Toe</button>
+        </div>
+    </div>
+    <div>
         <label>Turn Time (seconds)</label>
 
         <div class="form-row">
@@ -119,7 +121,7 @@ var makeGameObject = function (connection, app, viewModel) {
             Based on the "double-fours" rule. You can't place pieces where you would get 2 {{$root.gameState.game.configuration.numberInARowRequired - 1}}s in a row.
         </small>
     </div>
-</div>
+</fieldset>
 `
         }
     };
@@ -151,9 +153,18 @@ var makeGameObject = function (connection, app, viewModel) {
                     }
                     break;
                 case 'player-joined':
-                    if (fromPlayerId !== viewModel.player.id) {
-                        omokGame.assets.sounds['player_joined'].play();
+                    omokGame.assets.sounds['player_joined'].play();
+                    break;
+                case 'ready-changed':
+                    if (data.isReady) {
+                        omokGame.assets.sounds['player_ready'].play();
                     }
+                    else {
+                        omokGame.assets.sounds['player_unready'].play();
+                    }
+                    break;
+                case 'game-tie':
+                    omokGame.assets.sounds['game_tie'].play();
                     break;
             }
         },
@@ -180,6 +191,13 @@ var makeGameObject = function (connection, app, viewModel) {
                 // So we know what we last placed
                 lastPlacedCell: null
             }, game);
+
+            if (localStorage.getItem(app.gameName + '-game-configuration')) {
+                try {
+                    _.extend(game.configuration, JSON.parse(localStorage.getItem(app.gameName + '-game-configuration')));
+                }
+                catch (ex) { }
+            }
 
             return game;
         },
@@ -235,6 +253,9 @@ var makeGameObject = function (connection, app, viewModel) {
 
             gameState.turnTime = config.turnTime;
 
+            // Save configuration for next time
+            localStorage.setItem(app.gameName + '-game-configuration', JSON.stringify(config));
+
             return true;
         }
     };
@@ -289,7 +310,6 @@ var makeGameObject = function (connection, app, viewModel) {
             cell.ownedBy = null;
 
             // Check if we won
-            // TODO : Potentially need to discount blocked if we're implementing certain Renju rule sets
             if (config.allowOverWins) {
                 isWin = _.some(countInDirection, function (count) {
                     return count.count >= config.numberInARowRequired;
@@ -309,6 +329,38 @@ var makeGameObject = function (connection, app, viewModel) {
                 isWin: isWin,
                 nextPlayerId: viewModel.helpers.getNextPlayer()
             }, true);
+
+            // Let's do a background check for a game tie, since in theory that can be laggy
+            setTimeout(omokGame.helpers.checkForTie, 0);
+        },
+
+        setPreset: function (presetName) {
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configuration;
+
+            config.turnTime = 30;
+            config.allowOverWins = false;
+            config.allowDoubleThrees = false;
+            config.allowDoubleFours = true;
+            config.gridSize = 19;
+            config.numberInARowRequired = 5;
+
+            switch (_.trim(presetName).toLowerCase()) {
+                case 'tic-tac-toe':
+                    config.allowDoubleThrees = true;
+                    config.gridSize = 3;
+                    config.numberInARowRequired = 3;
+                    break;
+                case 'gomoku':
+                    config.allowDoubleThrees = true;
+                    config.allowOverWins = true;
+                    break;
+                case 'omok':
+                default:
+                    // Standard omok rules, set above
+                    break;
+            }
         }
     };
 
@@ -445,6 +497,32 @@ var makeGameObject = function (connection, app, viewModel) {
             }
 
             return ret;
+        },
+
+        checkForTie: function () {
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                y, x,
+                row, cell;
+
+            for (y = 0; y < game.boardCells.length; y++) {
+                row = game.boardCells[y];
+
+                for (x = 0; x < row.length; x++) {
+                    cell = row[x];
+
+                    if (!cell.ownedBy) {
+                        return true;
+                    }
+                }
+            }
+
+            connection.send({
+                type: 'game-tie',
+                isAutomatic: true
+            }, true);
+
+            return false;
         }
     };
 
@@ -462,13 +540,24 @@ var makeGameObject = function (connection, app, viewModel) {
             'player_joined': new Howl({
                 src: ['assets/game/omok/sounds/270304__littlerobotsoundfactory__collect-point-00.wav']
             }),
+            'player_ready': new Howl({
+                src: ['assets/game/omok/sounds/270318__littlerobotsoundfactory__jump-02.wav']
+            }),
+            'player_unready': new Howl({
+                src: ['assets/game/omok/sounds/270320__littlerobotsoundfactory__jump-00.wav']
+            }),
             'my_win': new Howl({
                 src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3', 'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav'],
-                volume: 0.5
+                volume: 0.25
             }),
             'other_win': new Howl({
                 src: ['assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.mp3', 'assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.wav'],
-                volume: 0.5
+                volume: 0.25
+            }),
+            'game_tie': new Howl({
+                src: ['assets/game/omok/sounds/270319__littlerobotsoundfactory__jingle-win-01.wav'],
+                volume: 0.25,
+                preload: false
             })
         };
 

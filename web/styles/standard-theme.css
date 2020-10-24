@@ -51,7 +51,7 @@
     background-image: url("images/standard/button_full_active.svg"); }
 
 .player__avatars__box {
-  background-image: url("images/standard/avatar_box_background.svg");
+  background-image: url("images/standard/avatar_panel.svg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   padding: 0.5em 1.5em; }
@@ -60,6 +60,21 @@
   background-image: url("images/standard/avatar_box.svg");
   background-repeat: no-repeat;
   background-size: 100% 100%; }
+  .player__avatar.player--turn {
+    border: none;
+    background-image: url("images/standard/avatar_box_turn.svg"); }
+  .player__avatar.player--spectating {
+    border: none;
+    background-image: url("images/standard/avatar_box_spectating.svg"); }
+  .player__avatar.player--me {
+    border: none;
+    background-image: url("images/standard/avatar_box_me.svg"); }
+  .player__avatar.player--ready {
+    border: none;
+    background-image: url("images/standard/avatar_box_ready.svg"); }
+  .player__avatar.player--me.player--turn {
+    border: none;
+    background-image: url("images/standard/avatar_box_me_turn.svg"); }
 
 .chat__box {
   background-image: url("images/standard/chat_box.svg");

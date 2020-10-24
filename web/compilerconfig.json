@@ -4,11 +4,11 @@
     "inputFile": "styles/main.scss"
   },
   {
-    "outputFile": "styles/omok.css",
-    "inputFile": "styles/omok.scss"
-  },
-  {
     "outputFile": "styles/standard-theme.css",
     "inputFile": "styles/standard-theme.scss"
+  },
+  {
+    "outputFile": "styles/game-omok.css",
+    "inputFile": "styles/game-omok.scss"
   }
 ]

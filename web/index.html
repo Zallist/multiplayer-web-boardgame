@@ -10,7 +10,6 @@
 
     <link href="styles/main.min.css" rel="stylesheet" />
     <link href="styles/standard-theme.min.css" rel="stylesheet" />
-    <link href="styles/omok.min.css" rel="stylesheet" />
 </head>
 <body class="h-100">
 
@@ -52,21 +51,20 @@
                                 {{Math.round($root.gameState.turnTimeRemaining)}}s remaining
                             </div>
                             <div class="mt-3">
+                                <label>Players</label>
                                 <div class="player__avatars__box">
                                     <div class="player__avatars">
                                         <div v-for="player in $root.computed.playersSortedByImportance"
                                              :title="player.name"
-                                             :class="[
-                                            'player__avatar',
-                                            { 'player--spectating': $root.gameState.started && !player.isPlaying },
-                                            { 'player--turn': $root.gameState.currentTurn === player.id }]">
+                                             :class="{
+                                                'player__avatar': true,
+                                                'player--spectating': $root.gameState.started && !player.isPlaying,
+                                                'player--ready': !$root.gameState.started && player.isReady,
+                                                'player--turn': $root.gameState.currentTurn === player.id,
+                                                'player--me': player.id === $root.player.id
+                                             }">
 
-                                            <i v-if="player.metadata.avatar.type=='css-class'"
-                                               :class="player.metadata.avatar.value"
-                                               :style="{ 'color': player.color }"></i>
-
-                                            <i v-else class="fas fa-question"
-                                               :style="{ 'color': player.color }"></i>
+                                            <player-avatar :player="player"></player-avatar>
 
                                             <span class="player__avatar__name">{{player.name}}</span>
                                         </div>
@@ -153,6 +151,9 @@
         </div>
 
         <div v-if="$root.viewGameConfig" style="display: none;" v-show="true" class="modal__dialog-wrap" @click="$root.viewGameConfig = false;">
+            <div style="position: fixed; top: 24px; right: 24px; font-size: 5em; color: white; cursor: pointer; line-height: 1em;">
+                <i class="fas fa-window-close"></i>
+            </div>
             <div class="modal__dialog" @click.stop="">
                 <div class="modal__dialog__content">
                     <config-panel></config-panel>
@@ -181,8 +182,10 @@
     <!-- custom games swap these tag -->
     <!-- Alternatively used by ?game url parameter -->
     <script type="text/javascript">
-        var game = new URLSearchParams(window.location.search).get('game') || 'omok';
-        document.write('<script src="scripts/game/' + game + '.js"><\/script>');
+        var app = app || {};
+        app.gameName = new URLSearchParams(window.location.search).get('game') || 'omok';
+        document.write('<link href="styles/game-' + app.gameName + '.min.css" rel="stylesheet" />');
+        document.write('<script src="scripts/game/' + app.gameName + '.js"><\/script>');
     </script>
 
     <script src="scripts/main.js"></script>
