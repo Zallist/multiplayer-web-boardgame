@@ -115,6 +115,8 @@
     z-index: 999;
     background-color: rgba(44, 62, 80, 0.85);
     color: #ecf0f1; }
+    #time-tracker svg {
+      fill: #ecf0f1; }
   #current-turn {
     border-radius: 0 .5em 0 0;
     margin: 0;
@@ -124,4 +126,6 @@
     bottom: 0;
     z-index: 999;
     background-color: rgba(44, 62, 80, 0.85);
-    color: #ecf0f1; } }
+    color: #ecf0f1; }
+    #current-turn svg {
+      fill: #ecf0f1; } }

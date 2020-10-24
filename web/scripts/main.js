@@ -594,7 +594,7 @@ app.main = (function () {
                         }
                     }
 
-                    viewModel.gameState.turnTimeRemaining = timeRemaining;
+                    viewModel.gameState.turnTimeRemaining = Math.round(timeRemaining);
                 }, 50);
             };
 

@@ -143,6 +143,8 @@ body {
         z-index: 999;
         background-color: rgba(44, 62, 80,0.85);
         color: rgba(236, 240, 241,1.0);
+
+        svg { fill: rgba(236, 240, 241,1.0); }
     }
     #current-turn {
         border-radius: 0 .5em 0 0;
@@ -154,5 +156,7 @@ body {
         z-index: 999;
         background-color: rgba(44, 62, 80,0.85);
         color: rgba(236, 240, 241,1.0);
+
+        svg { fill: rgba(236, 240, 241,1.0); }
     }
 }
