@@ -7,8 +7,8 @@ app.main = (function () {
         viewModelFunctions;
 
     connection = {
-        //serverUrl: 'https://omok-server-zallist.azurewebsites.net',
-        serverUrl: 'https://omok-zallist.azurewebsites.net/',
+        // Populated by /scripts/server.url.js
+        serverUrl: app.serverUrl,
 
         hub: null,
         userId: null,
