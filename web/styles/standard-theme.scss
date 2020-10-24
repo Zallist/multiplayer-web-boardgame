@@ -18,8 +18,10 @@ button, h1, h2, h3, h4, h5, h6 {
     }
 }
 
-#app {
+body {
     background-color: #192E58;
+}
+#app {
     background-image: url('images/standard/background.svg');
     background-repeat: no-repeat;
     background-size: 98% 98%;
@@ -33,7 +35,7 @@ button, h1, h2, h3, h4, h5, h6 {
     background-repeat: no-repeat;
     background-size: 100% 100%;
 
-    @include padChild(6%,8%,6%,7%);
+    @include padChild(7%,7%,7%,7%);
 }
 
 .game__row, .game__cell {

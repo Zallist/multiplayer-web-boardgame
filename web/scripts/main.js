@@ -853,6 +853,16 @@ app.main = (function () {
     :style="{ 'color': player.color }"></i>`
         });
 
+        // Borrowed from https://codepen.io/square0225/pen/QdvLQg
+        page.pageVue.component('fill-circle', {
+            props: ['percent', 'color'],
+            template: `
+<svg viewBox="0 0 100 100" height="1em" style="height: 100%; transform: rotate(-90deg); border-radius: 50%; fill: none; stroke-width: 100%;"
+     :style="{ 'stroke': color || '#7f8c8d', 'stroke-dasharray': ((Math.min(Math.max(percent,0),100) || 0) * Math.PI) + ', 999' }">
+    <circle cx="50" cy="50" r="50"></circle>  
+</svg>`
+        });
+
         _.each(app.game.vueComponents, function (component, key) {
             page.pageVue.component(key, component);
         });

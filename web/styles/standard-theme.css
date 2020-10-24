@@ -5,8 +5,10 @@
   font-family: 'Fredoka One', sans-serif;
   font-weight: normal; }
 
+body {
+  background-color: #192E58; }
+
 #app {
-  background-color: #192E58;
   background-image: url("images/standard/background.svg");
   background-repeat: no-repeat;
   background-size: 98% 98%;
@@ -27,9 +29,9 @@
   position: relative; }
   .game__wrap > *:nth-child(1) {
     position: absolute;
-    top: 6%;
-    bottom: 8%;
-    left: 6%;
+    top: 7%;
+    bottom: 7%;
+    left: 7%;
     right: 7%;
     height: auto !important; }
 
