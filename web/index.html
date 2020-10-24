@@ -21,15 +21,15 @@
                         <game-panel></game-panel>
                     </div>
                     <div id="setup-panel" class="col-6 col-md-4 col-lg-3 h-100">
-                        <div v-if="$data.isConnected" class="d-flex h-100 flex-column">
+                        <div v-if="$root.isConnected" class="d-flex h-100 flex-column">
                             <div>
                                 <div class="input-group input-group-sm mt-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="inputGroup-sizing-sm">Room</span>
                                     </div>
-                                    <input type="text" class="form-control" v-model="$data.roomId" disabled />
+                                    <input type="text" class="form-control" :value="$root.copyGameLinkText === 'Copied!' ? 'Copied!' : $root.roomId" disabled />
                                     <div class="input-group-append">
-                                        <a class="btn btn-outline-light" @click.prevent="$root.helpers.copyGameLink"
+                                        <a class="btn btn-outline-dark" @click.prevent="$root.helpers.copyGameLink"
                                            :href="$root.helpers.getGameLink()" :title="$root.copyGameLinkText">
 
                                             <i class="fas fa-copy"></i>
@@ -37,13 +37,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mt-3" v-if="!$data.gameState.started">
-                                <div v-if="$data.isHost">
-                                    <button type="button" class="btn btn-outline-primary btn-block" @click="$data.events.startGame" v-bind:disabled="!$root.computed.anyReady">Start</button>
+                            <div class="mt-3" v-if="!$root.gameState.started">
+                                <div v-if="$root.isHost">
+                                    <button type="button" class="btn btn-outline-primary btn-block" @click="$root.events.startGame" v-bind:disabled="!$root.computed.anyReady">Start</button>
                                 </div>
                                 <div v-else>
-                                    <button type="button" class="btn btn-outline-primary btn-block" v-if="!$data.player.isReady" @click="$data.events.toggleReady">Ready</button>
-                                    <button type="button" class="btn btn-outline-danger btn-block" v-else @click="$data.events.toggleReady">Un-Ready</button>
+                                    <button type="button" class="btn btn-outline-primary btn-block" v-if="!$root.player.isReady" @click="$root.events.toggleReady">Ready</button>
+                                    <button type="button" class="btn btn-outline-danger btn-block" v-else @click="$root.events.toggleReady">Un-Ready</button>
                                 </div>
                             </div>
                             <div v-if="$root.gameState.turnTimeRemaining !== null" class="mt-3">
@@ -51,7 +51,7 @@
                                 {{Math.round($root.gameState.turnTimeRemaining)}}s remaining
                             </div>
                             <div class="mt-3">
-                                <label>Players</label>
+                                <h6 style="margin: 0; text-align: center;">Players</h6>
                                 <div class="player__avatars__box">
                                     <div class="player__avatars">
                                         <div v-for="player in $root.computed.playersSortedByImportance"
@@ -74,19 +74,19 @@
                             <div class="mt-3 mb-3 d-flex flex-column" style="flex: 1; min-height: 0;">
                                 <div class="chat__box" style="flex: 1; min-height: 0;" id="chat-box">
                                     <div class="chat__messages" id="chat-messages">
-                                        <div v-for="message in $data.messages" v-bind:title="message.created" class="chat__message">
-                                            <template v-for="player in [$data.helpers.getPlayer(message.playerId)]">
+                                        <div v-for="message in $root.messages" v-bind:title="message.created" class="chat__message">
+                                            <template v-for="player in [$root.helpers.getPlayer(message.playerId)]">
                                                 <span v-if="player.name" :style="{ 'color': player.color }" class="chat__message-name">{{ player.name }}</span>
                                                 <span class="chat__message-message" :style="{ 'color': message.color }">{{ message.message }}</span>
                                             </template>
                                         </div>
                                     </div>
                                 </div>
-                                <form @submit.prevent="$data.helpers.submitMyMessage" class="mt-1">
+                                <form @submit.prevent="$root.helpers.submitMyMessage" class="mt-1">
                                     <div class="input-group">
-                                        <input type="text" class="form-control" v-model="$data.myMessage">
+                                        <input type="text" class="form-control" v-model="$root.myMessage">
                                         <div class="input-group-append">
-                                            <button class="btn btn-outline-light" type="submit" title="Send message">
+                                            <button class="btn btn-outline-dark" type="submit" title="Send message">
                                                 <i class="fas fa-caret-right"></i>
                                             </button>
                                         </div>
@@ -94,8 +94,8 @@
                                 </form>
                             </div>
                         </div>
-                        <div v-else-if="$data.isConnecting">
-                            <div style="white-space: pre-wrap;">{{ $data.connectionStatus }}</div>
+                        <div v-else-if="$root.isConnecting">
+                            <div style="white-space: pre-wrap;">{{ $root.connectionStatus }}</div>
                         </div>
                         <div v-else class="h-100" style="overflow: hidden; overflow-y: auto;">
                             <form id="name-form" @submit.prevent>
@@ -103,18 +103,18 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="inputGroup-sizing-sm">Name</span>
                                     </div>
-                                    <input type="text" class="form-control" v-model="$data.player.name" maxlength="24" required v-focus />
+                                    <input type="text" class="form-control" v-model="$root.player.name" maxlength="24" required v-focus />
                                 </div>
                             </form>
 
                             <hr />
 
-                            <form @submit.prevent="$data.helpers.joinGame">
+                            <form @submit.prevent="$root.helpers.joinGame">
                                 <div class="input-group input-group-sm mt-3">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text" id="inputGroup-sizing-sm">Room</span>
                                     </div>
-                                    <input type="text" class="form-control" v-model="$data.roomId" required maxlength="40" />
+                                    <input type="text" class="form-control" v-model="$root.roomId" required maxlength="40" />
                                 </div>
 
                                 <button type="submit" class="btn btn-outline-primary btn-block mt-3">Join Room</button>
@@ -122,10 +122,10 @@
 
                             <hr />
 
-                            <form @submit.prevent="$data.helpers.createGame" class="mt-3">
+                            <form @submit.prevent="$root.helpers.createGame" class="mt-3">
                                 <div class="d-flex flex-row">
-                                    <button type="submit" class="flex-fill btn btn-outline-secondary">Create</button>
-                                    <button type="button" class="flex-fill btn btn-outline-dark" @click="$root.viewGameConfig = !$root.viewGameConfig">Config</button>
+                                    <button type="submit" class="flex-fill btn btn-outline-primary">Create</button>
+                                    <button type="button" class="flex-fill btn btn-outline-secondary" @click="$root.viewGameConfig = !$root.viewGameConfig">Config</button>
                                 </div>
                             </form>
 
