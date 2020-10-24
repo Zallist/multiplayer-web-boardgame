@@ -355,8 +355,11 @@ app.main = (function () {
                 case 'game-state':
                     if (viewModel.isHost) break;
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
-
                     viewModel.gameState = data.gameState;
+
+                    if (viewModel.gameState.currentTurn && viewModel.gameState.turnTimeRemaining) {
+                        viewModel.helpers.trackTurnTime(true);
+                    }
                     break;
                 case 'ready-changed':
                     fromPlayer.isReady = data.isReady;
@@ -562,10 +565,16 @@ app.main = (function () {
                 currentTurnStarted = null;
             };
 
-            helpers.trackTurnTime = function () {
+            helpers.trackTurnTime = function (implyFromGameState) {
                 helpers.stopTrackingTurnTime();
 
-                currentTurnStarted = Date.now();
+                if (implyFromGameState) {
+                    currentTurnStarted = Date.now() - ((viewModel.gameState.turnTime - viewModel.gameState.turnTimeRemaining) * 1000);
+                }
+                else {
+                    currentTurnStarted = Date.now();
+                }
+
                 currentTurnTracker = setInterval(function () {
                     var timeSpent = (Date.now() - currentTurnStarted) / 1000.0,
                         timeRemaining = viewModel.gameState.turnTime - timeSpent;
@@ -765,6 +774,9 @@ app.main = (function () {
             ]);
 
             return players;
+        });
+        viewModel.computed.currentTurnPlayer = Vue.computed(function () {
+            return viewModel.gameState.currentTurn ? _.find(viewModel.players, { id: viewModel.gameState.currentTurn }) : null;
         });
 
         // Config stuff
