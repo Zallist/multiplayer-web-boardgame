@@ -15,6 +15,7 @@
   flex-flow: column nowrap; }
 
 .game__wrap {
+  display: flex;
   flex: 1; }
 
 .chat__box {

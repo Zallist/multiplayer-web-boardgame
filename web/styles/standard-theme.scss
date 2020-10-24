@@ -91,7 +91,7 @@ body {
     color: #222 !important;
 }
 
-.modal__dialog-wrap {
+.modal__dialog-wrap .dialog--config {
     .modal__dialog {
         height: 90%;
         width: 81vh; // hey we can use vh if we want to keep aspect ratio

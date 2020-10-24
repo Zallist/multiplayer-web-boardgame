@@ -18,7 +18,7 @@
 <body class="h-100">
 
     <div id="app" class="h-100">
-        <div style="display: none;" v-show="true" class="h-100 overflow-auto">
+        <div id="app-content" style="display: none;" v-show="true" class="h-100 overflow-auto">
             <div class="container h-100 overflow-auto" v-if="!$root.isConnected && !$root.isConnecting">
                 <div class="row">
                     <div class="col-12 col-sm-6 col-md-4">
@@ -190,7 +190,7 @@
 
         <div v-if="$root.viewGameConfig"
              style="display: none;" v-show="true"
-             class="modal__dialog-wrap"
+             class="modal__dialog-wrap dialog--config"
              @click="$root.viewGameConfig = false;"
              @keydown.esc="$root.viewGameConfig = false;"
              tabindex="0"
@@ -205,6 +205,39 @@
                 </div>
             </div>
         </div>
+
+        <div v-if="$root.gameOverReason"
+             style="display: none;" v-show="true"
+             class="modal__dialog-wrap dialog--game-over"
+             @keydown.esc="$root.gameOverReason = null;"
+             tabindex="0"
+             v-focus>
+
+            <div class="modal__dialog" @click.stop="">
+                <div class="modal__dialog__content">
+                    <div :class="{
+                         'game__over__reason': true,
+                         'game__over__reason--my-win': $root.gameOverReason=='my-win',
+                         'game__over__reason--my-win': $root.gameOverReason=='my-win',
+                         'game__over__reason--tie': $root.gameOverReason=='tie'
+                    }">
+                        <div class="game__over__content">
+                            <span v-if="$root.gameOverReason=='my-win'">You won!</span>
+                            <span v-else-if="$root.gameOverReason=='my-loss'">You lost!</span>
+                            <span v-else-if="$root.gameOverReason=='tie'">You tied!</span>
+                            <span v-else>The game ended for some reason that hasn't been checked for.</span>
+                        </div>
+                    </div>
+                    <div class="game__over__actions">
+                        <div class="d-flex flex-row">
+                            <button type="button" class="flex-fill btn btn-outline-primary btn-lg" 
+                                    @click="$root.events.toggleReady(); $root.gameOverReason=null;">Play Again</button>
+                            <button type="button" class="flex-fill btn btn-outline-secondary btn-lg" @click="$root.gameOverReason=null;">Spectate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
@@ -216,8 +249,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/randomcolor/0.6.1/randomColor.js" integrity="sha512-rOS+dRWxckK6Ruh7+ybrHke9vr3WIqplzcu3Jg9C/BPxoEisNulj0kKjT9W6Byn/Gg817ENltr53/vWmA8GW6g==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.1.7/chance.min.js" integrity="sha512-dELYIOEzIECWdvsEdoywFOB4qKDmtQee33yD0dQnzAE7eBGKJ984VQXRLs/vlsP4Sb3VchbQL7iAy4NWqetCsw==" crossorigin="anonymous"></script>
-
-    <script src="scripts/libs/base_converter.js"></script>
 
     <script src="scripts/vue.directives.js"></script>
 

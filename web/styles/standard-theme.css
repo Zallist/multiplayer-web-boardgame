@@ -95,7 +95,7 @@ body {
 .config__help-text {
   color: #222 !important; }
 
-.modal__dialog-wrap .modal__dialog {
+.modal__dialog-wrap .dialog--config .modal__dialog {
   height: 90%;
   width: 81vh;
   background-color: transparent;
@@ -105,14 +105,14 @@ body {
   background-position: center center;
   border: none;
   position: relative; }
-  .modal__dialog-wrap .modal__dialog > *:nth-child(1) {
+  .modal__dialog-wrap .dialog--config .modal__dialog > *:nth-child(1) {
     position: absolute;
     top: 34%;
     bottom: 6%;
     left: 6%;
     right: 6%;
     height: auto !important; }
-  .modal__dialog-wrap .modal__dialog .modal__dialog__content {
+  .modal__dialog-wrap .dialog--config .modal__dialog .modal__dialog__content {
     padding: 0; }
 
 /* customize scrollbar css */

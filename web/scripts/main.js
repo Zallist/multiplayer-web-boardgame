@@ -26,7 +26,7 @@ app.main = (function () {
 
         getUserId: function () {
             if (!connection.userId) {
-                connection.setUserId(app.helpers.shortenUUID(chance.guid()));
+                connection.setUserId(chance.guid());
             }
 
             return connection.userId;
@@ -377,6 +377,10 @@ app.main = (function () {
                     viewModel.gameState = data.gameState;
 
                     viewModel.helpers.doStartTurn();
+
+                    if (document.getElementById('app-content')) {
+                        document.getElementById('app-content').scrollTop = 0;
+                    }
                     break;
                 case 'end-turn':
                     if (viewModel.gameState.currentTurn !== fromPlayer.id) {
@@ -389,9 +393,10 @@ app.main = (function () {
                     }
 
                     if (data.isWin) {
-                        // You won
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
-                        viewModel.helpers.endGame();
+                        viewModel.helpers.endGame({
+                            reason: fromPlayer.id === viewModel.player.id ? 'my-win' : 'my-loss'
+                        });
                     }
                     else {
                         viewModel.gameState.currentTurn = data.nextPlayerId;
@@ -407,7 +412,9 @@ app.main = (function () {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' called a tie', 'red');
                     }
 
-                    viewModel.helpers.endGame();
+                    viewModel.helpers.endGame({
+                        reason: 'tie'
+                    });
                     break;
             }
 
@@ -608,7 +615,7 @@ app.main = (function () {
                 helpers.trackTurnTime();
             };
 
-            helpers.endGame = function () {
+            helpers.endGame = function (options) {
                 viewModel.gameState.currentTurn = null;
                 viewModel.gameState.started = false;
 
@@ -621,6 +628,15 @@ app.main = (function () {
                 viewModel.player.isPlaying = false;
 
                 viewModel.helpers.stopTrackingTurnTime();
+
+                // And now a splash screen
+                switch (_.trim(options.reason).toLowerCase()) {
+                    case 'my-win':
+                    case 'my-loss':
+                    case 'tie':
+                        viewModel.gameOverReason = _.trim(options.reason).toLowerCase();
+                        break;
+                }
             };
 
             return helpers;
@@ -703,6 +719,7 @@ app.main = (function () {
         // == /game state
 
         viewModel.viewGameConfig = false;
+        viewModel.gameOverReason = null;
 
         viewModel.events.toggleReady = function () {
             viewModel.player.isReady = !viewModel.player.isReady;
