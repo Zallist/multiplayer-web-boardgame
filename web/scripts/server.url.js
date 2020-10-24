@@ -1,3 +1,3 @@
 ﻿var app = app || {};
 
-app.serverUrl = 'https://omok-zallist.azurewebsites.net/';
+app.serverUrl = 'http://localhost:5000';
