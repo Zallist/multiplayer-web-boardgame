@@ -12,29 +12,15 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  flex-flow: column nowrap;
-  padding: 1em 0; }
+  flex-flow: column nowrap; }
 
-.game__footer {
-  height: 20px;
-  min-height: 20px; }
-
-.game__footer__timer {
-  float: right; }
-
-.connection__status {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  padding: 4px 8px;
-  background: #F0F0F0;
-  border-top-left-radius: 4px; }
+.game__wrap {
+  flex: 1; }
 
 .chat__box {
   border: 1px solid #E0E0E0;
   font-size: .75rem;
   height: 100%;
-  max-height: 300px;
   padding: 0 .25em; }
   .chat__box .chat__messages {
     overflow: hidden;
@@ -54,7 +40,8 @@
   min-height: 3em;
   overflow-y: auto;
   overflow-x: hidden;
-  justify-content: space-around; }
+  justify-content: space-around;
+  margin-top: -0.5em; }
 
 .player__avatar {
   position: relative;
@@ -63,7 +50,7 @@
   flex: 1;
   height: 3em;
   min-width: 3em;
-  margin: 0 0.25em 0.5em 0.25em;
+  margin: 0.5em 0.25em 0 0.25em;
   align-items: center;
   border-radius: 4px; }
   .player__avatar > i {

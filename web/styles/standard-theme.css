@@ -20,12 +20,12 @@
     right: 4%;
     height: auto !important; }
 
-#game-panel {
+.game__wrap {
   background-image: url("images/standard/game_panel_background.svg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
   position: relative; }
-  #game-panel > *:nth-child(1) {
+  .game__wrap > *:nth-child(1) {
     position: absolute;
     top: 6%;
     bottom: 8%;
