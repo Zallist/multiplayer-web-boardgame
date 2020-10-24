@@ -532,32 +532,55 @@ var makeGameObject = function (connection, app, viewModel) {
 
         assets.sounds = {
             'my_piece_placed': new Howl({
-                src: ['assets/game/omok/sounds/242737__supafrycook2__tap.wav']
+                src: [
+                    'assets/game/omok/sounds/242737__supafrycook2__tap.mp3',
+                    'assets/game/omok/sounds/242737__supafrycook2__tap.wav'
+                ]
             }),
             'other_piece_placed': new Howl({
-                src: ['assets/game/omok/sounds/242737__supafrycook2__tap.wav']
+                src: [
+                    'assets/game/omok/sounds/242737__supafrycook2__tap.mp3',
+                    'assets/game/omok/sounds/242737__supafrycook2__tap.wav'
+                ]
             }),
             'player_joined': new Howl({
-                src: ['assets/game/omok/sounds/270304__littlerobotsoundfactory__collect-point-00.wav']
+                src: [
+                    'assets/game/omok/sounds/270304__littlerobotsoundfactory__collect-point-00.mp3',
+                    'assets/game/omok/sounds/270304__littlerobotsoundfactory__collect-point-00.wav'
+                ]
             }),
             'player_ready': new Howl({
-                src: ['assets/game/omok/sounds/270318__littlerobotsoundfactory__jump-02.wav']
+                src: [
+                    'assets/game/omok/sounds/270318__littlerobotsoundfactory__jump-02.mp3',
+                    'assets/game/omok/sounds/270318__littlerobotsoundfactory__jump-02.wav'
+                ]
             }),
             'player_unready': new Howl({
-                src: ['assets/game/omok/sounds/270320__littlerobotsoundfactory__jump-00.wav']
+                src: [
+                    'assets/game/omok/sounds/270320__littlerobotsoundfactory__jump-00.mp3',
+                    'assets/game/omok/sounds/270320__littlerobotsoundfactory__jump-00.wav'
+                ]
             }),
             'my_win': new Howl({
-                src: ['assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3', 'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav'],
-                volume: 0.25
+                src: [
+                    'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.mp3',
+                    'assets/game/omok/sounds/270333__littlerobotsoundfactory__jingle-win-00.wav'
+                ],
+                volume: 0.4
             }),
             'other_win': new Howl({
-                src: ['assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.mp3', 'assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.wav'],
-                volume: 0.25
+                src: [
+                    'assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.mp3',
+                    'assets/game/omok/sounds/270329__littlerobotsoundfactory__jingle-lose-00.wav'
+                ],
+                volume: 0.4
             }),
             'game_tie': new Howl({
-                src: ['assets/game/omok/sounds/270319__littlerobotsoundfactory__jingle-win-01.wav'],
-                volume: 0.25,
-                preload: false
+                src: [
+                    'assets/game/omok/sounds/270319__littlerobotsoundfactory__jingle-win-01.mp3',
+                    'assets/game/omok/sounds/270319__littlerobotsoundfactory__jingle-win-01.wav'
+                ],
+                volume: 0.4
             })
         };
 
