@@ -166,6 +166,9 @@ var makeGameObject = function (connection, app, viewModel) {
                 case 'game-tie':
                     omokGame.assets.sounds['game_tie'].play();
                     break;
+                case 'game-started':
+                    omokGame.assets.sounds['game_start'].play();
+                    break;
             }
         },
 
@@ -577,10 +580,15 @@ var makeGameObject = function (connection, app, viewModel) {
             }),
             'game_tie': new Howl({
                 src: [
-                    'assets/game/omok/sounds/270319__littlerobotsoundfactory__jingle-win-01.mp3',
-                    'assets/game/omok/sounds/270319__littlerobotsoundfactory__jingle-win-01.wav'
-                ],
-                volume: 0.4
+                    'assets/game/omok/sounds/181353__unfa__fail-jingle-layer-2.mp3',
+                    'assets/game/omok/sounds/181353__unfa__fail-jingle-layer-2.wav'
+                ]
+            }),
+            'game_start': new Howl({
+                src: [
+                    'assets/game/omok/sounds/107786__leviclaassen__beepbeep.mp3',
+                    'assets/game/omok/sounds/107786__leviclaassen__beepbeep.wav'
+                ]
             })
         };
 
