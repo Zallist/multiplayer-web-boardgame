@@ -98,7 +98,8 @@
     transform: translate(-50%, -50%);
     height: 80%;
     width: 80%;
-    background-color: white; }
+    background-color: white;
+    max-width: 100% !important; }
   .modal__dialog-wrap .modal__dialog__content {
     max-height: 100%;
     overflow: hidden;
@@ -148,29 +149,3 @@
       content: "";
       display: table;
       clear: both; } }
-
-/*
-@for $i from 1 to 40 {
-    @media (max-width: 100px * $i) and (min-height: 100px * ($i + 1)) {
-        #game-panel { height: auto !important; }
-        .game__wrap {
-            flex: none !important;
-
-            &::before {
-                content: "";
-                width: 1px;
-                margin-left: -1px;
-                float: left;
-                height: 0;
-                padding-top: 100%;
-            }
-
-            &::after {
-                content: "";
-                display: table;
-                clear: both;
-            }
-        }
-    }
-}
-*/
