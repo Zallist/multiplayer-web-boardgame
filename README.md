@@ -5,6 +5,7 @@ Simple web framework using Vue and SignalR to build multiplayer turn-based board
 Multiple games are implementable. The raw "rules" for each are contained in /web/scripts/game/\*.js
 Currently implemented:
 * Omok
+* Chess
 
 # TODO
 * Custom & randomised avatars
