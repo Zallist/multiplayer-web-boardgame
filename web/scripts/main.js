@@ -6,10 +6,18 @@ app.main = (function () {
         connection,
         viewModelFunctions;
 
+    page.helpers = {
+        getUrlParameter: function (key, useHash) {
+            var urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
+            return urlParams.has(key) ? urlParams.get(key) : null;
+        }
+    };
+
     connection = {
         // Populated by /scripts/server.url.js
-        serverUrl: app.serverUrl,
-        serverType: app.serverType,
+        // Can also be populated by ?serverUrl and &serverType
+        serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || 'http://localhost:5000/',
+        serverType: app.serverType || page.helpers.getUrlParameter('serverType') || 'server-dotnet',
 
         hub: null,
         userId: null,
@@ -471,7 +479,15 @@ app.main = (function () {
                 }
             };
             helpers.getGameLink = function () {
-                return window.location.origin + window.location.pathname + '?game=' + app.gameName + '&roomId=' + encodeURIComponent(viewModel.roomId);
+                var url, queryString;
+
+                url = window.location.origin + window.location.pathname;
+                queryString = new URLSearchParams(window.location.search);
+                queryString.set('roomId', viewModel.roomId);
+
+                url += '?' + queryString.toString();
+
+                return url;
             };
             helpers.copyGameLink = function () {
                 app.helpers.copyTextToClipboard(helpers.getGameLink());
@@ -844,21 +860,6 @@ app.main = (function () {
 
         return viewModel;
     }
-
-    page.computed = {
-
-    };
-
-    page.events = {
-        
-    };
-
-    page.helpers = {
-        getUrlParameter: function (key, useHash) {
-            var urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
-            return urlParams.has(key) ? urlParams.get(key) : null;
-        }
-    };
 
     viewModel = new makeVM();
     page.viewModel = viewModel;
