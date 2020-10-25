@@ -91,7 +91,7 @@ body {
     color: #222 !important;
 }
 
-.modal__dialog-wrap .dialog--config {
+.modal__dialog-wrap.dialog--config {
     .modal__dialog {
         height: 90%;
         width: 81vh; // hey we can use vh if we want to keep aspect ratio
@@ -105,6 +105,46 @@ body {
 
         .modal__dialog__content {
             padding: 0;
+        }
+    }
+}
+
+.modal__dialog-wrap.dialog--game-over {
+    .modal__dialog {
+        background-color: transparent;
+        border: none;
+
+        .modal__dialog__content {
+            height: 100%;
+            display: flex;
+            flex-flow: column nowrap;
+            padding: 0;
+        }
+
+        .game__over__actions {
+            margin-top: 3em;
+        }
+
+        .game__over__reason {
+            flex: 1;
+            background-image: url('images/standard/game_over_tie.svg');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            background-position: center center;
+
+            & > * { display: none; }
+
+            &.game__over__reason--my-win {
+                background-image: url('images/standard/game_over_win.svg');
+            }
+
+            &.game__over__reason--my-loss {
+                background-image: url('images/standard/game_over_loss.svg');
+            }
+
+            &.game__over__reason--tie {
+                background-image: url('images/standard/game_over_tie.svg');
+            }
         }
     }
 }

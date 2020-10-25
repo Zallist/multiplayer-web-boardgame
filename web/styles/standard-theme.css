@@ -95,7 +95,7 @@ body {
 .config__help-text {
   color: #222 !important; }
 
-.modal__dialog-wrap .dialog--config .modal__dialog {
+.modal__dialog-wrap.dialog--config .modal__dialog {
   height: 90%;
   width: 81vh;
   background-color: transparent;
@@ -105,15 +105,40 @@ body {
   background-position: center center;
   border: none;
   position: relative; }
-  .modal__dialog-wrap .dialog--config .modal__dialog > *:nth-child(1) {
+  .modal__dialog-wrap.dialog--config .modal__dialog > *:nth-child(1) {
     position: absolute;
     top: 34%;
     bottom: 6%;
     left: 6%;
     right: 6%;
     height: auto !important; }
-  .modal__dialog-wrap .dialog--config .modal__dialog .modal__dialog__content {
+  .modal__dialog-wrap.dialog--config .modal__dialog .modal__dialog__content {
     padding: 0; }
+
+.modal__dialog-wrap.dialog--game-over .modal__dialog {
+  background-color: transparent;
+  border: none; }
+  .modal__dialog-wrap.dialog--game-over .modal__dialog .modal__dialog__content {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 0; }
+  .modal__dialog-wrap.dialog--game-over .modal__dialog .game__over__actions {
+    margin-top: 3em; }
+  .modal__dialog-wrap.dialog--game-over .modal__dialog .game__over__reason {
+    flex: 1;
+    background-image: url("images/standard/game_over_tie.svg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center center; }
+    .modal__dialog-wrap.dialog--game-over .modal__dialog .game__over__reason > * {
+      display: none; }
+    .modal__dialog-wrap.dialog--game-over .modal__dialog .game__over__reason.game__over__reason--my-win {
+      background-image: url("images/standard/game_over_win.svg"); }
+    .modal__dialog-wrap.dialog--game-over .modal__dialog .game__over__reason.game__over__reason--my-loss {
+      background-image: url("images/standard/game_over_loss.svg"); }
+    .modal__dialog-wrap.dialog--game-over .modal__dialog .game__over__reason.game__over__reason--tie {
+      background-image: url("images/standard/game_over_tie.svg"); }
 
 /* customize scrollbar css */
 *::-webkit-scrollbar {
