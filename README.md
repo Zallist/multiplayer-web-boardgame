@@ -10,11 +10,11 @@ Currently implemented:
 # TODO
 * Custom & randomised avatars
 * Implement new game modes
-** ~~Omok~~
-*** Additional assets as they become available
-** ~~Chess~~
-*** Chess config (allow rooking, allow pawn promotion, place random)
-*** Accessible by putting *?game=chess* on the URL
+  * ~~Omok~~
+    * Additional assets as they become available
+  * ~~Chess~~
+    * Chess config (allow rooking, allow pawn promotion, place random)
+    * Accessible by putting *?game=chess* on the URL
 * Implement game mode selector
 
 # Configuration
