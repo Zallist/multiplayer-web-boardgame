@@ -10,5 +10,9 @@
   {
     "outputFile": "styles/game-omok.css",
     "inputFile": "styles/game-omok.scss"
+  },
+  {
+    "outputFile": "styles/game-chess.css",
+    "inputFile": "styles/game-chess.scss"
   }
 ]

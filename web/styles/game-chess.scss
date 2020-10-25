@@ -1,0 +1,70 @@
+﻿#game-panel {
+
+}
+
+.game__board {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    flex-flow: column nowrap;
+    align-items: stretch;
+}
+
+.game__row {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    
+    background: transparent;
+    background-image: none !important;
+    border-top: 1px solid #CCC;
+    &:last-child { border-bottom: 1px solid #CCC;  }
+}
+
+.game__cell {
+    position: relative;
+    flex: 1;
+    cursor: pointer;
+    
+    background: transparent;
+    background-image: none !important;
+    border-left: 1px solid #CCC;
+    &:last-child { border-right: 1px solid #CCC; }
+
+    &.game__cell--placable {
+        background-color: #2980b9;
+    }
+
+    .chess__piece {
+        position: absolute;
+        left: 50%; top: 50%;
+        transform: translate(-50%,-50%);
+
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        text-align: center;
+
+        & > i { flex: 1; }
+
+        @keyframes wiggle {
+            0% {
+                transform: rotate(8deg);
+            }
+
+            50% {
+                transform: rotate(-8deg);
+            }
+
+            100% {
+                transform: rotate(8deg);
+            }
+        }
+
+        &.chess__piece--last-placed {
+            & > i { animation: wiggle 0.5s infinite; }
+        }
+    }
+}

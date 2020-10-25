@@ -7,10 +7,13 @@ Currently implemented:
 * Omok
 
 # TODO
-* Cleanup of omok as assets become available
 * Custom & randomised avatars
 * Implement new game modes
-** Chess
+** ~~Omok~~
+*** Additional assets as they become available
+** ~~Chess~~
+*** Chess config (allow rooking, allow pawn promotion, place random)
+*** Accessible by putting *?game=chess* on the URL
 * Implement game mode selector
 
 # Configuration

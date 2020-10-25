@@ -29,9 +29,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{5E01D1C6-D373-4923-BB2E-83C2EDFF1AE1}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		LICENSE = LICENSE
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "server-dotnet", "server-dotnet\server-dotnet.csproj", "{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "server-dotnet", "server-dotnet\server-dotnet.csproj", "{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

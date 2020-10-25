@@ -757,11 +757,6 @@ app.main = (function () {
         viewModel.events.startGame = function () {
             var playersPlaying, playingIds;
 
-            if (!app.game.hooks.setup()) {
-                // Something wrong
-                return false;
-            }
-
             viewModel.player.isReady = true;
 
             playersPlaying = _.filter(viewModel.players, { isReady: true, isDisconnected: false });
@@ -769,6 +764,11 @@ app.main = (function () {
 
             viewModel.gameState.turnOrder = _.shuffle(playingIds);
             viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[0];
+
+            if (!app.game.hooks.setup()) {
+                // Something wrong
+                return false;
+            }
 
             viewModel.gameState.started = true;
 

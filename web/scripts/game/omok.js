@@ -1,9 +1,9 @@
 ﻿
 var makeGameObject = function (connection, app, viewModel) {
-    var omokGame = {};
+    var gameObject = {};
 
     // Components get injected into the right place, so this is where we write custom HTML
-    omokGame.vueComponents = {
+    gameObject.vueComponents = {
         'game-panel': {
             data: function () { return viewModel; },
             template: `
@@ -123,48 +123,48 @@ var makeGameObject = function (connection, app, viewModel) {
         }
     };
 
-    omokGame.hooks = {
+    gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
                     if (_.isNumber(data.cellX) && _.isNumber(data.cellY)) {
-                        viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayerId
+                        viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayerId;
                         viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
 
                         if (fromPlayerId === viewModel.player.id) {
                             if (data.isWin) {
-                                omokGame.assets.sounds['my_win'].play();
+                                gameObject.assets.sounds['my_win'].play();
                             }
                             else {
-                                omokGame.assets.sounds['my_piece_placed'].play();
+                                gameObject.assets.sounds['my_piece_placed'].play();
                             }
                         }
                         else {
                             if (data.isWin) {
-                                omokGame.assets.sounds['other_win'].play();
+                                gameObject.assets.sounds['other_win'].play();
                             }
                             else {
-                                omokGame.assets.sounds['other_piece_placed'].play();
+                                gameObject.assets.sounds['other_piece_placed'].play();
                             }
                         }
                     }
                     break;
                 case 'player-joined':
-                    omokGame.assets.sounds['player_joined'].play();
+                    gameObject.assets.sounds['player_joined'].play();
                     break;
                 case 'ready-changed':
                     if (data.isReady) {
-                        omokGame.assets.sounds['player_ready'].play();
+                        gameObject.assets.sounds['player_ready'].play();
                     }
                     else {
-                        omokGame.assets.sounds['player_unready'].play();
+                        gameObject.assets.sounds['player_unready'].play();
                     }
                     break;
                 case 'game-tie':
-                    omokGame.assets.sounds['game_tie'].play();
+                    gameObject.assets.sounds['game_tie'].play();
                     break;
                 case 'game-started':
-                    omokGame.assets.sounds['game_start'].play();
+                    gameObject.assets.sounds['game_start'].play();
                     break;
             }
         },
@@ -260,7 +260,7 @@ var makeGameObject = function (connection, app, viewModel) {
         }
     };
 
-    omokGame.events = {
+    gameObject.events = {
         cellClicked: function (cell) {
             var gameState = viewModel.gameState,
                 game = gameState.game,
@@ -287,7 +287,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
             // Check if we fail validation
             if (!config.allowDoubleThrees) {
-                if (omokGame.helpers.isEasyWin(cell, viewModel.player.id)) {
+                if (gameObject.helpers.isEasyWin(cell, viewModel.player.id)) {
                     viewModel.helpers.addMessage(null, 'No easy wins allowed (double ' + (game.configurationAtStart.numberInARowRequired - 2) + 's)');
                     return;
                 }
@@ -298,13 +298,13 @@ var makeGameObject = function (connection, app, viewModel) {
 
             // Count how many we have in each direction if this is placed
             // up left
-            countInDirection.push(omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, -1, -1));
+            countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, -1, -1));
             // up
-            countInDirection.push(omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, 0, -1));
+            countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, 0, -1));
             // up right
-            countInDirection.push(omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, 1, -1));
+            countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, 1, -1));
             // left
-            countInDirection.push(omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, -1, 0));
+            countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, -1, 0));
 
             // Clear owner just in case validation fails
             cell.ownedBy = null;
@@ -331,7 +331,7 @@ var makeGameObject = function (connection, app, viewModel) {
             }, true);
 
             // Let's do a background check for a game tie, since in theory that can be laggy
-            setTimeout(omokGame.helpers.checkForTie, 0);
+            setTimeout(gameObject.helpers.checkForTie, 0);
         },
 
         setPreset: function (presetName) {
@@ -364,7 +364,7 @@ var makeGameObject = function (connection, app, viewModel) {
         }
     };
 
-    omokGame.helpers = {
+    gameObject.helpers = {
         isEasyWin: function (cell, playerId) {
             var gameState = viewModel.gameState,
                 game = gameState.game,
@@ -376,7 +376,7 @@ var makeGameObject = function (connection, app, viewModel) {
             function checkDir(xDir, yDir) {
                 var count;
 
-                count = omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
+                count = gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
 
                 if (!count.isBlocked && count.count === config.numberInARowRequired - 2) {
                     return true;
@@ -391,14 +391,14 @@ var makeGameObject = function (connection, app, viewModel) {
             function checkSkipDir(xDir, yDir) {
                 var count;
 
-                count = omokGame.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
+                count = gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
 
                 if (!count.isBlocked && count.count === config.numberInARowRequired - 3) {
-                    count = omokGame.helpers.getCellsOwnedInARow(cell.x + (xDir * -2), cell.y + (yDir * -2), xDir, yDir, playerId);
+                    count = gameObject.helpers.getCellsOwnedInARow(cell.x + (xDir * -2), cell.y + (yDir * -2), xDir, yDir, playerId);
                     if (!count.isBlocked && count.count === config.numberInARowRequired - 4) {
                         return true;
                     }
-                    count = omokGame.helpers.getCellsOwnedInARow(cell.x + (xDir * 2), cell.y + (yDir * 2), xDir, yDir, playerId);
+                    count = gameObject.helpers.getCellsOwnedInARow(cell.x + (xDir * 2), cell.y + (yDir * 2), xDir, yDir, playerId);
                     if (!count.isBlocked && count.count === config.numberInARowRequired - 4) {
                         return true;
                     }
@@ -527,7 +527,7 @@ var makeGameObject = function (connection, app, viewModel) {
     };
 
     // initialise
-    omokGame.assets = (function () {
+    gameObject.assets = (function () {
         var assets = {};
 
         assets.sounds = {
@@ -592,5 +592,5 @@ var makeGameObject = function (connection, app, viewModel) {
         return assets;
     })();
 
-    return omokGame;
+    return gameObject;
 };
