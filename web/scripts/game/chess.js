@@ -457,9 +457,10 @@ var makeGameObject = function (connection, app, viewModel) {
                         }
                         if (isCell(cell.x, cell.y + 1) && game.boardCells[cell.y + 1][cell.x].ownedBy === null) {
                             addCell(cell.x, cell.y + 1);
-                        }
-                        if (cell.y === 1 && isCell(cell.x, cell.y + 2) && game.boardCells[cell.y + 2][cell.x].ownedBy === null) {
-                            addCell(cell.x, cell.y + 2);
+
+                            if (cell.y === 1 && isCell(cell.x, cell.y + 2) && game.boardCells[cell.y + 2][cell.x].ownedBy === null) {
+                                addCell(cell.x, cell.y + 2);
+                            }
                         }
                         if (cell.y === config.gridHeight - 1) {
                             moves.canPromotePawn = true;
@@ -475,9 +476,10 @@ var makeGameObject = function (connection, app, viewModel) {
                         }
                         if (isCell(cell.x, cell.y - 1) && game.boardCells[cell.y - 1][cell.x].ownedBy === null) {
                             addCell(cell.x, cell.y - 1);
-                        }
-                        if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
-                            addCell(cell.x, cell.y - 2);
+
+                            if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
+                                addCell(cell.x, cell.y - 2);
+                            }
                         }
                         if (cell.y === 0) {
                             moves.canPromotePawn = true;
