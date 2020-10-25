@@ -1,6 +1,11 @@
 # multiplayer-web-boardgame
 Simple web framework using Vue and SignalR to build multiplayer turn-based board games.
 
+# Implemented Games
+Multiple games are implementable. The raw "rules" for each are contained in /web/scripts/game/\*.js
+Currently implemented:
+* Omok
+
 # WIP 
 
 # Configuration
