@@ -161,3 +161,54 @@ body {
         svg { fill: rgba(236, 240, 241,1.0); }
     }
 }
+
+/* Media queries to ensure the game board uses aspect ratio rendering if we get too tall */
+@media (max-aspect-ratio: 1/1), (min-width: 768px) and (max-aspect-ratio: 9/6) {
+    #game-panel {
+        height: auto !important;
+    }
+
+    .game__wrap {
+        flex: none !important;
+
+        &::before {
+            content: "";
+            width: 1px;
+            margin-left: -1px;
+            float: left;
+            height: 0;
+            padding-top: 100%;
+        }
+
+        &::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    }
+}
+/*
+@for $i from 1 to 40 {
+    @media (max-width: 100px * $i) and (min-height: 100px * ($i + 1)) {
+        #game-panel { height: auto !important; }
+        .game__wrap {
+            flex: none !important;
+
+            &::before {
+                content: "";
+                width: 1px;
+                margin-left: -1px;
+                float: left;
+                height: 0;
+                padding-top: 100%;
+            }
+
+            &::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+        }
+    }
+}
+*/
