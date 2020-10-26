@@ -312,7 +312,7 @@ app.main = (function () {
         },
 
         handleData: function (fromPlayerId, data) {
-            var fromPlayer;
+            var fromPlayer, playerIndex;
 
             fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
@@ -363,6 +363,27 @@ app.main = (function () {
                     }
                     else {
                         viewModel.helpers.addMessage(null, fromPlayer.name + " tried to skip a turn but wasn't host", 'red');
+                    }
+                    break;
+                case 'forfeit':
+                    if (fromPlayer) {
+                        fromPlayer.isPlaying = false;
+                        playerIndex = viewModel.gameState.turnOrder.indexOf(fromPlayerId);
+
+                        if (playerIndex > -1) {
+                            viewModel.gameState.turnOrder.splice(playerIndex, 1);
+
+                            if (viewModel.gameState.currentTurn === fromPlayerId) {
+                                if (playerIndex >= viewModel.gameState.turnOrder.length) {
+                                    playerIndex = 0;
+                                }
+
+                                viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[playerIndex];
+                            }
+
+                            viewModel.helpers.doStartTurn();
+                            viewModel.helpers.addMessage(null, fromPlayer.name + ' has forfeited the game!', 'red');
+                        }
                     }
                     break;
                 case 'players':
@@ -520,7 +541,7 @@ app.main = (function () {
                 }
                 else {
                     app.game.hooks.setup();
-                                        
+
                     localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
 
                     viewModel.viewGameConfig = false;
@@ -569,7 +590,7 @@ app.main = (function () {
 
                     player = unknownPlayer;
                 }
-                
+
                 return player;
             };
 
@@ -697,7 +718,109 @@ app.main = (function () {
         getEvents: function (viewModel) {
             var events = {};
 
+            events.toggleReady = function () {
+                viewModel.player.isReady = !viewModel.player.isReady;
+                connection.send({
+                    type: 'ready-changed',
+                    isReady: viewModel.player.isReady
+                }, true);
+            };
+
+            events.startGame = function () {
+                var playersPlaying, playingIds;
+
+                viewModel.player.isReady = true;
+
+                playersPlaying = _.filter(viewModel.players, { isReady: true, isDisconnected: false });
+                playingIds = _.map(playersPlaying, 'id');
+
+                viewModel.gameState.turnOrder = _.shuffle(playingIds);
+                viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[0];
+
+                if (!app.game.hooks.setup()) {
+                    // Something wrong
+                    return false;
+                }
+
+                viewModel.gameState.started = true;
+
+                connection.send({
+                    type: 'game-started',
+                    playerIds: playingIds,
+                    gameState: viewModel.gameState
+                }, true);
+            };
+
+            events.startForfeit = function () {
+                app.helpers.makeDialog({
+                    title: 'Forfeit?',
+                    content: 'Are you sure you want to forfeit the game?',
+                    buttons: [
+                        {
+                            text: 'Yes, forfeit the game',
+                            action: function () {
+                                if (viewModel.gameState.turnOrder.length > 1) {
+                                    connection.send({
+                                        type: 'forfeit'
+                                    }, true);
+                                }
+                            }
+                        },
+                        {
+                            text: 'No, keep playing'
+                        }
+                    ]
+                });
+            };
+
             return events;
+        },
+
+        getComputeds: function () {
+            var computeds = {};
+
+            computeds.anyReady = Vue.computed(function () {
+                var players;
+
+                players = _.reject(viewModel.players, { id: viewModel.player.id });
+                players = _.reject(players, 'isDisconnected');
+                players = _.filter(players, 'isReady');
+
+                return _.size(players) > 0;
+            });
+            computeds.playersSortedByImportance = Vue.computed(function () {
+                var players;
+
+                players = _.reject(viewModel.players, 'isDisconnected');
+                players = _.sortBy(players, [
+                    function (player) {
+                        var index;
+
+                        index = viewModel.gameState.turnOrder.indexOf(player.id);
+
+                        if (index >= 0) {
+                            index = index - viewModel.gameState.turnOrder.indexOf(viewModel.gameState.currentTurn);
+
+                            if (index < 0) {
+                                index += _.size(viewModel.gameState.turnOrder);
+                            }
+
+                            return index;
+                        }
+                        else {
+                            return Infinity;
+                        }
+                    },
+                    function (player) { return player.isReady ? 0 : 1; }
+                ]);
+
+                return players;
+            });
+            computeds.currentTurnPlayer = Vue.computed(function () {
+                return viewModel.gameState.currentTurn ? _.find(viewModel.players, { id: viewModel.gameState.currentTurn }) : null;
+            });
+
+            return computeds;
         }
     };
 
@@ -746,80 +869,8 @@ app.main = (function () {
         viewModel.viewGameConfig = false;
         viewModel.gameOverReason = null;
 
-        viewModel.events.toggleReady = function () {
-            viewModel.player.isReady = !viewModel.player.isReady;
-            connection.send({
-                type: 'ready-changed',
-                isReady: viewModel.player.isReady
-            }, true);
-        };
-
-        viewModel.events.startGame = function () {
-            var playersPlaying, playingIds;
-
-            viewModel.player.isReady = true;
-
-            playersPlaying = _.filter(viewModel.players, { isReady: true, isDisconnected: false });
-            playingIds = _.map(playersPlaying, 'id');
-
-            viewModel.gameState.turnOrder = _.shuffle(playingIds);
-            viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[0];
-
-            if (!app.game.hooks.setup()) {
-                // Something wrong
-                return false;
-            }
-
-            viewModel.gameState.started = true;
-
-            connection.send({
-                type: 'game-started',
-                playerIds: playingIds,
-                gameState: viewModel.gameState
-            }, true);
-        };
-
-        viewModel.computed = viewModel.computed || {};
-        viewModel.computed.anyReady = Vue.computed(function () {
-            var players;
-
-            players = _.reject(viewModel.players, { id: viewModel.player.id });
-            players = _.reject(players, 'isDisconnected');
-            players = _.filter(players, 'isReady');
-
-            return _.size(players) > 0;
-        });
-        viewModel.computed.playersSortedByImportance = Vue.computed(function () {
-            var players;
-
-            players = _.reject(viewModel.players, 'isDisconnected');
-            players = _.sortBy(players, [
-                function (player) {
-                    var index;
-
-                    index = viewModel.gameState.turnOrder.indexOf(player.id);
-
-                    if (index >= 0) {
-                        index = index - viewModel.gameState.turnOrder.indexOf(viewModel.gameState.currentTurn);
-
-                        if (index < 0) {
-                            index += _.size(viewModel.gameState.turnOrder);
-                        }
-
-                        return index;
-                    }
-                    else {
-                        return Infinity;
-                    }
-                },
-                function (player) { return player.isReady ? 0 : 1; }
-            ]);
-
-            return players;
-        });
-        viewModel.computed.currentTurnPlayer = Vue.computed(function () {
-            return viewModel.gameState.currentTurn ? _.find(viewModel.players, { id: viewModel.gameState.currentTurn }) : null;
-        });
+        viewModel.computed = {};
+        _.extend(viewModel.computed, viewModelFunctions.getComputeds(viewModel));
 
         // Config stuff
         viewModel.availableAvatarCssClasses = [
@@ -905,7 +956,7 @@ app.main = (function () {
         _.each(app.game.vueComponents, function (component, key) {
             page.pageVue.component(key, component);
         });
-        
+
         page.pageVue.mount('#app');
     };
 

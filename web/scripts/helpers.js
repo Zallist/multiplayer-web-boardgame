@@ -39,6 +39,79 @@ app.helpers = (function () {
         }
     };
 
+    helpers.makeDialog = function makeDialog(options) {
+        // Assumes we've got bootstrap and Vue
+        var dialog, app, data;
+
+        options = _.extend({
+            notEscapable: false,
+            backdrop: true,
+            title: null,
+            content: 'Content...',
+            onOK: function () { },
+            onCancel: function () { },
+            buttons: [{
+                text: 'OK',
+                action: options.onOK
+            }, {
+                text: 'Cancel',
+                action: options.onCancel
+            }]
+        }, options);
+
+        data = {
+            options: options,
+            close: function (doCall) {
+                dialog.parentNode.removeChild(dialog);
+                document.body.classList.remove('modal-open');
+
+                if (_.isFunction(doCall)) {
+                    doCall();
+                }
+            },
+            escape: function () {
+                if (!data.options.notEscapable) {
+                    data.close();
+                }
+            }
+        }
+
+        dialog = document.createElement('div');
+        dialog.innerHTML = `
+<div class="modal-backdrop fade show" v-if="$root.options.backdrop"></div>
+<div class="modal fade show" role="dialog" tabindex="-1" @keydown.esc="$root.escape" @click="$root.escape" style="display: block;">
+  <div class="modal-dialog" role="document" @click.stop>
+    <div class="modal-content">
+      <div class="modal-header" v-if="$root.options.title || !$root.options.notEscapable">
+        <h5 class="modal-title" v-if="$root.options.title">{{ $root.options.title }}</h5>
+        <button type="button" class="close" aria-label="Close" v-if="!$root.options.notEscapable" @click="$root.escape">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ $root.options.content }}</p>
+      </div>
+      <div class="modal-footer" v-if="$root.options.buttons && $root.options.buttons.length > 0">
+        <button type="button" class="btn flex-fill" 
+          v-for="(button, buttonIndex) in $root.options.buttons"
+          :class="[ 'btn-outline-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]"
+          @click="$root.close(button.action)">
+          {{ button.text }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+        app = Vue.createApp({
+            data: function () { return data; }
+        });
+
+        app.mount(dialog);
+        document.body.appendChild(dialog);
+        document.body.classList.add('modal-open');
+    };
+
     helpers.copyTextToClipboard = function (text) {
         var textArea = document.createElement("textarea");
 
@@ -95,7 +168,7 @@ app.helpers = (function () {
         }
 
         document.body.removeChild(textArea);
-    }
+    };
 
     return helpers;
 })();
