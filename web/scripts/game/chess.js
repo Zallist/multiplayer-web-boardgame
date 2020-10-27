@@ -16,7 +16,7 @@ var makeGameObject = function (connection, app, viewModel) {
             <div v-if="cell.ownedBy !== null && cell.piece"
                  v-for="player in [$root.game.helpers.getPlayerFromIndex(cell.ownedBy)]"
                  :class="{ 'chess__piece': true, 'chess__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }"
-                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridSize,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'px' }"
+                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridHeight,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
                  :title="'Owned by ' + player.name">
 
                 <!-- chess piece -->
