@@ -23,7 +23,7 @@ app.helpers = (function () {
         }
         else {
             color = randomColor({
-                // TODO : luminosity: 'light/dark',
+                luminosity: 'bright',
                 seed: seed
             });
         }
