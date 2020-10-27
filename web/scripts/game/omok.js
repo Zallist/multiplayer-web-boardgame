@@ -16,7 +16,7 @@ var makeGameObject = function (connection, app, viewModel) {
             <div v-if="cell.ownedBy"
                  v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
                  :class="{ 'omok__piece': true, 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }"
-                 :style="{ 'font-size': ((100 / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'vh' }"
+                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridSize,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'px' }"
                  :title="'Owned by ' + player.name">
 
                 <player-avatar :player="player"></player-avatar>

@@ -236,7 +236,6 @@ app.main = (function () {
                         }
                     }
 
-
                     // If host is connected and I'm the first in the list of hosts, I become host
                     // This should be the LAST check since host stuff happens above, and we need people to know we're host before we pretend to be host
                     hostPlayer = _.find(viewModel.players, { isHost: true, isDisconnected: false });
@@ -254,6 +253,8 @@ app.main = (function () {
                         }
                     }
                 }, 5000);
+
+                setTimeout(viewModel.helpers.calculateSizes, 0);
             }
 
             if (page.serverType === 'server-azure') {
@@ -696,6 +697,25 @@ app.main = (function () {
                 }
             };
 
+            helpers.calculateSizes = function () {
+                var gamePanel;
+
+                gamePanel = document.getElementById('game-panel');
+
+                if (gamePanel) {
+                    viewModel.gamePanelHeight = gamePanel.offsetHeight;
+                    viewModel.gamePanelWidth = gamePanel.offsetWidth;
+                }
+
+                if (!viewModel.gamePanelHeight) {
+                    viewModel.gamePanelHeight = window.innerHeight;
+                }
+
+                if (!viewModel.gamePanelWidth) {
+                    viewModel.gamePanelWidth = window.innerWidth;
+                }
+            };
+
             return helpers;
         },
 
@@ -884,6 +904,10 @@ app.main = (function () {
         viewModel.viewGameConfig = false;
         viewModel.gameOverReason = null;
 
+        // Window state stuff
+        viewModel.gamePanelHeight = window.innerHeight;
+        viewModel.gamePanelWidth = window.innerWidth;
+
         viewModel.computed = {};
         _.extend(viewModel.computed, viewModelFunctions.getComputeds(viewModel));
 
@@ -973,6 +997,9 @@ app.main = (function () {
         });
 
         page.pageVue.mount('#app');
+
+        viewModel.helpers.calculateSizes();
+        window.addEventListener("resize", viewModel.helpers.calculateSizes);
     };
 
     return page;
