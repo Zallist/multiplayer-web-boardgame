@@ -431,6 +431,17 @@ app.main = (function () {
                     }
 
                     if (data.isWin) {
+                        _.forEach(viewModel.players, function (player) {
+                            if (player.id === fromPlayerId) {
+                                player.wins += 1;
+                                player.winsTotal += 1;
+                            }
+                            else {
+                                player.losses += 1;
+                                player.lossesTotal += 1;
+                            }
+                        });
+
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
                         viewModel.helpers.endGame({
                             reason: fromPlayer.id === viewModel.player.id ? 'my-win' : 'my-loss'
@@ -704,7 +715,11 @@ app.main = (function () {
                             type: 'css-class',
                             value: null
                         }
-                    }
+                    },
+                    wins: 0,
+                    losses: 0,
+                    winsTotal: 0,
+                    lossesTotal: 0
                 }, player);
 
                 player.color = player.color || app.helpers.generateColor(player.id);

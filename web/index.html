@@ -155,6 +155,12 @@
                                             <player-avatar :player="player"></player-avatar>
 
                                             <span class="player__avatar__name">{{player.name}}</span>
+
+                                            <div style="position: absolute; top: 0; left: 50%; font-size: 12px; width: 12px; height: 12px; text-align: center; line-height: 12px; transform: translateX(-50%);"
+                                                 :title="'Wins: ' + player.wins + '\nLosses: ' + player.losses">
+                                                <i v-if="player.wins > 0" class="fas fa-crown" style="color: #f1c40f;"></i>
+                                                <i v-else-if="player.losses > 0" class="fas fa-cross" style="color: #c0392b;"></i>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
