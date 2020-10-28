@@ -170,7 +170,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         makeGame: function (game) {
-            game = _.extend({
+            game = _.merge({
                 configuration: {
                     gridSize: 19,
                     // In case you want to get more in a row
@@ -194,7 +194,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
             if (localStorage.getItem(app.gameName + '-game-configuration')) {
                 try {
-                    _.extend(game.configuration, JSON.parse(localStorage.getItem(app.gameName + '-game-configuration')));
+                    _.merge(game.configuration, JSON.parse(localStorage.getItem(app.gameName + '-game-configuration')));
                 }
                 catch (ex) { }
             }

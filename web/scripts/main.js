@@ -54,7 +54,7 @@ app.main = (function () {
         connectUsingApi: function (onConnected) {
             function throwError(error) {
                 var parsed = {};
-                _.extend(parsed, error);
+                _.merge(parsed, error);
                 parsed.message = error.toString();
                 viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
                 viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
@@ -140,7 +140,7 @@ app.main = (function () {
         connectUsingSignalR: function (onConnected) {
             function throwError(error) {
                 var parsed = {};
-                _.extend(parsed, error);
+                _.merge(parsed, error);
                 parsed.message = error.toString();
                 viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
                 viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
@@ -324,6 +324,10 @@ app.main = (function () {
                 case 'player-joined':
                     viewModel.players[fromPlayerId] = viewModel.makers.makePlayer(data.player);
                     fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
+
+                    fromPlayer.metadata.wins = 0;
+                    fromPlayer.metadata.losses = 0;
+
                     viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.color);
 
                     // Let's distribute the game state to this person too
@@ -434,14 +438,16 @@ app.main = (function () {
                     if (data.isWin) {
                         _.forEach(viewModel.players, function (player) {
                             if (player.id === fromPlayerId) {
-                                player.wins += 1;
-                                player.winsTotal += 1;
+                                player.metadata.wins += 1;
+                                player.metadata.winsTotal += 1;
                             }
                             else {
-                                player.losses += 1;
-                                player.lossesTotal += 1;
+                                player.metadata.losses += 1;
+                                player.metadata.lossesTotal += 1;
                             }
                         });
+
+                        viewModel.helpers.recordPlayer();
 
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
                         viewModel.helpers.endGame({
@@ -511,6 +517,20 @@ app.main = (function () {
                     });
                 }
             };
+
+            helpers.recordPlayer = function () {
+                // Records the current player
+                var player = _.find(viewModel.players, { id: viewModel.player.id });
+
+                // Align array and known player
+                if (player && viewModel.player !== player) {
+                    viewModel.player = player;
+                }
+
+                // Record information
+                localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
+            };
+
             helpers.getGameLink = function () {
                 var url, queryString;
 
@@ -723,7 +743,7 @@ app.main = (function () {
             var makers = {};
 
             makers.makePlayer = function (player) {
-                player = _.extend({
+                player = _.merge({
                     id: null,
                     name: null,
                     isHost: false,
@@ -734,12 +754,12 @@ app.main = (function () {
                         avatar: {
                             type: 'css-class',
                             value: null
-                        }
-                    },
-                    wins: 0,
-                    losses: 0,
-                    winsTotal: 0,
-                    lossesTotal: 0
+                        },
+                        wins: 0,
+                        losses: 0,
+                        winsTotal: 0,
+                        lossesTotal: 0
+                    }
                 }, player);
 
                 player.color = player.color || app.helpers.generateColor(player.id);
@@ -863,13 +883,13 @@ app.main = (function () {
         var viewModel = Vue.reactive({});
 
         viewModel.events = {};
-        _.extend(viewModel.events, viewModelFunctions.getEvents(viewModel));
+        _.merge(viewModel.events, viewModelFunctions.getEvents(viewModel));
 
         viewModel.helpers = {};
-        _.extend(viewModel.helpers, viewModelFunctions.getHelpers(viewModel));
+        _.merge(viewModel.helpers, viewModelFunctions.getHelpers(viewModel));
 
         viewModel.makers = {};
-        _.extend(viewModel.makers, viewModelFunctions.getMakers(viewModel));
+        _.merge(viewModel.makers, viewModelFunctions.getMakers(viewModel));
 
         viewModel.roomId = page.helpers.getUrlParameter('roomId');
 
@@ -909,7 +929,7 @@ app.main = (function () {
         viewModel.gamePanelWidth = window.innerWidth;
 
         viewModel.computed = {};
-        _.extend(viewModel.computed, viewModelFunctions.getComputeds(viewModel));
+        _.merge(viewModel.computed, viewModelFunctions.getComputeds(viewModel));
 
         // Config stuff
         viewModel.availableAvatarCssClasses = [
@@ -961,7 +981,9 @@ app.main = (function () {
 
         if (localStorage.getItem('saved-player-config')) {
             try {
-                _.extend(page.viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
+                _.merge(viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
+                viewModel.player.metadata.wins = 0;
+                viewModel.player.metadata.losses = 0;
             }
             catch (ex) { }
         }
