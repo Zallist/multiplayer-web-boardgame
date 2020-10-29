@@ -528,7 +528,7 @@ app.main = (function () {
                 }
 
                 // Record information
-                localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
+                localStorage.setItem(app.gameName + '-player-config', JSON.stringify(viewModel.player));
             };
 
             helpers.getGameLink = function () {
@@ -574,7 +574,7 @@ app.main = (function () {
                 else {
                     app.game.hooks.setup();
 
-                    localStorage.setItem('saved-player-config', JSON.stringify(viewModel.player));
+                    localStorage.setItem(app.gameName + '-player-config', JSON.stringify(viewModel.player));
 
                     viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
@@ -985,11 +985,13 @@ app.main = (function () {
         page.viewModel.gameState.game = app.game.hooks.makeGame();
         page.viewModel.game = app.game;
 
-        if (localStorage.getItem('saved-player-config')) {
+        if (localStorage.getItem(app.gameName + '-player-config')) {
             try {
-                _.merge(viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
-                viewModel.player.metadata.gameStats.wins = 0;
-                viewModel.player.metadata.gameStats.losses = 0;
+                _.mergeWith(viewModel.player, JSON.parse(localStorage.getItem(app.gameName + '-player-config')), function (objValue, srcValue, key) {
+                    if (objValue === viewModel.player.metadata.gameStats && key === 'gameStats') {
+                        return objValue;
+                    }
+                });
             }
             catch (ex) { }
         }
