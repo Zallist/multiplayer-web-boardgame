@@ -368,6 +368,7 @@ app.main = (function () {
                     }
                     else {
                         viewModel.helpers.addMessage(null, fromPlayer.name + " tried to skip a turn but wasn't host", 'red');
+                        fromPlayer.metadata.totalStats.timesHacked += 1;
                     }
                     break;
                 case 'forfeit':
@@ -394,10 +395,13 @@ app.main = (function () {
                 case 'players':
                     if (viewModel.isHost) break;
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
+                    viewModel.player = viewModel.players[viewModel.player.id];
                     break;
                 case 'game-state':
                     if (viewModel.isHost) break;
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
+                    viewModel.player = viewModel.players[viewModel.player.id];
+
                     viewModel.gameState = data.gameState;
 
                     if (viewModel.gameState.currentTurn && viewModel.gameState.turnTimeRemaining) {
@@ -417,6 +421,7 @@ app.main = (function () {
                         }
                     });
 
+                    viewModel.gameStarted = Date.now();
                     viewModel.gameState = data.gameState;
 
                     viewModel.helpers.doStartTurn();
@@ -428,12 +433,18 @@ app.main = (function () {
                 case 'end-turn':
                     if (viewModel.gameState.currentTurn !== fromPlayer.id) {
                         viewModel.helpers.addMessage(null, fromPlayer.name + " made a move when it wasn't their turn somehow", 'red');
+                        fromPlayer.metadata.totalStats.timesHacked += 1;
                         return;
                     }
 
                     if (data.skipped) {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' had their turn skipped', 'red');
                     }
+                    else {
+                        fromPlayer.metadata.totalStats.piecesPlaced += 1;
+                    }
+
+                    fromPlayer.metadata.totalStats.timeMyTurn += viewModel.helpers.timeOnCurrentTurn();
 
                     if (data.isWin) {
                         _.forEach(viewModel.players, function (player) {
@@ -446,8 +457,6 @@ app.main = (function () {
                                 player.metadata.totalStats.losses += 1;
                             }
                         });
-
-                        viewModel.helpers.recordPlayer();
 
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
                         viewModel.helpers.endGame({
@@ -519,15 +528,6 @@ app.main = (function () {
             };
 
             helpers.recordPlayer = function () {
-                // Records the current player
-                var player = _.find(viewModel.players, { id: viewModel.player.id });
-
-                // Align array and known player
-                if (player && viewModel.player !== player) {
-                    viewModel.player = player;
-                }
-
-                // Record information
                 localStorage.setItem(app.gameName + '-player-config', JSON.stringify(viewModel.player));
             };
 
@@ -574,7 +574,7 @@ app.main = (function () {
                 else {
                     app.game.hooks.setup();
 
-                    localStorage.setItem(app.gameName + '-player-config', JSON.stringify(viewModel.player));
+                    viewModel.helpers.recordPlayer();
 
                     viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
@@ -642,6 +642,16 @@ app.main = (function () {
             var currentTurnStarted = null,
                 currentTurnTracker = null;
 
+            helpers.timeOnCurrentTurn = function () {
+                // Returns in milliseconds
+
+                if (!currentTurnStarted) {
+                    return 0;
+                }
+
+                return Date.now() - currentTurnStarted;
+            };
+
             helpers.stopTrackingTurnTime = function () {
                 if (currentTurnTracker !== null)
                     clearInterval(currentTurnTracker);
@@ -694,8 +704,15 @@ app.main = (function () {
             };
 
             helpers.endGame = function (options) {
+                if (viewModel.gameStarted) {
+                    viewModel.player.metadata.totalStats.timeInGame += Date.now() - viewModel.gameStarted;
+                }
+
+                viewModel.helpers.recordPlayer();
+
                 viewModel.gameState.currentTurn = null;
                 viewModel.gameState.started = false;
+                viewModel.gameStarted = null;
 
                 _.forEach(viewModel.players, function (player) {
                     player.isReady = false;
@@ -761,12 +778,21 @@ app.main = (function () {
                         },
                         totalStats: {
                             wins: 0,
-                            losses: 0
+                            losses: 0,
+                            timeInGame: 0,
+                            timeMyTurn: 0,
+                            piecesPlaced: 0,
+                            timesHacked: 0
                         }
                     }
                 }, player);
 
                 player.color = player.color || app.helpers.generateColor(player.id);
+
+                if (viewModel.player && player.id === viewModel.player.id) {
+                    // Make sure we don't screw with stats if we're talking about the current player
+                    _.merge(player.metadata, viewModel.player.metadata);
+                }
 
                 return player;
             };
@@ -927,6 +953,7 @@ app.main = (function () {
         };
         // == /game state
 
+        viewModel.gameStarted = null;
         viewModel.viewGameConfig = false;
         viewModel.gameOverReason = null;
 
