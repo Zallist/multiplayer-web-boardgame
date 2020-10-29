@@ -157,9 +157,9 @@
                                             <span class="player__avatar__name">{{player.name}}</span>
 
                                             <div style="position: absolute; top: 0; left: 50%; font-size: 12px; width: 12px; height: 12px; text-align: center; line-height: 12px; transform: translateX(-50%);"
-                                                 :title="'Wins: ' + player.metadata.wins + ' (' + player.metadata.winsTotal + ' total)' + '\nLosses: ' + player.metadata.losses + ' (' + player.metadata.lossesTotal + ' total)'">
-                                                <i v-if="player.wins > 0" class="fas fa-crown" style="color: #f1c40f;"></i>
-                                                <i v-else-if="player.losses > 0" class="fas fa-cross" style="color: #c0392b;"></i>
+                                                 :title="'Wins: ' + player.metadata.gameStats.wins + ' (' + player.metadata.totalStats.wins + ' total)' + '\nLosses: ' + player.metadata.gameStats.losses + ' (' + player.metadata.totalStats.losses + ' total)'">
+                                                <i v-if="player.metadata.gameStats.wins > 0" class="fas fa-crown" style="color: #f1c40f;"></i>
+                                                <i v-else-if="player.metadata.gameStats.losses > 0" class="fas fa-cross" style="color: #c0392b;"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -170,7 +170,9 @@
                                     <button type="button" class="flex-fill btn btn-outline-danger"
                                             v-if="$root.gameState.started && $root.gameState.turnOrder.indexOf($root.player.id) > -1"
                                             :disabled="$root.gameState.turnOrder.length <= 1"
-                                            @click="$root.events.startForfeit">Forfeit</button>
+                                            @click="$root.events.startForfeit">
+                                        Forfeit
+                                    </button>
                                     <button type="button" class="flex-fill btn btn-outline-secondary" @click="$root.viewGameConfig = !$root.viewGameConfig;">Config</button>
                                 </div>
                             </div>
@@ -257,9 +259,10 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js" integrity="sha512-M8VjsuCj1iBzrwKloFNjvQBmFXT2oF0MWExoLGpQT2nEx5tq7CP+BhWGJdczT1LoWAhyqHh+LJ6ihHSVGyclHw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.js" integrity="sha512-REb0S2epbS0XtS28ifNa1haxmTZigXjB+Tx5IHCvXZndWB2RL431Vt1qONzFoe0dPwA8WGow+xxkQwhVr44nRg==" crossorigin="anonymous"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.prod.js" integrity="sha512-M8VjsuCj1iBzrwKloFNjvQBmFXT2oF0MWExoLGpQT2nEx5tq7CP+BhWGJdczT1LoWAhyqHh+LJ6ihHSVGyclHw==" crossorigin="anonymous"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.0/howler.min.js" integrity="sha512-ALoawPS0JxHQ+8dGL7htZIlVNRaE/SN9gHD4G8pJJTi9H4BQ/3PjdvhggSGR34g00mvTPFkxQuveQUsJA5664Q==" crossorigin="anonymous"></script>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aspnet-signalr/1.1.4/signalr.min.js" integrity="sha512-hqwtOj6waHZZoLRoJoLn0tq34JS97tR1QmhM69uvyrt3LVBiR1o0xeOVAskjUFL1L1fahQH2W7IdcMaFbqCEaw==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>
 

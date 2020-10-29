@@ -325,8 +325,8 @@ app.main = (function () {
                     viewModel.players[fromPlayerId] = viewModel.makers.makePlayer(data.player);
                     fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
-                    fromPlayer.metadata.wins = 0;
-                    fromPlayer.metadata.losses = 0;
+                    fromPlayer.metadata.gameStats.wins = 0;
+                    fromPlayer.metadata.gameStats.losses = 0;
 
                     viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.color);
 
@@ -438,12 +438,12 @@ app.main = (function () {
                     if (data.isWin) {
                         _.forEach(viewModel.players, function (player) {
                             if (player.id === fromPlayerId) {
-                                player.metadata.wins += 1;
-                                player.metadata.winsTotal += 1;
+                                player.metadata.gameStats.wins += 1;
+                                player.metadata.totalStats.wins += 1;
                             }
                             else {
-                                player.metadata.losses += 1;
-                                player.metadata.lossesTotal += 1;
+                                player.metadata.gameStats.losses += 1;
+                                player.metadata.totalStats.losses += 1;
                             }
                         });
 
@@ -755,10 +755,14 @@ app.main = (function () {
                             type: 'css-class',
                             value: null
                         },
-                        wins: 0,
-                        losses: 0,
-                        winsTotal: 0,
-                        lossesTotal: 0
+                        gameStats: {
+                            wins: 0,
+                            losses: 0
+                        },
+                        totalStats: {
+                            wins: 0,
+                            losses: 0
+                        }
                     }
                 }, player);
 
@@ -831,10 +835,10 @@ app.main = (function () {
             return events;
         },
 
-        getComputeds: function () {
-            var computeds = {};
+        getComputed: function () {
+            var computed = {};
 
-            computeds.anyReady = Vue.computed(function () {
+            computed.anyReady = Vue.computed(function () {
                 var players;
 
                 players = _.reject(viewModel.players, { id: viewModel.player.id });
@@ -843,7 +847,8 @@ app.main = (function () {
 
                 return _.size(players) > 0;
             });
-            computeds.playersSortedByImportance = Vue.computed(function () {
+
+            computed.playersSortedByImportance = Vue.computed(function () {
                 var players;
 
                 players = _.reject(viewModel.players, 'isDisconnected');
@@ -871,11 +876,12 @@ app.main = (function () {
 
                 return players;
             });
-            computeds.currentTurnPlayer = Vue.computed(function () {
+
+            computed.currentTurnPlayer = Vue.computed(function () {
                 return viewModel.gameState.currentTurn ? _.find(viewModel.players, { id: viewModel.gameState.currentTurn }) : null;
             });
 
-            return computeds;
+            return computed;
         }
     };
 
@@ -929,7 +935,7 @@ app.main = (function () {
         viewModel.gamePanelWidth = window.innerWidth;
 
         viewModel.computed = {};
-        _.merge(viewModel.computed, viewModelFunctions.getComputeds(viewModel));
+        _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
 
         // Config stuff
         viewModel.availableAvatarCssClasses = [
@@ -982,8 +988,8 @@ app.main = (function () {
         if (localStorage.getItem('saved-player-config')) {
             try {
                 _.merge(viewModel.player, JSON.parse(localStorage.getItem('saved-player-config')));
-                viewModel.player.metadata.wins = 0;
-                viewModel.player.metadata.losses = 0;
+                viewModel.player.metadata.gameStats.wins = 0;
+                viewModel.player.metadata.gameStats.losses = 0;
             }
             catch (ex) { }
         }
