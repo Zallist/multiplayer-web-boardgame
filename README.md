@@ -8,9 +8,9 @@ Simple web framework using Vue and SignalR to build multiplayer turn-based board
 * Chatting
 * Stat tracking (in localStorage)
 * Basic game logic states (extras can be triggered by individual games):
- * Game start
- * End turn (logic from game)
- * Game win/loss/tie/forfeit (logic from game)
+  * Game start
+  * End turn (logic from game)
+  * Game win/loss/tie/forfeit (logic from game)
 * Resetting turns if players disconnect
 * Synchronizing game state on load
 
@@ -23,14 +23,14 @@ Simple web framework using Vue and SignalR to build multiplayer turn-based board
 Multiple games are implementable. The raw "rules" for each are contained in /web/scripts/game/\*.js
 Currently implemented:
 * Omok
- * Default, but explicit is *?game=omok* on the url
+  * Default, but explicit is *?game=omok* on the url
 * Chess
- * Use *?game=chess* on the URL to access it
- * Currently missing various configuration options, rooking, promotions, randomisation
+  * Use *?game=chess* on the URL to access it
+  * Currently missing various configuration options, rooking, promotions, randomisation
 
 # TODO
 * More avatar/piece selection
- * Generating svg with colours on demand
+  * Generating svg with colours on demand
 * Chess config (allow rooking, allow pawn promotion, place random)
 * New games
 * Game mode selector
@@ -39,6 +39,7 @@ Currently implemented:
 ## Server URL Configuration
 Configuration of server URL is held at /web/server.url.template.js. Make this into a /web/server.url.js that contains your server-side URL.
 This will cause a 404 if not configured, and is done this way to *attempt* to simplify deployment and remove the need for any server-side code for the actual distribution of files.
+
 ## Theme Configuration
 *theme-standard.scss* can be swapped out or removed entirely to change theming. 
 The base game system should work without any theme whatsoever.
