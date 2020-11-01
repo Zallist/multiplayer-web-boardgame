@@ -21,7 +21,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
                 <!-- chess piece -->
                 <i :class="['fas', 'fa-chess-' + cell.piece]"
-                   :style="{ 'color': player.color }"></i>
+                   :style="{ 'color': player.metadata.color }"></i>
             </div>
         </div>
     </div>

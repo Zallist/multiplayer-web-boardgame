@@ -328,7 +328,7 @@ app.main = (function () {
                     fromPlayer.metadata.gameStats.wins = 0;
                     fromPlayer.metadata.gameStats.losses = 0;
 
-                    viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.color);
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.metadata.color);
 
                     // Let's distribute the game state to this person too
                     if (viewModel.isHost) {
@@ -348,7 +348,7 @@ app.main = (function () {
                     fromPlayer = viewModel.helpers.getPlayer(data.playerId, true);
 
                     if (fromPlayer && !fromPlayer.isDisconnected) {
-                        viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.color);
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' disconnected', fromPlayer.metadata.color);
                         fromPlayer.isDisconnected = true;
                         fromPlayer.isPlaying = false;
 
@@ -358,7 +358,7 @@ app.main = (function () {
                 case 'player-promote-to-host':
                     fromPlayer = viewModel.helpers.getPlayer(data.playerId);
                     fromPlayer.isHost = true;
-                    viewModel.helpers.addMessage(null, fromPlayer.name + ' was promoted to host due to disconnection', fromPlayer.color);
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' was promoted to host due to disconnection', fromPlayer.metadata.color);
                     break;
                 case 'reset-turn-to-player':
                     if (fromPlayer.isHost) {
@@ -410,7 +410,7 @@ app.main = (function () {
                     break;
                 case 'ready-changed':
                     fromPlayer.isReady = data.isReady;
-                    viewModel.helpers.addMessage(null, fromPlayer.name + ' is' + (data.isReady ? '' : ' not') + ' ready', fromPlayer.color);
+                    viewModel.helpers.addMessage(null, fromPlayer.name + ' is' + (data.isReady ? '' : ' not') + ' ready', fromPlayer.metadata.color);
                     break;
                 case 'game-started':
                     _.each(data.playerIds, function (id) {
@@ -458,7 +458,7 @@ app.main = (function () {
                             }
                         });
 
-                        viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.color);
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.metadata.color);
                         viewModel.helpers.endGame({
                             reason: fromPlayer.id === viewModel.player.id ? 'my-win' : 'my-loss'
                         });
@@ -471,7 +471,7 @@ app.main = (function () {
                 case 'game-tie':
                     // Anyone can tie, but if not isAutomatic we probably need some confirmation
                     if (data.isAutomatic) {
-                        viewModel.helpers.addMessage(null, fromPlayer.name + ' triggered a tie', fromPlayer.color);
+                        viewModel.helpers.addMessage(null, fromPlayer.name + ' triggered a tie', fromPlayer.metadata.color);
                     }
                     else {
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' called a tie', 'red');
@@ -595,8 +595,9 @@ app.main = (function () {
                         systemPlayer = viewModel.makers.makePlayer({
                             id: null,
                             name: '[System]',
-                            color: '#f1c40f',
-                            metadata: {}
+                            metadata: {
+                                color: '#f1c40f'
+                            }
                         });
                     }
 
@@ -697,7 +698,7 @@ app.main = (function () {
                 var currentPlayer = helpers.getPlayer(viewModel.gameState.currentTurn);
 
                 if (currentPlayer.id) {
-                    helpers.addMessage(null, "It's " + currentPlayer.name + "'" + (_.endsWith(currentPlayer.name, 's') ? "" : "s") + " turn", currentPlayer.color);
+                    helpers.addMessage(null, "It's " + currentPlayer.name + "'" + (_.endsWith(currentPlayer.name, 's') ? "" : "s") + " turn", currentPlayer.metadata.color);
                 }
 
                 helpers.trackTurnTime();
@@ -768,6 +769,7 @@ app.main = (function () {
                     isReady: false,
                     isPlaying: false,
                     metadata: {
+                        color: app.helpers.generateColor(),
                         avatar: {
                             type: 'css-class',
                             value: null
@@ -786,8 +788,6 @@ app.main = (function () {
                         }
                     }
                 }, player);
-
-                player.color = player.color || app.helpers.generateColor(player.id);
 
                 if (viewModel.player && player.id === viewModel.player.id) {
                     // Make sure we don't screw with stats if we're talking about the current player
@@ -965,6 +965,7 @@ app.main = (function () {
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
 
         // Config stuff
+        viewModel.availableColors = randomColor({ luminosity: 'bright', count: 12 });
         viewModel.availableAvatarCssClasses = [
             { cssClass: 'fas fa-apple-alt', id: 'apple-alt' },
             { cssClass: 'fas fa-bread-slice', id: 'bread-slice' },
@@ -1033,10 +1034,10 @@ app.main = (function () {
             template: `
 <i v-if="player.metadata.avatar.type=='css-class'"
     :class="player.metadata.avatar.value"
-    :style="{ 'color': player.color }"></i>
+    :style="{ 'color': player.metadata.color }"></i>
 
 <i v-else class="fas fa-question"
-    :style="{ 'color': player.color }"></i>`
+    :style="{ 'color': player.metadata.color }"></i>`
         });
 
         // Borrowed from https://codepen.io/square0225/pen/QdvLQg

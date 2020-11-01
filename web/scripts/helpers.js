@@ -18,15 +18,10 @@ app.helpers = (function () {
     helpers.generateColor = function (seed) {
         var color;
 
-        if (!seed) {
-            color = 'rgba(0,0,0,1)';
-        }
-        else {
-            color = randomColor({
-                luminosity: 'bright',
-                seed: seed
-            });
-        }
+        color = randomColor({
+            luminosity: 'bright',
+            seed: seed
+        });
 
         return color;
     };
