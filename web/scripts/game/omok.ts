@@ -1,16 +1,128 @@
+﻿
 var makeGameObject = function (connection, app, viewModel) {
     var gameObject = {};
+
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
             data: function () { return viewModel; },
-            template: "\n<div class=\"game__board\">\n    <div class=\"game__row\" v-for=\"row in $root.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$root.game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }\">\n\n            <div v-if=\"cell.ownedBy\"\n                 v-for=\"player in [$root.helpers.getPlayer(cell.ownedBy)]\"\n                 :class=\"{ 'omok__piece': true, 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }\"\n                 :style=\"{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridSize,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + player.name\">\n\n                <player-avatar :player=\"player\"></player-avatar>\n            </div>\n        </div>\n    </div>\n</div>\n"
+            template: `
+<div class="game__board">
+    <div class="game__row" v-for="row in $root.gameState.game.boardCells">
+        <div v-for="cell in row"
+             @click.prevent="$root.game.events.cellClicked(cell)"
+             :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
+
+            <div v-if="cell.ownedBy"
+                 v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
+                 :class="{ 'omok__piece': true, 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }"
+                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridSize,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'px' }"
+                 :title="'Owned by ' + player.name">
+
+                <player-avatar :player="player"></player-avatar>
+            </div>
+        </div>
+    </div>
+</div>
+`
         },
         'config-panel': {
             data: function () { return viewModel; },
-            template: "\n<fieldset :disabled=\"$root.isConnecting || $root.isConnected\">\n    <div class=\"mb-3\" v-show=\"!$root.isConnected\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-outline-primary mr-1\" @click=\"$root.game.events.setPreset('omok')\">Omok</button>\n            <button type=\"button\" class=\"btn btn-outline-primary mr-1\" @click=\"$root.game.events.setPreset('gomoku')\">Gomoku</button>\n            <button type=\"button\" class=\"btn btn-outline-primary\" @click=\"$root.game.events.setPreset('tic-tac-toe')\">Tic-Tac-Toe</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" :min=\"$root.gameState.game.configuration.turnTime > 10 ? 1 : 0.25\" max=\"180\" :step=\"1\" v-model=\"$root.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"0.25\" max=\"180\" :step=\"0.25\" v-model=\"$root.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n\n        <small class=\"form-text text-danger\" v-show=\"$root.gameState.game.configuration.turnTime < 3\">\n            Turns this short may get affected by latency and people may miss their turns without realising\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Size</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"1\" max=\"100\" step=\"1\" v-model=\"$root.gameState.game.configuration.gridSize\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"1\" max=\"100\" step=\"1\" v-model=\"$root.gameState.game.configuration.gridSize\" />\n            </div>\n        </div>\n\n        <small class=\"form-text text-danger\" v-show=\"$root.gameState.game.configuration.gridSize > 40\">\n            Playing with a grid this size is likely to make it laggy. Good luck.\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <label>Number In A Row To Win</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"1\" :max=\"$root.gameState.game.configuration.gridSize\" step=\"1\" v-model=\"$root.gameState.game.configuration.numberInARowRequired\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"1\" :max=\"$root.gameState.game.configuration.gridSize\" step=\"1\" v-model=\"$root.gameState.game.configuration.numberInARowRequired\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$root.gameState.game.configuration.allowOverWins\">\n                Allow Over Wins (overlines)\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            Can you win by placing more than the number required in a row?\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$root.gameState.game.configuration.allowDoubleThrees\">\n                Allow Easy Wins (double 3s)\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            Easy Wins are based on the \"double-threes\" rule. You can't place pieces where you would get 2 <strong>unblocked</strong> {{$root.gameState.game.configuration.numberInARowRequired - 2}}s in a row.\n        </small>\n    </div>\n    <div class=\"mt-3\" v-show=\"!$root.gameState.game.configuration.allowDoubleThrees\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$root.gameState.game.configuration.allowDoubleFours\">\n                Allow 2x N-1 (double 4s)\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            Based on the \"double-fours\" rule. You can't place pieces where you would get 2 {{$root.gameState.game.configuration.numberInARowRequired - 1}}s in a row.\n        </small>\n    </div>\n</fieldset>\n"
+            template: `
+<fieldset :disabled="$root.isConnecting || $root.isConnected">
+    <div class="mb-3" v-show="!$root.isConnected">
+        <label>Use a preset</label>
+        <div>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'omok\')">Omok</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'gomoku\')">Gomoku</button>
+            <button type="button" class="btn btn-outline-primary" @click="$root.game.events.setPreset(\'tic-tac-toe\')">Tic-Tac-Toe</button>
+        </div>
+    </div>
+    <div>
+        <label>Turn Time (seconds)</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" :min="$root.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$root.gameState.game.configuration.turnTime" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model="$root.gameState.game.configuration.turnTime" />
+            </div>
+        </div>
+
+        <small class="form-text text-danger" v-show="$root.gameState.game.configuration.turnTime < 3">
+            Turns this short may get affected by latency and people may miss their turns without realising
+        </small>
+    </div>
+    <div class="mt-3">
+        <label>Grid Size</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="1" max="100" step="1" v-model="$root.gameState.game.configuration.gridSize" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model="$root.gameState.game.configuration.gridSize" />
+            </div>
+        </div>
+
+        <small class="form-text text-danger" v-show="$root.gameState.game.configuration.gridSize > 40">
+            Playing with a grid this size is likely to make it laggy. Good luck.
+        </small>
+    </div>
+    <div class="mt-3">
+        <label>Number In A Row To Win</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="1" :max="$root.gameState.game.configuration.gridSize" step="1" v-model="$root.gameState.game.configuration.numberInARowRequired" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="1" :max="$root.gameState.game.configuration.gridSize" step="1" v-model="$root.gameState.game.configuration.numberInARowRequired" />
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowOverWins">
+                Allow Over Wins (overlines)
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            Can you win by placing more than the number required in a row?
+        </small>
+    </div>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowDoubleThrees">
+                Allow Easy Wins (double 3s)
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            Easy Wins are based on the "double-threes" rule. You can't place pieces where you would get 2 <strong>unblocked</strong> {{$root.gameState.game.configuration.numberInARowRequired - 2}}s in a row.
+        </small>
+    </div>
+    <div class="mt-3" v-show="!$root.gameState.game.configuration.allowDoubleThrees">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowDoubleFours">
+                Allow 2x N-1 (double 4s)
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            Based on the "double-fours" rule. You can't place pieces where you would get 2 {{$root.gameState.game.configuration.numberInARowRequired - 1}}s in a row.
+        </small>
+    </div>
+</fieldset>
+`
         }
     };
+
     gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
             switch (_.trim(data.type).toLowerCase()) {
@@ -18,6 +130,7 @@ var makeGameObject = function (connection, app, viewModel) {
                     if (_.isNumber(data.cellX) && _.isNumber(data.cellY)) {
                         viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayerId;
                         viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
+
                         if (fromPlayerId === viewModel.player.id) {
                             if (data.isWin) {
                                 gameObject.assets.sounds['my_win'].play();
@@ -55,6 +168,7 @@ var makeGameObject = function (connection, app, viewModel) {
                     break;
             }
         },
+
         makeGame: function (game) {
             game = _.merge({
                 configuration: {
@@ -77,20 +191,29 @@ var makeGameObject = function (connection, app, viewModel) {
                 // So we know what we last placed
                 lastPlacedCell: null
             }, game);
+
             if (localStorage.getItem(app.gameName + '-game-configuration')) {
                 try {
                     _.merge(game.configuration, JSON.parse(localStorage.getItem(app.gameName + '-game-configuration')));
                 }
                 catch (ex) { }
             }
+
             return game;
         },
+
         setup: function () {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configuration, x, y, row, cell;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configuration,
+                x, y,
+                row, cell;
+
             // Validation checks
             config.turnTime = Number(config.turnTime);
             config.gridSize = Number(config.gridSize);
             config.numberInARowRequired = Number(config.numberInARowRequired);
+
             if (!_.isFinite(config.turnTime) || config.turnTime < 0.25) {
                 alert('Invalid turn time');
                 return false;
@@ -104,46 +227,64 @@ var makeGameObject = function (connection, app, viewModel) {
                 alert('Invalid number in a row required');
                 return false;
             }
+
             // Store config just because
             game.configurationAtStart = config;
             game.boardCells = [];
+
             for (y = 0; y < config.gridSize; y++) {
                 row = [];
                 game.boardCells.push(row);
+
                 for (x = 0; x < config.gridSize; x++) {
                     cell = {
                         x: x,
                         y: y,
                         ownedBy: null
                     };
+
                     row.push(cell);
                 }
             }
+
             if (config.placeRandomStarts) {
+
             }
+
             gameState.turnTime = config.turnTime;
+
             // Save configuration for next time
             localStorage.setItem(app.gameName + '-game-configuration', JSON.stringify(config));
+
             return true;
         }
     };
+
     gameObject.events = {
         cellClicked: function (cell) {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, countInDirection = [], isWin = false;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configurationAtStart,
+                countInDirection = [],
+                isWin = false;
+
             // If the game's started
             if (!gameState.started) {
                 return;
             }
+
             // If it's my turn
             if (gameState.currentTurn !== viewModel.player.id) {
                 viewModel.helpers.addMessage(null, 'Not your turn');
                 return;
             }
+
             // If it's already clicked
             if (cell.ownedBy) {
                 viewModel.helpers.addMessage(null, 'Pick an empty space');
                 return;
             }
+
             // Check if we fail validation
             if (!config.allowDoubleThrees) {
                 if (gameObject.helpers.isEasyWin(cell, viewModel.player.id)) {
@@ -151,8 +292,10 @@ var makeGameObject = function (connection, app, viewModel) {
                     return;
                 }
             }
+
             // Temporarily own it for calculations
             cell.ownedBy = viewModel.player.id;
+
             // Count how many we have in each direction if this is placed
             // up left
             countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, -1, -1));
@@ -162,8 +305,10 @@ var makeGameObject = function (connection, app, viewModel) {
             countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, 1, -1));
             // left
             countInDirection.push(gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, -1, 0));
+
             // Clear owner just in case validation fails
             cell.ownedBy = null;
+
             // Check if we won
             if (config.allowOverWins) {
                 isWin = _.some(countInDirection, function (count) {
@@ -175,6 +320,7 @@ var makeGameObject = function (connection, app, viewModel) {
                     return count.count === config.numberInARowRequired;
                 });
             }
+
             // If all goes to plan, let's say we own it
             connection.send({
                 type: 'end-turn',
@@ -183,17 +329,23 @@ var makeGameObject = function (connection, app, viewModel) {
                 isWin: isWin,
                 nextPlayerId: viewModel.helpers.getNextPlayer()
             }, true);
+
             // Let's do a background check for a game tie, since in theory that can be laggy
             setTimeout(gameObject.helpers.checkForTie, 0);
         },
+
         setPreset: function (presetName) {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configuration;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configuration;
+
             config.turnTime = 30;
             config.allowOverWins = false;
             config.allowDoubleThrees = false;
             config.allowDoubleFours = true;
             config.gridSize = 19;
             config.numberInARowRequired = 5;
+
             switch (_.trim(presetName).toLowerCase()) {
                 case 'tic-tac-toe':
                     config.allowDoubleThrees = true;
@@ -211,24 +363,36 @@ var makeGameObject = function (connection, app, viewModel) {
             }
         }
     };
+
     gameObject.helpers = {
         isEasyWin: function (cell, playerId) {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, easyWinCount = 0;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configurationAtStart,
+                easyWinCount = 0;
+
             cell.ownedBy = playerId;
+
             function checkDir(xDir, yDir) {
                 var count;
+
                 count = gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
+
                 if (!count.isBlocked && count.count === config.numberInARowRequired - 2) {
                     return true;
                 }
+
                 if (!config.allowDoubleFours && count.count === config.numberInARowRequired - 1) {
                     return true;
                 }
+
                 return false;
             }
             function checkSkipDir(xDir, yDir) {
                 var count;
+
                 count = gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
+
                 if (!count.isBlocked && count.count === config.numberInARowRequired - 3) {
                     count = gameObject.helpers.getCellsOwnedInARow(cell.x + (xDir * -2), cell.y + (yDir * -2), xDir, yDir, playerId);
                     if (!count.isBlocked && count.count === config.numberInARowRequired - 4) {
@@ -239,8 +403,10 @@ var makeGameObject = function (connection, app, viewModel) {
                         return true;
                     }
                 }
+
                 return false;
             }
+
             if (checkDir(-1, -1) || checkSkipDir(-1, -1) || checkSkipDir(1, 1)) {
                 easyWinCount += 1;
             }
@@ -253,41 +419,62 @@ var makeGameObject = function (connection, app, viewModel) {
             if (checkDir(-1, 0) || checkSkipDir(-1, 0) || checkSkipDir(1, 0)) {
                 easyWinCount += 1;
             }
+
             cell.ownedBy = null;
+
             if (easyWinCount > 1) {
                 return true;
             }
+
             return false;
         },
+
         getCellsOwnedInARow: function (xStart, yStart, xDelta, yDelta, playerId) {
             // xyDelta = which direction to go to find start
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, cell = null, firstOwnedCell = null, ret;
+
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configurationAtStart,
+                cell = null, firstOwnedCell = null,
+                ret;
+
             ret = {
                 count: 0,
                 isBlocked: false
             };
+
             if ((xDelta === 0 && yDelta === 0) ||
                 xStart < 0 || yStart < 0 ||
-                xStart >= config.gridSize || yStart >= config.gridSize)
-                return ret;
+                xStart >= config.gridSize || yStart >= config.gridSize) return ret;
+
             function travel(x, y, xDelta, yDelta) {
                 var cell = null;
+
                 x += xDelta;
                 y += yDelta;
+
                 if (x >= 0 && x < config.gridSize &&
                     y >= 0 && y < config.gridSize) {
+
                     cell = game.boardCells[y][x];
                 }
+
                 return cell;
             }
+
             cell = game.boardCells[yStart][xStart];
+
             if (!playerId) {
                 playerId = cell.ownedBy;
             }
+
             firstOwnedCell = cell;
+
             while (cell && cell.ownedBy === playerId) {
                 ret.count = 1;
+
                 cell = travel(cell.x, cell.y, xDelta, yDelta);
+
                 if (cell && cell.ownedBy === playerId) {
                     firstOwnedCell = cell;
                 }
@@ -295,9 +482,12 @@ var makeGameObject = function (connection, app, viewModel) {
                     ret.isBlocked = true;
                 }
             }
+
             cell = firstOwnedCell;
+
             while (cell && cell.ownedBy === playerId) {
                 cell = travel(cell.x, cell.y, xDelta * -1, yDelta * -1);
+
                 if (cell && cell.ownedBy === playerId) {
                     ret.count += 1;
                 }
@@ -305,29 +495,41 @@ var makeGameObject = function (connection, app, viewModel) {
                     ret.isBlocked = true;
                 }
             }
+
             return ret;
         },
+
         checkForTie: function () {
-            var gameState = viewModel.gameState, game = gameState.game, y, x, row, cell;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                y, x,
+                row, cell;
+
             for (y = 0; y < game.boardCells.length; y++) {
                 row = game.boardCells[y];
+
                 for (x = 0; x < row.length; x++) {
                     cell = row[x];
+
                     if (!cell.ownedBy) {
                         return true;
                     }
                 }
             }
+
             connection.send({
                 type: 'game-tie',
                 isAutomatic: true
             }, true);
+
             return false;
         }
     };
+
     // initialise
     gameObject.assets = (function () {
         var assets = {};
+
         assets.sounds = {
             'my_piece_placed': new Howl({
                 src: [
@@ -386,8 +588,9 @@ var makeGameObject = function (connection, app, viewModel) {
                 ]
             })
         };
+
         return assets;
     })();
+
     return gameObject;
 };
-//# sourceMappingURL=omok.js.map

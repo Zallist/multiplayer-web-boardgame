@@ -1,36 +1,113 @@
+﻿
 var makeGameObject = function (connection, app, viewModel) {
     var gameObject = {};
+
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
             data: function () { return viewModel; },
-            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$root.game.helpers.getPossibleMoves($root.game.selectedCell)]\">\n    <div class=\"game__row\" v-for=\"row in $root.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$root.game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$root.game.helpers.getPlayerFromIndex(cell.ownedBy)]\"\n                 :class=\"{ 'chess__piece': true, 'chess__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }\"\n                 :style=\"{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridHeight,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + player.name\">\n\n                <!-- chess piece -->\n                <i :class=\"['fas', 'fa-chess-' + cell.piece]\"\n                   :style=\"{ 'color': player.metadata.color }\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
+            template: `
+<div class="game__board" v-for="availableMoves in [$root.game.helpers.getPossibleMoves($root.game.selectedCell)]">
+    <div class="game__row" v-for="row in $root.gameState.game.boardCells">
+        <div v-for="cell in row"
+             @click.prevent="$root.game.events.cellClicked(cell)"
+             :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }">
+
+            <div v-if="cell.ownedBy !== null && cell.piece"
+                 v-for="player in [$root.game.helpers.getPlayerFromIndex(cell.ownedBy)]"
+                 :class="{ 'chess__piece': true, 'chess__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }"
+                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridHeight,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
+                 :title="'Owned by ' + player.name">
+
+                <!-- chess piece -->
+                <i :class="['fas', 'fa-chess-' + cell.piece]"
+                   :style="{ 'color': player.metadata.color }"></i>
+            </div>
+        </div>
+    </div>
+</div>
+`
         },
         'config-panel': {
             data: function () { return viewModel; },
-            template: "\n<fieldset :disabled=\"$root.isConnecting || $root.isConnected\">\n    <div class=\"mb-3\" v-show=\"!$root.isConnected\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-outline-primary mr-1\" @click=\"$root.game.events.setPreset('simple-chess')\">Simple Chess</button>\n            <button type=\"button\" class=\"btn btn-outline-primary mr-1\" @click=\"$root.game.events.setPreset('chess')\">Chess</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$root.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model=\"$root.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Height</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"4\" max=\"24\" step=\"1\" v-model=\"$root.gameState.game.configuration.gridHeight\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"4\" max=\"24\" step=\"1\" v-model=\"$root.gameState.game.configuration.gridHeight\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Width</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"8\" max=\"24\" step=\"1\" v-model=\"$root.gameState.game.configuration.gridWidth\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"8\" max=\"24\" step=\"1\" v-model=\"$root.gameState.game.configuration.gridWidth\" />\n            </div>\n        </div>\n    </div>\n</fieldset>\n"
+            template: `
+<fieldset :disabled="$root.isConnecting || $root.isConnected">
+    <div class="mb-3" v-show="!$root.isConnected">
+        <label>Use a preset</label>
+        <div>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'simple-chess\')">Simple Chess</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'chess\')">Chess</button>
+        </div>
+    </div>
+    <div>
+        <label>Turn Time (seconds)</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="5" max="180" :step="1" v-model="$root.gameState.game.configuration.turnTime" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="5" max="180" :step="5" v-model="$root.gameState.game.configuration.turnTime" />
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <label>Grid Height</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="4" max="24" step="1" v-model="$root.gameState.game.configuration.gridHeight" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="4" max="24" step="1" v-model="$root.gameState.game.configuration.gridHeight" />
+            </div>
+        </div>
+    </div>
+    <div class="mt-3">
+        <label>Grid Width</label>
+
+        <div class="form-row">
+            <div class="col-8">
+                <input type="range" class="form-control form-control-sm form-control-range" min="8" max="24" step="1" v-model="$root.gameState.game.configuration.gridWidth" />
+            </div>
+            <div class="col-4">
+                <input type="number" class="form-control form-control-sm" min="8" max="24" step="1" v-model="$root.gameState.game.configuration.gridWidth" />
+            </div>
+        </div>
+    </div>
+</fieldset>
+`
         }
     };
+
     gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
             var fromCell, toCell;
+
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
                     gameObject.selectedCell = null;
+
                     if (_.isNumber(data.fromCellX) && _.isNumber(data.fromCellY) &&
                         _.isNumber(data.toCellX) && _.isNumber(data.toCellY)) {
+
                         fromCell = viewModel.gameState.game.boardCells[data.fromCellY][data.fromCellX];
                         toCell = viewModel.gameState.game.boardCells[data.toCellY][data.toCellX];
+
                         if (fromCell && toCell) {
                             // The barest of anti-hack checks
                             // We just move from in-memory to in-memory so if you've done something illegal then it's gonna be super obvious
                             // TODO : Probably check if this IS a legal move
+
                             toCell.ownedBy = fromCell.ownedBy;
                             toCell.piece = fromCell.piece;
                             fromCell.ownedBy = null;
                             fromCell.piece = null;
+
                             viewModel.gameState.game.lastPlacedCell = toCell;
+
                         }
+
                         if (fromPlayerId === viewModel.player.id) {
                             if (data.isWin) {
                                 gameObject.assets.sounds['my_win'].play();
@@ -68,6 +145,7 @@ var makeGameObject = function (connection, app, viewModel) {
                     break;
             }
         },
+
         makeGame: function (game) {
             game = _.merge({
                 configuration: {
@@ -98,20 +176,30 @@ var makeGameObject = function (connection, app, viewModel) {
                 // So we know what we last placed
                 lastPlacedCell: null
             }, game);
+
             if (localStorage.getItem(app.gameName + '-game-configuration')) {
                 try {
                     _.merge(game.configuration, JSON.parse(localStorage.getItem(app.gameName + '-game-configuration')));
                 }
                 catch (ex) { }
             }
+
             return game;
         },
+
         setup: function () {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configuration, x, y, row, cell, setPieces;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configuration,
+                x, y,
+                row, cell,
+                setPieces;
+
             // Validation checks
             config.turnTime = Number(config.turnTime);
             config.gridHeight = Number(config.gridHeight);
             config.gridWidth = Number(config.gridWidth);
+
             if (!_.isFinite(config.turnTime) || config.turnTime < 5) {
                 alert('Invalid turn time');
                 return false;
@@ -124,12 +212,15 @@ var makeGameObject = function (connection, app, viewModel) {
                 alert('Invalid grid height');
                 return false;
             }
+
             // Store config just because
             game.configurationAtStart = config;
             game.boardCells = [];
+
             for (y = 0; y < config.gridHeight; y++) {
                 row = [];
                 game.boardCells.push(row);
+
                 for (x = 0; x < config.gridWidth; x++) {
                     cell = {
                         x: x,
@@ -137,19 +228,24 @@ var makeGameObject = function (connection, app, viewModel) {
                         ownedBy: null,
                         piece: null
                     };
+
                     row.push(cell);
                 }
             }
+
             switch (config.randomLevel) {
                 case 0:
                 default:
                     setPieces = function () {
                         var i, x;
+
                         for (i = 0; i < Math.min(_.size(gameState.turnOrder), 2); i++) {
                             row = game.boardCells[i * (_.size(game.boardCells) - 1)]; // first or last row
+
                             for (x = 0; x < _.size(row); x++) {
                                 cell = row[x];
                                 cell.ownedBy = i;
+
                                 if (x === 0 || x === _.size(row) - 1) {
                                     cell.piece = 'rook';
                                 }
@@ -165,11 +261,14 @@ var makeGameObject = function (connection, app, viewModel) {
                                 if (x === _.size(row) - 4) {
                                     cell.piece = 'queen';
                                 }
+
                                 if (!cell.piece) {
                                     cell.piece = 'pawn';
                                 }
                             }
+
                             row = game.boardCells[(i * (_.size(game.boardCells) - 3)) + 1]; // n+1 or n-1 row
+
                             for (x = 0; x < _.size(row); x++) {
                                 cell = row[x];
                                 cell.ownedBy = i;
@@ -179,29 +278,43 @@ var makeGameObject = function (connection, app, viewModel) {
                     };
                     break;
             }
+
             setPieces();
+
             gameState.turnTime = config.turnTime;
+
             if (config.limitToTwoPlayers) {
                 gameState.turnOrder = _.take(gameState.turnOrder, 2);
             }
+
             // Save configuration for next time
             localStorage.setItem(app.gameName + '-game-configuration', JSON.stringify(config));
+
             return true;
         }
     };
+
     gameObject.events = {
         cellClicked: function (cell) {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, availableMoves, fromCell, isWin = false;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configurationAtStart,
+                availableMoves, fromCell,
+                isWin = false;
+
             // If the game's started
             if (!gameState.started) {
                 return;
             }
+
             // If it's my turn
             if (gameState.currentTurn !== viewModel.player.id) {
                 viewModel.helpers.addMessage(null, 'Not your turn');
                 return;
             }
+
             fromCell = gameObject.selectedCell;
+
             // If it's already clicked
             if (cell.ownedBy === gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
                 // select it
@@ -210,6 +323,7 @@ var makeGameObject = function (connection, app, viewModel) {
             }
             else if (fromCell && fromCell.ownedBy === gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
                 availableMoves = gameObject.helpers.getPossibleMoves(fromCell);
+
                 if (availableMoves.cells.indexOf(cell) === -1) {
                     viewModel.helpers.addMessage(null, 'Invalid move');
                     return;
@@ -218,9 +332,11 @@ var makeGameObject = function (connection, app, viewModel) {
             else {
                 return;
             }
+
             if (cell.piece === 'king' && cell.ownedBy !== gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
                 isWin = true;
             }
+
             // If all goes to plan, let's say we own it
             connection.send({
                 type: 'end-turn',
@@ -232,8 +348,12 @@ var makeGameObject = function (connection, app, viewModel) {
                 nextPlayerId: viewModel.helpers.getNextPlayer()
             }, true);
         },
+
         setPreset: function (presetName) {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configuration;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configuration;
+
             config.turnTime = 60;
             config.gridWidth = 8;
             config.gridHeight = 8;
@@ -242,6 +362,7 @@ var makeGameObject = function (connection, app, viewModel) {
             config.allowCastling = false;
             config.allowEnpasse = false;
             config.allowPromotion = true;
+
             switch (_.trim(presetName).toLowerCase()) {
                 case 'chess':
                     config.allowCastling = true;
@@ -254,6 +375,7 @@ var makeGameObject = function (connection, app, viewModel) {
             }
         }
     };
+
     gameObject.helpers = {
         getPlayerFromIndex: function (playerIndex) {
             var player = viewModel.gameState.turnOrder[playerIndex];
@@ -263,11 +385,16 @@ var makeGameObject = function (connection, app, viewModel) {
             return viewModel.gameState.turnOrder.indexOf(playerId);
         },
         getPossibleMoves: function (cell, player, piece) {
-            var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, moves, x, y;
+            var gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configurationAtStart,
+                moves, x, y;
+
             moves = {
                 cells: [],
                 canPromotePawn: false
             };
+
             if (cell) {
                 if (!piece) {
                     piece = cell.piece;
@@ -276,17 +403,21 @@ var makeGameObject = function (connection, app, viewModel) {
                     player = cell.ownedBy;
                 }
             }
+
             if (!cell || !piece || player === null) {
                 return moves;
             }
+
             function isCell(x, y) {
                 return x >= 0 && x < config.gridWidth &&
                     y >= 0 && y < config.gridHeight;
             }
             function addCell(x, y) {
                 var cell;
+
                 if (isCell(x, y)) {
                     cell = game.boardCells[y][x];
+
                     if (cell.ownedBy !== player) {
                         moves.cells.push(cell);
                     }
@@ -294,20 +425,26 @@ var makeGameObject = function (connection, app, viewModel) {
             }
             function addAllInLine(startX, startY, travelX, travelY) {
                 var cell;
+
                 if (travelX === 0 && travelY === 0) {
                     return;
                 }
+
                 cell = game.boardCells[startY][startX];
+
                 while (cell.ownedBy === null || (cell.x === startX && cell.y === startY)) {
                     if (!isCell(cell.x + travelX, cell.y + travelY)) {
                         break;
                     }
+
                     cell = game.boardCells[cell.y + travelY][cell.x + travelX];
+
                     if (cell.ownedBy !== player) {
                         moves.cells.push(cell);
                     }
                 }
             }
+
             switch (piece) {
                 case 'pawn':
                     if (player === 0) {
@@ -320,6 +457,7 @@ var makeGameObject = function (connection, app, viewModel) {
                         }
                         if (isCell(cell.x, cell.y + 1) && game.boardCells[cell.y + 1][cell.x].ownedBy === null) {
                             addCell(cell.x, cell.y + 1);
+
                             if (cell.y === 1 && isCell(cell.x, cell.y + 2) && game.boardCells[cell.y + 2][cell.x].ownedBy === null) {
                                 addCell(cell.x, cell.y + 2);
                             }
@@ -338,6 +476,7 @@ var makeGameObject = function (connection, app, viewModel) {
                         }
                         if (isCell(cell.x, cell.y - 1) && game.boardCells[cell.y - 1][cell.x].ownedBy === null) {
                             addCell(cell.x, cell.y - 1);
+
                             if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
                                 addCell(cell.x, cell.y - 2);
                             }
@@ -389,12 +528,15 @@ var makeGameObject = function (connection, app, viewModel) {
                     addAllInLine(cell.x, cell.y, 1, 1);
                     break;
             }
+
             return moves;
         }
     };
+
     // initialise
     gameObject.assets = (function () {
         var assets = {};
+
         assets.sounds = {
             'my_piece_placed': new Howl({
                 src: [
@@ -453,9 +595,11 @@ var makeGameObject = function (connection, app, viewModel) {
                 ]
             })
         };
+
         return assets;
     })();
+
     gameObject.selectedCell = null;
+
     return gameObject;
 };
-//# sourceMappingURL=chess.js.map

@@ -1,33 +1,43 @@
-var app = app || {};
+﻿var app = app || {};
+
 app.helpers = (function () {
     var helpers = {};
+
     helpers.removeFromArray = function (array, item) {
         var index;
+
         index = array.indexOf(item);
+
         if (index >= 0) {
             array.splice(index, 1);
         }
+
         return array;
-    };
+    }; 
+
     helpers.generateColor = function (seed) {
         var color;
+
         color = randomColor({
             luminosity: 'bright',
             seed: seed
         });
+
         return color;
     };
+
     helpers.pageReady = function ready(fn) {
         if (document.readyState != 'loading') {
             fn();
-        }
-        else {
+        } else {
             document.addEventListener('DOMContentLoaded', fn);
         }
     };
+
     helpers.makeDialog = function makeDialog(options) {
         // Assumes we've got bootstrap and Vue
         var dialog, app, data;
+
         options = _.merge({
             notEscapable: false,
             backdrop: true,
@@ -36,18 +46,20 @@ app.helpers = (function () {
             onOK: function () { },
             onCancel: function () { },
             buttons: [{
-                    text: 'OK',
-                    action: options.onOK
-                }, {
-                    text: 'Cancel',
-                    action: options.onCancel
-                }]
+                text: 'OK',
+                action: options.onOK
+            }, {
+                text: 'Cancel',
+                action: options.onCancel
+            }]
         }, options);
+
         data = {
             options: options,
             close: function (doCall) {
                 dialog.parentNode.removeChild(dialog);
                 document.body.classList.remove('modal-open');
+
                 if (_.isFunction(doCall)) {
                     doCall();
                 }
@@ -57,18 +69,47 @@ app.helpers = (function () {
                     data.close();
                 }
             }
-        };
+        }
+
         dialog = document.createElement('div');
-        dialog.innerHTML = "\n<div class=\"modal-backdrop fade show\" v-if=\"$root.options.backdrop\"></div>\n<div class=\"modal fade show\" role=\"dialog\" tabindex=\"-1\" @keydown.esc=\"$root.escape\" @click=\"$root.escape\" style=\"display: block;\">\n  <div class=\"modal-dialog\" role=\"document\" @click.stop>\n    <div class=\"modal-content\">\n      <div class=\"modal-header\" v-if=\"$root.options.title || !$root.options.notEscapable\">\n        <h5 class=\"modal-title\" v-if=\"$root.options.title\">{{ $root.options.title }}</h5>\n        <button type=\"button\" class=\"close\" aria-label=\"Close\" v-if=\"!$root.options.notEscapable\" @click=\"$root.escape\">\n          <span aria-hidden=\"true\">&times;</span>\n        </button>\n      </div>\n      <div class=\"modal-body\">\n        <p>{{ $root.options.content }}</p>\n      </div>\n      <div class=\"modal-footer\" v-if=\"$root.options.buttons && $root.options.buttons.length > 0\">\n        <button type=\"button\" class=\"btn flex-fill\" \n          v-for=\"(button, buttonIndex) in $root.options.buttons\"\n          :class=\"[ 'btn-outline-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]\"\n          @click=\"$root.close(button.action)\">\n          {{ button.text }}\n        </button>\n      </div>\n    </div>\n  </div>\n</div>\n";
+        dialog.innerHTML = `
+<div class="modal-backdrop fade show" v-if="$root.options.backdrop"></div>
+<div class="modal fade show" role="dialog" tabindex="-1" @keydown.esc="$root.escape" @click="$root.escape" style="display: block;">
+  <div class="modal-dialog" role="document" @click.stop>
+    <div class="modal-content">
+      <div class="modal-header" v-if="$root.options.title || !$root.options.notEscapable">
+        <h5 class="modal-title" v-if="$root.options.title">{{ $root.options.title }}</h5>
+        <button type="button" class="close" aria-label="Close" v-if="!$root.options.notEscapable" @click="$root.escape">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>{{ $root.options.content }}</p>
+      </div>
+      <div class="modal-footer" v-if="$root.options.buttons && $root.options.buttons.length > 0">
+        <button type="button" class="btn flex-fill" 
+          v-for="(button, buttonIndex) in $root.options.buttons"
+          :class="[ 'btn-outline-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]"
+          @click="$root.close(button.action)">
+          {{ button.text }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
         app = Vue.createApp({
             data: function () { return data; }
         });
+
         app.mount(dialog);
         document.body.appendChild(dialog);
         document.body.classList.add('modal-open');
     };
+
     helpers.copyTextToClipboard = function (text) {
         var textArea = document.createElement("textarea");
+
         //
         // *** This styling is an extra step which is likely not required. ***
         //
@@ -84,36 +125,45 @@ app.helpers = (function () {
         // box asking the user for permission for the web page to
         // copy to the clipboard.
         //
+
         // Place in top-left corner of screen regardless of scroll position.
         textArea.style.position = 'fixed';
         textArea.style.top = 0;
         textArea.style.left = 0;
+
         // Ensure it has a small width and height. Setting to 1px / 1em
         // doesn't work as this gives a negative w/h on some browsers.
         textArea.style.width = '2em';
         textArea.style.height = '2em';
+
         // We don't need padding, reducing the size if it does flash render.
         textArea.style.padding = 0;
+
         // Clean up any borders.
         textArea.style.border = 'none';
         textArea.style.outline = 'none';
         textArea.style.boxShadow = 'none';
+
         // Avoid flash of white box if rendered for any reason.
         textArea.style.background = 'transparent';
+
+
         textArea.value = text;
+
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
+
         try {
             var successful = document.execCommand('copy');
             var msg = successful ? 'successful' : 'unsuccessful';
             console.log('Copying text command was ' + msg);
-        }
-        catch (err) {
+        } catch (err) {
             console.log('Oops, unable to copy');
         }
+
         document.body.removeChild(textArea);
     };
+
     return helpers;
 })();
-//# sourceMappingURL=helpers.js.map
