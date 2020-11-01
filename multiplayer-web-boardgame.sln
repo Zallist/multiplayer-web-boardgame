@@ -3,37 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "web", "web\", "{3642FBC2-54C6-4BA3-9F98-AD8C76A2B173}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_56051"
-		Debug.AspNetCompiler.PhysicalPath = "web\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56051\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_56051"
-		Release.AspNetCompiler.PhysicalPath = "web\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_56051\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "56051"
-		SlnRelativePath = "web\"
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "server-azure", "server-azure\server-azure.csproj", "{C6688971-3243-42B0-B237-FB113F950516}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{5E01D1C6-D373-4923-BB2E-83C2EDFF1AE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "server-dotnet", "server-dotnet\server-dotnet.csproj", "{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6D978EDC-879F-4623-BB59-52A84D28303E}"
 	ProjectSection(SolutionItems) = preProject
+		.filenesting.json = .filenesting.json
 		.gitignore = .gitignore
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "server-dotnet", "server-dotnet\server-dotnet.csproj", "{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "web", "web\web.csproj", "{D19FA8C5-8B42-4822-A373-1CB90C052D14}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,10 +23,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3642FBC2-54C6-4BA3-9F98-AD8C76A2B173}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3642FBC2-54C6-4BA3-9F98-AD8C76A2B173}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3642FBC2-54C6-4BA3-9F98-AD8C76A2B173}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{3642FBC2-54C6-4BA3-9F98-AD8C76A2B173}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{C6688971-3243-42B0-B237-FB113F950516}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6688971-3243-42B0-B237-FB113F950516}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6688971-3243-42B0-B237-FB113F950516}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,6 +31,10 @@ Global
 		{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3D7C3D00-9EC8-4979-B21E-11CDF4341B53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D19FA8C5-8B42-4822-A373-1CB90C052D14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D19FA8C5-8B42-4822-A373-1CB90C052D14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D19FA8C5-8B42-4822-A373-1CB90C052D14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D19FA8C5-8B42-4822-A373-1CB90C052D14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
