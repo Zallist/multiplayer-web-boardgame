@@ -24,13 +24,11 @@ app.main = (function () {
 
         setUserId: function (userId) {
             connection.userId = userId;
-            viewModel.player = viewModel.makers.makePlayer({
-                id: connection.userId,
-                isHost: viewModel.isHost,
-                name: viewModel.player.name,
-                metadata: viewModel.player.metadata
-            });
-            viewModel.players[viewModel.player.id] = viewModel.player;
+
+            viewModel.player.id = userId;
+            viewModel.player.isHost = viewModel.isHost;
+
+            viewModel.players[userId] = viewModel.player;
         },
 
         getUserId: function () {
@@ -1015,8 +1013,13 @@ app.main = (function () {
 
         if (localStorage.getItem(app.gameName + '-player-config')) {
             try {
-                _.mergeWith(viewModel.player, JSON.parse(localStorage.getItem(app.gameName + '-player-config')), function (objValue, srcValue, key) {
-                    if (objValue === viewModel.player.metadata.gameStats && key === 'gameStats') {
+                var playerConfig = JSON.parse(localStorage.getItem(app.gameName + '-player-config'));
+
+                viewModel.player.name = playerConfig.name;
+
+                _.mergeWith(viewModel.player.metadata, playerConfig.metadata, function (objValue, srcValue, key) {
+                    if (objValue === viewModel.player.metadata.gameStats && key === 'gameStats' ||
+                        objValue === viewModel.player.metadata.color && key === 'color') {
                         return objValue;
                     }
                 });

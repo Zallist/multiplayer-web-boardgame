@@ -38,7 +38,7 @@ app.helpers = (function () {
         // Assumes we've got bootstrap and Vue
         var dialog, app, data;
 
-        options = _.extend({
+        options = _.merge({
             notEscapable: false,
             backdrop: true,
             title: null,
