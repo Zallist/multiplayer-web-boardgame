@@ -1,7 +1,13 @@
-﻿var app = app || {};
+﻿declare var randomColor: any;
+declare var Vue: any;
+declare var _: any;
+
+var app = app || {};
 
 app.helpers = (function () {
-    var helpers = {};
+    var helpers;
+    
+    helpers = { };
 
     helpers.removeFromArray = function (array, item) {
         var index;
@@ -128,8 +134,8 @@ app.helpers = (function () {
 
         // Place in top-left corner of screen regardless of scroll position.
         textArea.style.position = 'fixed';
-        textArea.style.top = 0;
-        textArea.style.left = 0;
+        textArea.style.top = '0';
+        textArea.style.left = '0';
 
         // Ensure it has a small width and height. Setting to 1px / 1em
         // doesn't work as this gives a negative w/h on some browsers.
@@ -137,7 +143,7 @@ app.helpers = (function () {
         textArea.style.height = '2em';
 
         // We don't need padding, reducing the size if it does flash render.
-        textArea.style.padding = 0;
+        textArea.style.padding = '0';
 
         // Clean up any borders.
         textArea.style.border = 'none';

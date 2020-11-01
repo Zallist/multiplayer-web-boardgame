@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "vue@3.0.2",
+      "destination": "scripts/libs/vue/",
+      "files": [
+        "vue.global.js",
+        "vue.global.prod.js"
+      ]
+    },
+    {
+      "library": "lodash.js@4.17.20",
+      "destination": "scripts/libs/lodash.js/",
+      "files": [
+        "lodash.min.js",
+        "lodash.js"
+      ]
+    },
+    {
+      "library": "howler@2.2.1",
+      "destination": "scripts/libs/howler/",
+      "files": [
+        "howler.js",
+        "howler.min.js"
+      ]
+    },
+    {
+      "library": "axios@0.21.0",
+      "destination": "scripts/libs/axios/",
+      "files": [
+        "axios.js",
+        "axios.map",
+        "axios.min.js",
+        "axios.min.map"
+      ]
+    },
+    {
+      "library": "randomcolor@0.6.1",
+      "destination": "scripts/libs/randomcolor/",
+      "files": [
+        "randomColor.min.js",
+        "randomColor.js"
+      ]
+    },
+    {
+      "library": "chance@1.1.7",
+      "destination": "scripts/libs/chance/",
+      "files": [
+        "chance.min.js",
+        "chance.min.js.map"
+      ]
+    },
+    {
+      "library": "aspnet-signalr@1.1.4",
+      "destination": "scripts/libs/aspnet-signalr/",
+      "files": [
+        "signalr.min.js",
+        "signalr.js"
+      ]
+    }
+  ]
+}
