@@ -14,5 +14,9 @@
   {
     "outputFile": "styles/game-chess.css",
     "inputFile": "styles/game-chess.scss"
+  },
+  {
+    "outputFile": "styles/theme-standard.css",
+    "inputFile": "styles/theme-standard.scss"
   }
 ]
