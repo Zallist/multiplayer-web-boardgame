@@ -11,7 +11,7 @@
   flex-direction: row;
   flex-flow: row nowrap;
   align-items: stretch;
-  background-image: linear-gradient(#F0F0F0, #F0F0F0);
+  background-image: linear-gradient(#CCC, #CCC);
   background-size: 100% 1px;
   background-repeat: no-repeat;
   background-position: center center; }
@@ -20,7 +20,7 @@
   position: relative;
   flex: 1;
   cursor: pointer;
-  background-image: linear-gradient(#F0F0F0, #F0F0F0);
+  background-image: linear-gradient(#CCC, #CCC);
   background-size: 1px 100%;
   background-repeat: no-repeat;
   background-position: center center; }

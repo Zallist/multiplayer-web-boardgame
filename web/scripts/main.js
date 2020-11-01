@@ -315,6 +315,8 @@ app.main = (function () {
 
             fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
+            app.game.hooks.handleData(fromPlayerId, data, fromPlayer);
+
             switch (_.trim(data.type).toLowerCase()) {
                 case 'message':
                     viewModel.helpers.addMessage(fromPlayerId, data.message);
@@ -480,8 +482,6 @@ app.main = (function () {
                     });
                     break;
             }
-
-            app.game.hooks.handleData(fromPlayerId, data, fromPlayer);
         }
     };
 

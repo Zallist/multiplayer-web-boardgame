@@ -18,5 +18,9 @@
   {
     "outputFile": "styles/theme-standard.css",
     "inputFile": "styles/theme-standard.scss"
+  },
+  {
+    "outputFile": "styles/game-yut.css",
+    "inputFile": "styles/game-yut.scss"
   }
 ]

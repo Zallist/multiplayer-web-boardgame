@@ -17,7 +17,7 @@
     flex-flow: row nowrap;
     align-items: stretch;
     
-    background-image: linear-gradient(#F0F0F0, #F0F0F0);
+    background-image: linear-gradient(#CCC, #CCC);
     background-size: 100% 1px;
     background-repeat: no-repeat;
     background-position: center center;
@@ -30,7 +30,7 @@
     flex: 1;
     cursor: pointer;
 
-    background-image: linear-gradient(#F0F0F0, #F0F0F0);
+    background-image: linear-gradient(#CCC, #CCC);
     background-size: 1px 100%;
     background-repeat: no-repeat;
     background-position: center center;
@@ -42,15 +42,17 @@
 
     .omok__piece {
         position: absolute;
-        left: 50%; top: 50%;
+        left: 50%;
+        top: 50%;
         transform: translate(-50%,-50%);
-
         display: flex;
         flex-flow: row;
         align-items: center;
         text-align: center;
 
-        & > i { flex: 1; }
+        & > i {
+            flex: 1;
+        }
 
         @keyframes wiggle {
             0% {
@@ -67,7 +69,9 @@
         }
 
         &.omok__piece--last-placed {
-            & > i { animation: wiggle 0.5s infinite; }
+            & > i {
+                animation: wiggle 0.5s infinite;
+            }
         }
     }
 }

@@ -38,10 +38,6 @@ body {
     @include padChild(7%,7%,7%,7%);
 }
 
-.game__row, .game__cell {
-    background-image: linear-gradient(#CCC, #CCC) !important;
-}
-
 .btn {
     background-color: transparent;
     background-image: url('images/standard/button_full.svg');

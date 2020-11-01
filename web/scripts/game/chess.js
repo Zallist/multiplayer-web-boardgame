@@ -7,7 +7,7 @@ var makeGameObject = function (connection, app, viewModel) {
         'game-panel': {
             data: function () { return viewModel; },
             template: `
-<div class="game__board" v-for="availableMoves in [$root.game.helpers.getPossibleMoves($root.selectedCell)]">
+<div class="game__board" v-for="availableMoves in [$root.game.helpers.getPossibleMoves($root.game.selectedCell)]">
     <div class="game__row" v-for="row in $root.gameState.game.boardCells">
         <div v-for="cell in row"
              @click.prevent="$root.game.events.cellClicked(cell)"
@@ -86,7 +86,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
-                    viewModel.selectedCell = null;
+                    gameObject.selectedCell = null;
 
                     if (_.isNumber(data.fromCellX) && _.isNumber(data.fromCellY) &&
                         _.isNumber(data.toCellX) && _.isNumber(data.toCellY)) {
@@ -313,12 +313,12 @@ var makeGameObject = function (connection, app, viewModel) {
                 return;
             }
 
-            fromCell = viewModel.selectedCell;
+            fromCell = gameObject.selectedCell;
 
             // If it's already clicked
             if (cell.ownedBy === gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
                 // select it
-                viewModel.selectedCell = cell;
+                gameObject.selectedCell = cell;
                 return;
             }
             else if (fromCell && fromCell.ownedBy === gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
@@ -599,7 +599,7 @@ var makeGameObject = function (connection, app, viewModel) {
         return assets;
     })();
 
-    viewModel.selectedCell = null;
+    gameObject.selectedCell = null;
 
     return gameObject;
 };
