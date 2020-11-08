@@ -5,6 +5,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>web</RootNamespace>
     <OutputType>Library</OutputType>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
 
   <ItemGroup>
