@@ -1,4 +1,7 @@
-﻿.yut__wrap .game__board {
+﻿.logo__main {
+  background-image: url("images/game/yut/logo.png"); }
+
+.yut__wrap .game__board {
   position: absolute;
   top: 0;
   left: 0;
