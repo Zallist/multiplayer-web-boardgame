@@ -1,3 +1,9 @@
+declare var Vue: any;
+declare var _: any;
+declare var chance: any;
+declare var axios: any;
+declare var signalR: any;
+
 var app = app || {};
 
 app.main = (function () {
@@ -53,10 +59,12 @@ app.main = (function () {
 
         connectUsingApi: function (onConnected) {
             function throwError(error) {
-                var parsed = {};
+                var parsed;
+
+                parsed = {};
                 _.merge(parsed, error);
                 parsed.message = error.toString();
-                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.connectionStatus = JSON.stringify(parsed, null, 4);
                 viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
                 alert('Network error: ' + viewModel.connectionStatus);
             }
@@ -139,10 +147,12 @@ app.main = (function () {
         },
         connectUsingSignalR: function (onConnected) {
             function throwError(error) {
-                var parsed = {};
+                var parsed;
+
+                parsed = {};
                 _.merge(parsed, error);
                 parsed.message = error.toString();
-                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.connectionStatus = JSON.stringify(parsed, null, 4);
                 viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
                 alert('Network error: ' + viewModel.connectionStatus);
             }
@@ -489,7 +499,9 @@ app.main = (function () {
 
     viewModelFunctions = {
         getHelpers: function (viewModel) {
-            var helpers = {};
+            var helpers;
+
+            helpers = {};
 
             helpers.addMessage = function (playerId, message, color) {
                 var doScroll = false,
@@ -569,7 +581,7 @@ app.main = (function () {
             };
             helpers.connect = function () {
                 if (!viewModel.player.name) {
-                    document.getElementById('name-form').reportValidity();
+                    (<HTMLFormElement>document.getElementById('name-form')).reportValidity();
                 }
                 else {
                     app.game.hooks.setup();
@@ -758,7 +770,9 @@ app.main = (function () {
         },
 
         getMakers: function (viewModel) {
-            var makers = {};
+            var makers;
+
+            makers = {};
 
             makers.makePlayer = function (player) {
                 player = _.merge({
@@ -801,7 +815,9 @@ app.main = (function () {
         },
 
         getEvents: function (viewModel) {
-            var events = {};
+            var events;
+
+            events = {};
 
             events.toggleReady = function () {
                 viewModel.player.isReady = !viewModel.player.isReady;
@@ -862,7 +878,9 @@ app.main = (function () {
         },
 
         getComputed: function () {
-            var computed = {};
+            var computed;
+
+            computed = {};
 
             computed.anyReady = Vue.computed(function () {
                 var players;
@@ -1005,7 +1023,7 @@ app.main = (function () {
         return viewModel;
     }
 
-    viewModel = new makeVM();
+    viewModel = makeVM();
     page.viewModel = viewModel;
 
     page.initialise = function () {

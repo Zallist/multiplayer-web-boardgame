@@ -4,6 +4,6 @@
     "target": "es5",
     "allowJs": true
   },
-  "include": [ "./**/*", "./*" ],
+  "include": [ "./**/*.ts", "./*.ts" ],
   "compileOnSave": true
 }

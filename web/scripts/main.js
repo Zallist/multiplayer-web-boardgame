@@ -38,10 +38,11 @@ app.main = (function () {
         },
         connectUsingApi: function (onConnected) {
             function throwError(error) {
-                var parsed = {};
+                var parsed;
+                parsed = {};
                 _.merge(parsed, error);
                 parsed.message = error.toString();
-                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.connectionStatus = JSON.stringify(parsed, null, 4);
                 viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
                 alert('Network error: ' + viewModel.connectionStatus);
             }
@@ -108,10 +109,11 @@ app.main = (function () {
         },
         connectUsingSignalR: function (onConnected) {
             function throwError(error) {
-                var parsed = {};
+                var parsed;
+                parsed = {};
                 _.merge(parsed, error);
                 parsed.message = error.toString();
-                viewModel.connectionStatus = JSON.stringify(parsed, true, 4);
+                viewModel.connectionStatus = JSON.stringify(parsed, null, 4);
                 viewModel.helpers.addMessage(null, "Network error: " + viewModel.connectionStatus, 'red');
                 alert('Network error: ' + viewModel.connectionStatus);
             }
@@ -408,7 +410,8 @@ app.main = (function () {
     };
     viewModelFunctions = {
         getHelpers: function (viewModel) {
-            var helpers = {};
+            var helpers;
+            helpers = {};
             helpers.addMessage = function (playerId, message, color) {
                 var doScroll = false, chatbox = document.getElementById('chat-messages');
                 if (chatbox) {
@@ -612,7 +615,8 @@ app.main = (function () {
             return helpers;
         },
         getMakers: function (viewModel) {
-            var makers = {};
+            var makers;
+            makers = {};
             makers.makePlayer = function (player) {
                 player = _.merge({
                     id: null,
@@ -650,7 +654,8 @@ app.main = (function () {
             return makers;
         },
         getEvents: function (viewModel) {
-            var events = {};
+            var events;
+            events = {};
             events.toggleReady = function () {
                 viewModel.player.isReady = !viewModel.player.isReady;
                 connection.send({
@@ -700,7 +705,8 @@ app.main = (function () {
             return events;
         },
         getComputed: function () {
-            var computed = {};
+            var computed;
+            computed = {};
             computed.anyReady = Vue.computed(function () {
                 var players;
                 players = _.reject(viewModel.players, { id: viewModel.player.id });
@@ -812,7 +818,7 @@ app.main = (function () {
         }
         return viewModel;
     }
-    viewModel = new makeVM();
+    viewModel = makeVM();
     page.viewModel = viewModel;
     page.initialise = function () {
         app.game = makeGameObject(connection, app, page.viewModel);

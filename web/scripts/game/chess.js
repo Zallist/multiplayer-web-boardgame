@@ -1,5 +1,6 @@
 var makeGameObject = function (connection, app, viewModel) {
-    var gameObject = {};
+    var gameObject;
+    gameObject = {};
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
@@ -394,7 +395,8 @@ var makeGameObject = function (connection, app, viewModel) {
     };
     // initialise
     gameObject.assets = (function () {
-        var assets = {};
+        var assets;
+        assets = {};
         assets.sounds = {
             'my_piece_placed': new Howl({
                 src: [

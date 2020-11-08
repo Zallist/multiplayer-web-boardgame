@@ -1,6 +1,9 @@
-﻿
+﻿declare var Howl: any;
+
 var makeGameObject = function (connection, app, viewModel) {
-    var gameObject = {};
+    var gameObject;
+    
+    gameObject = {};
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
@@ -101,7 +104,7 @@ var makeGameObject = function (connection, app, viewModel) {
                     pieces = [];
 
                     if (data.pieceId) {
-                        pieces.push.apply(pieces, _.filter(viewModel.gameState.game.playerPieces, { pieceId: pieceId }));
+                        pieces.push.apply(pieces, _.filter(viewModel.gameState.game.playerPieces, { pieceId: data.pieceId }));
                     }
                     else {
 
@@ -502,7 +505,9 @@ var makeGameObject = function (connection, app, viewModel) {
 
     // initialise
     gameObject.assets = (function () {
-        var assets = {};
+        var assets;
+        
+        assets = {};
 
         assets.sounds = {
             'my_piece_placed': new Howl({
