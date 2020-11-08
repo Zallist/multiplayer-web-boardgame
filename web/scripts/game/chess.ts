@@ -3,23 +3,31 @@
 declare var Howl: any;
 
 app.makeGameObject = function (connection, app, viewModel) {
-    const gameObject: any = {};
+    const gameObject: any = {},
+        gameViewModel: any = Vue.reactive({});
+
+    gameObject.viewModel = gameViewModel;
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
-            data: () => viewModel,
+            data: () => {
+                return {
+                    $vm: viewModel,
+                    $game: gameViewModel
+                };
+            },
             template: `
-<div class="game__board" v-for="availableMoves in [$root.game.helpers.getPossibleMoves($root.game.selectedCell)]">
-    <div class="game__row" v-for="row in $root.gameState.game.boardCells">
+<div class="game__board" v-for="availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]">
+    <div class="game__row" v-for="row in $data.$vm.gameState.game.boardCells">
         <div v-for="cell in row"
-             @click.prevent="$root.game.events.cellClicked(cell)"
+             @click.prevent="$data.$game.events.cellClicked(cell)"
              :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }">
 
             <div v-if="cell.ownedBy !== null && cell.piece"
-                 v-for="player in [$root.game.helpers.getPlayerFromIndex(cell.ownedBy)]"
-                 :class="{ 'chess__piece': true, 'chess__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }"
-                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridHeight,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
+                 v-for="player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]"
+                 :class="{ 'chess__piece': true, 'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell }"
+                 :style="{ 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
                  :title="'Owned by ' + player.name">
 
                 <!-- chess piece -->
@@ -32,14 +40,19 @@ app.makeGameObject = function (connection, app, viewModel) {
 `
         },
         'config-panel': {
-            data: () => viewModel,
+            data: () => {
+                return {
+                    $vm: viewModel,
+                    $game: gameViewModel
+                };
+            },
             template: `
-<fieldset :disabled="$root.isConnecting || $root.isConnected">
-    <div class="mb-3" v-show="!$root.isConnected">
+<fieldset :disabled="$data.$vm.isConnecting || $data.$vm.isConnected">
+    <div class="mb-3" v-show="!$data.$vm.isConnected">
         <label>Use a preset</label>
         <div>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'simple-chess\')">Simple Chess</button>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'chess\')">Chess</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'simple-chess\')">Simple Chess</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'chess\')">Chess</button>
         </div>
     </div>
     <div>
@@ -47,10 +60,10 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="5" max="180" :step="1" v-model="$root.gameState.game.configuration.turnTime" />
+                <input type="range" class="form-control form-control-sm form-control-range" min="5" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="5" max="180" :step="5" v-model="$root.gameState.game.configuration.turnTime" />
+                <input type="number" class="form-control form-control-sm" min="5" max="180" :step="5" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
         </div>
     </div>
@@ -59,10 +72,10 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="4" max="24" step="1" v-model="$root.gameState.game.configuration.gridHeight" />
+                <input type="range" class="form-control form-control-sm form-control-range" min="4" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridHeight" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="4" max="24" step="1" v-model="$root.gameState.game.configuration.gridHeight" />
+                <input type="number" class="form-control form-control-sm" min="4" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridHeight" />
             </div>
         </div>
     </div>
@@ -71,10 +84,10 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="8" max="24" step="1" v-model="$root.gameState.game.configuration.gridWidth" />
+                <input type="range" class="form-control form-control-sm form-control-range" min="8" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridWidth" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="8" max="24" step="1" v-model="$root.gameState.game.configuration.gridWidth" />
+                <input type="number" class="form-control form-control-sm" min="8" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridWidth" />
             </div>
         </div>
     </div>
@@ -297,7 +310,7 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
     };
 
-    gameObject.events = {
+    gameViewModel.events = {
         cellClicked: function (cell) {
             let gameState = viewModel.gameState,
                 game = gameState.game,
@@ -319,13 +332,13 @@ app.makeGameObject = function (connection, app, viewModel) {
             fromCell = gameObject.selectedCell;
 
             // If it's already clicked
-            if (cell.ownedBy === gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
+            if (cell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
                 // select it
                 gameObject.selectedCell = cell;
                 return;
             }
-            else if (fromCell && fromCell.ownedBy === gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
-                availableMoves = gameObject.helpers.getPossibleMoves(fromCell);
+            else if (fromCell && fromCell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
+                availableMoves = gameViewModel.getPossibleMoves(fromCell);
 
                 if (availableMoves.cells.indexOf(cell) === -1) {
                     viewModel.helpers.addMessage(null, 'Invalid move');
@@ -336,7 +349,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 return;
             }
 
-            if (cell.piece === 'king' && cell.ownedBy !== gameObject.helpers.getPlayerIndexFromId(viewModel.player.id)) {
+            if (cell.piece === 'king' && cell.ownedBy !== gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
                 isWin = true;
             }
 
@@ -379,167 +392,10 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
     };
 
-    gameObject.helpers = {
-        getPlayerFromIndex: function (playerIndex) {
-            let player = viewModel.gameState.turnOrder[playerIndex];
-            return player ? viewModel.helpers.getPlayer(player) : null;
-        },
-        getPlayerIndexFromId: function (playerId) {
-            return viewModel.gameState.turnOrder.indexOf(playerId);
-        },
-        getPossibleMoves: function (cell, player, piece) {
-            let gameState = viewModel.gameState,
-                game = gameState.game,
-                config = game.configurationAtStart,
-                moves, x, y;
-
-            moves = {
-                cells: [],
-                canPromotePawn: false
-            };
-
-            if (cell) {
-                if (!piece) {
-                    piece = cell.piece;
-                }
-                if (player === undefined) {
-                    player = cell.ownedBy;
-                }
-            }
-
-            if (!cell || !piece || player === null) {
-                return moves;
-            }
-
-            function isCell(x, y) {
-                return x >= 0 && x < config.gridWidth &&
-                    y >= 0 && y < config.gridHeight;
-            }
-            function addCell(x, y) {
-                let cell;
-
-                if (isCell(x, y)) {
-                    cell = game.boardCells[y][x];
-
-                    if (cell.ownedBy !== player) {
-                        moves.cells.push(cell);
-                    }
-                }
-            }
-            function addAllInLine(startX, startY, travelX, travelY) {
-                let cell;
-
-                if (travelX === 0 && travelY === 0) {
-                    return;
-                }
-
-                cell = game.boardCells[startY][startX];
-
-                while (cell.ownedBy === null || (cell.x === startX && cell.y === startY)) {
-                    if (!isCell(cell.x + travelX, cell.y + travelY)) {
-                        break;
-                    }
-
-                    cell = game.boardCells[cell.y + travelY][cell.x + travelX];
-
-                    if (cell.ownedBy !== player) {
-                        moves.cells.push(cell);
-                    }
-                }
-            }
-
-            switch (piece) {
-                case 'pawn':
-                    if (player === 0) {
-                        // go down
-                        if (isCell(cell.x - 1, cell.y + 1) && game.boardCells[cell.y + 1][cell.x - 1].ownedBy !== null && game.boardCells[cell.y + 1][cell.x - 1].ownedBy !== player) {
-                            addCell(cell.x - 1, cell.y + 1);
-                        }
-                        if (isCell(cell.x + 1, cell.y + 1) && game.boardCells[cell.y + 1][cell.x + 1].ownedBy !== null && game.boardCells[cell.y + 1][cell.x + 1].ownedBy !== player) {
-                            addCell(cell.x + 1, cell.y + 1);
-                        }
-                        if (isCell(cell.x, cell.y + 1) && game.boardCells[cell.y + 1][cell.x].ownedBy === null) {
-                            addCell(cell.x, cell.y + 1);
-
-                            if (cell.y === 1 && isCell(cell.x, cell.y + 2) && game.boardCells[cell.y + 2][cell.x].ownedBy === null) {
-                                addCell(cell.x, cell.y + 2);
-                            }
-                        }
-                        if (cell.y === config.gridHeight - 1) {
-                            moves.canPromotePawn = true;
-                        }
-                    }
-                    else {
-                        // go up
-                        if (isCell(cell.x - 1, cell.y - 1) && game.boardCells[cell.y - 1][cell.x - 1].ownedBy !== null && game.boardCells[cell.y - 1][cell.x - 1].ownedBy !== player) {
-                            addCell(cell.x - 1, cell.y - 1);
-                        }
-                        if (isCell(cell.x + 1, cell.y - 1) && game.boardCells[cell.y - 1][cell.x + 1].ownedBy !== null && game.boardCells[cell.y - 1][cell.x + 1].ownedBy !== player) {
-                            addCell(cell.x + 1, cell.y - 1);
-                        }
-                        if (isCell(cell.x, cell.y - 1) && game.boardCells[cell.y - 1][cell.x].ownedBy === null) {
-                            addCell(cell.x, cell.y - 1);
-
-                            if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
-                                addCell(cell.x, cell.y - 2);
-                            }
-                        }
-                        if (cell.y === 0) {
-                            moves.canPromotePawn = true;
-                        }
-                    }
-                    break;
-                case 'king':
-                    for (x = cell.x - 1; x <= cell.x + 1; x++) {
-                        for (y = cell.y - 1; y <= cell.y + 1; y++) {
-                            if (x !== cell.x || y !== cell.y) {
-                                addCell(x, y);
-                            }
-                        }
-                    }
-                    break;
-                case 'knight':
-                    addCell(cell.x - 2, cell.y - 1);
-                    addCell(cell.x - 1, cell.y - 2);
-                    addCell(cell.x + 2, cell.y - 1);
-                    addCell(cell.x + 1, cell.y - 2);
-                    addCell(cell.x - 2, cell.y + 1);
-                    addCell(cell.x - 1, cell.y + 2);
-                    addCell(cell.x + 2, cell.y + 1);
-                    addCell(cell.x + 1, cell.y + 2);
-                    break;
-                case 'rook':
-                    addAllInLine(cell.x, cell.y, -1, 0);
-                    addAllInLine(cell.x, cell.y, 1, 0);
-                    addAllInLine(cell.x, cell.y, 0, -1);
-                    addAllInLine(cell.x, cell.y, 0, 1);
-                    break;
-                case 'bishop':
-                    addAllInLine(cell.x, cell.y, -1, -1);
-                    addAllInLine(cell.x, cell.y, -1, 1);
-                    addAllInLine(cell.x, cell.y, 1, -1);
-                    addAllInLine(cell.x, cell.y, 1, 1);
-                    break;
-                case 'queen':
-                    addAllInLine(cell.x, cell.y, -1, 0);
-                    addAllInLine(cell.x, cell.y, 1, 0);
-                    addAllInLine(cell.x, cell.y, 0, -1);
-                    addAllInLine(cell.x, cell.y, 0, 1);
-                    addAllInLine(cell.x, cell.y, -1, -1);
-                    addAllInLine(cell.x, cell.y, -1, 1);
-                    addAllInLine(cell.x, cell.y, 1, -1);
-                    addAllInLine(cell.x, cell.y, 1, 1);
-                    break;
-            }
-
-            return moves;
-        }
-    };
-
     // initialise
     gameObject.assets = (function () {
         let assets;
-        
+
         assets = {};
 
         assets.sounds = {
@@ -604,7 +460,162 @@ app.makeGameObject = function (connection, app, viewModel) {
         return assets;
     })();
 
-    gameObject.selectedCell = null;
+    gameViewModel.selectedCell = null;
+
+    gameViewModel.getPlayerFromIndex = function (playerIndex) {
+        let player = viewModel.gameState.turnOrder[playerIndex];
+        return player ? viewModel.helpers.getPlayer(player) : null;
+    };
+    gameViewModel.getPlayerIndexFromId = function (playerId) {
+        return viewModel.gameState.turnOrder.indexOf(playerId);
+    };
+    gameViewModel.getPossibleMoves = function (cell, player, piece) {
+        let gameState = viewModel.gameState,
+            game = gameState.game,
+            config = game.configurationAtStart,
+            moves, x, y;
+
+        moves = {
+            cells: [],
+            canPromotePawn: false
+        };
+
+        if (cell) {
+            if (!piece) {
+                piece = cell.piece;
+            }
+            if (player === undefined) {
+                player = cell.ownedBy;
+            }
+        }
+
+        if (!cell || !piece || player === null) {
+            return moves;
+        }
+
+        function isCell(x, y) {
+            return x >= 0 && x < config.gridWidth &&
+                y >= 0 && y < config.gridHeight;
+        }
+        function addCell(x, y) {
+            let cell;
+
+            if (isCell(x, y)) {
+                cell = game.boardCells[y][x];
+
+                if (cell.ownedBy !== player) {
+                    moves.cells.push(cell);
+                }
+            }
+        }
+        function addAllInLine(startX, startY, travelX, travelY) {
+            let cell;
+
+            if (travelX === 0 && travelY === 0) {
+                return;
+            }
+
+            cell = game.boardCells[startY][startX];
+
+            while (cell.ownedBy === null || (cell.x === startX && cell.y === startY)) {
+                if (!isCell(cell.x + travelX, cell.y + travelY)) {
+                    break;
+                }
+
+                cell = game.boardCells[cell.y + travelY][cell.x + travelX];
+
+                if (cell.ownedBy !== player) {
+                    moves.cells.push(cell);
+                }
+            }
+        }
+
+        switch (piece) {
+            case 'pawn':
+                if (player === 0) {
+                    // go down
+                    if (isCell(cell.x - 1, cell.y + 1) && game.boardCells[cell.y + 1][cell.x - 1].ownedBy !== null && game.boardCells[cell.y + 1][cell.x - 1].ownedBy !== player) {
+                        addCell(cell.x - 1, cell.y + 1);
+                    }
+                    if (isCell(cell.x + 1, cell.y + 1) && game.boardCells[cell.y + 1][cell.x + 1].ownedBy !== null && game.boardCells[cell.y + 1][cell.x + 1].ownedBy !== player) {
+                        addCell(cell.x + 1, cell.y + 1);
+                    }
+                    if (isCell(cell.x, cell.y + 1) && game.boardCells[cell.y + 1][cell.x].ownedBy === null) {
+                        addCell(cell.x, cell.y + 1);
+
+                        if (cell.y === 1 && isCell(cell.x, cell.y + 2) && game.boardCells[cell.y + 2][cell.x].ownedBy === null) {
+                            addCell(cell.x, cell.y + 2);
+                        }
+                    }
+                    if (cell.y === config.gridHeight - 1) {
+                        moves.canPromotePawn = true;
+                    }
+                }
+                else {
+                    // go up
+                    if (isCell(cell.x - 1, cell.y - 1) && game.boardCells[cell.y - 1][cell.x - 1].ownedBy !== null && game.boardCells[cell.y - 1][cell.x - 1].ownedBy !== player) {
+                        addCell(cell.x - 1, cell.y - 1);
+                    }
+                    if (isCell(cell.x + 1, cell.y - 1) && game.boardCells[cell.y - 1][cell.x + 1].ownedBy !== null && game.boardCells[cell.y - 1][cell.x + 1].ownedBy !== player) {
+                        addCell(cell.x + 1, cell.y - 1);
+                    }
+                    if (isCell(cell.x, cell.y - 1) && game.boardCells[cell.y - 1][cell.x].ownedBy === null) {
+                        addCell(cell.x, cell.y - 1);
+
+                        if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
+                            addCell(cell.x, cell.y - 2);
+                        }
+                    }
+                    if (cell.y === 0) {
+                        moves.canPromotePawn = true;
+                    }
+                }
+                break;
+            case 'king':
+                for (x = cell.x - 1; x <= cell.x + 1; x++) {
+                    for (y = cell.y - 1; y <= cell.y + 1; y++) {
+                        if (x !== cell.x || y !== cell.y) {
+                            addCell(x, y);
+                        }
+                    }
+                }
+                break;
+            case 'knight':
+                addCell(cell.x - 2, cell.y - 1);
+                addCell(cell.x - 1, cell.y - 2);
+                addCell(cell.x + 2, cell.y - 1);
+                addCell(cell.x + 1, cell.y - 2);
+                addCell(cell.x - 2, cell.y + 1);
+                addCell(cell.x - 1, cell.y + 2);
+                addCell(cell.x + 2, cell.y + 1);
+                addCell(cell.x + 1, cell.y + 2);
+                break;
+            case 'rook':
+                addAllInLine(cell.x, cell.y, -1, 0);
+                addAllInLine(cell.x, cell.y, 1, 0);
+                addAllInLine(cell.x, cell.y, 0, -1);
+                addAllInLine(cell.x, cell.y, 0, 1);
+                break;
+            case 'bishop':
+                addAllInLine(cell.x, cell.y, -1, -1);
+                addAllInLine(cell.x, cell.y, -1, 1);
+                addAllInLine(cell.x, cell.y, 1, -1);
+                addAllInLine(cell.x, cell.y, 1, 1);
+                break;
+            case 'queen':
+                addAllInLine(cell.x, cell.y, -1, 0);
+                addAllInLine(cell.x, cell.y, 1, 0);
+                addAllInLine(cell.x, cell.y, 0, -1);
+                addAllInLine(cell.x, cell.y, 0, 1);
+                addAllInLine(cell.x, cell.y, -1, -1);
+                addAllInLine(cell.x, cell.y, -1, 1);
+                addAllInLine(cell.x, cell.y, 1, -1);
+                addAllInLine(cell.x, cell.y, 1, 1);
+                break;
+        }
+
+        return moves;
+    };
 
     return gameObject;
 };

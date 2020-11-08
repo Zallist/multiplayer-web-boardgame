@@ -3,23 +3,31 @@
 declare var Howl: any;
 
 app.makeGameObject = function (connection, app, viewModel) {
-    const gameObject: any = {};
+    const gameObject: any = {},
+        gameViewModel: any = Vue.reactive({});
+
+    gameObject.viewModel = gameViewModel;
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
-            data: () => viewModel,
+            data: () => {
+                return {
+                    $vm: viewModel,
+                    $game: gameViewModel
+                };
+            },
             template: `
 <div class="game__board">
-    <div class="game__row" v-for="row in $root.gameState.game.boardCells">
+    <div class="game__row" v-for="row in $data.$vm.gameState.game.boardCells">
         <div v-for="cell in row"
-             @click.prevent="$root.game.events.cellClicked(cell)"
+             @click.prevent="$data.$game.events.cellClicked(cell)"
              :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
 
             <div v-if="cell.ownedBy"
-                 v-for="player in [$root.helpers.getPlayer(cell.ownedBy)]"
-                 :class="{ 'omok__piece': true, 'omok__piece--last-placed': cell === $root.gameState.game.lastPlacedCell }"
-                 :style="{ 'font-size': (Math.min($root.gamePanelHeight / $root.gameState.game.configurationAtStart.gridSize,$root.gamePanelWidth / $root.gameState.game.configurationAtStart.gridSize) * 0.75) + 'px' }"
+                 v-for="player in [$data.$vm.helpers.getPlayer(cell.ownedBy)]"
+                 :class="{ 'omok__piece': true, 'omok__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell }"
+                 :style="{ 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridSize,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridSize) * 0.75) + 'px' }"
                  :title="'Owned by ' + player.name">
 
                 <player-avatar :player="player"></player-avatar>
@@ -30,15 +38,20 @@ app.makeGameObject = function (connection, app, viewModel) {
 `
         },
         'config-panel': {
-            data: () => viewModel,
+            data: () => {
+                return {
+                    $vm: viewModel,
+                    $game: gameViewModel
+                };
+            },
             template: `
-<fieldset :disabled="$root.isConnecting || $root.isConnected">
-    <div class="mb-3" v-show="!$root.isConnected">
+<fieldset :disabled="$data.$vm.isConnecting || $data.$vm.isConnected">
+    <div class="mb-3" v-show="!$data.$vm.isConnected">
         <label>Use a preset</label>
         <div>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'omok\')">Omok</button>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$root.game.events.setPreset(\'gomoku\')">Gomoku</button>
-            <button type="button" class="btn btn-outline-primary" @click="$root.game.events.setPreset(\'tic-tac-toe\')">Tic-Tac-Toe</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'omok\')">Omok</button>
+            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'gomoku\')">Gomoku</button>
+            <button type="button" class="btn btn-outline-primary" @click="$data.$game.events.setPreset(\'tic-tac-toe\')">Tic-Tac-Toe</button>
         </div>
     </div>
     <div>
@@ -46,14 +59,14 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" :min="$root.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$root.gameState.game.configuration.turnTime" />
+                <input type="range" class="form-control form-control-sm form-control-range" :min="$data.$vm.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model="$root.gameState.game.configuration.turnTime" />
+                <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
         </div>
 
-        <small class="form-text text-danger" v-show="$root.gameState.game.configuration.turnTime < 3">
+        <small class="form-text text-danger" v-show="$data.$vm.gameState.game.configuration.turnTime < 3">
             Turns this short may get affected by latency and people may miss their turns without realising
         </small>
     </div>
@@ -62,14 +75,14 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="1" max="100" step="1" v-model="$root.gameState.game.configuration.gridSize" />
+                <input type="range" class="form-control form-control-sm form-control-range" min="1" max="100" step="1" v-model="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model="$root.gameState.game.configuration.gridSize" />
+                <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
         </div>
 
-        <small class="form-text text-danger" v-show="$root.gameState.game.configuration.gridSize > 40">
+        <small class="form-text text-danger" v-show="$data.$vm.gameState.game.configuration.gridSize > 40">
             Playing with a grid this size is likely to make it laggy. Good luck.
         </small>
     </div>
@@ -78,17 +91,17 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="1" :max="$root.gameState.game.configuration.gridSize" step="1" v-model="$root.gameState.game.configuration.numberInARowRequired" />
+                <input type="range" class="form-control form-control-sm form-control-range" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model="$data.$vm.gameState.game.configuration.numberInARowRequired" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="1" :max="$root.gameState.game.configuration.gridSize" step="1" v-model="$root.gameState.game.configuration.numberInARowRequired" />
+                <input type="number" class="form-control form-control-sm" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model="$data.$vm.gameState.game.configuration.numberInARowRequired" />
             </div>
         </div>
     </div>
     <div class="mt-3">
         <div class="form-check">
             <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowOverWins">
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowOverWins">
                 Allow Over Wins (overlines)
             </label>
         </div>
@@ -100,25 +113,25 @@ app.makeGameObject = function (connection, app, viewModel) {
     <div class="mt-3">
         <div class="form-check">
             <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowDoubleThrees">
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowDoubleThrees">
                 Allow Easy Wins (double 3s)
             </label>
         </div>
 
         <small class="form-text text-secondary config__help-text">
-            Easy Wins are based on the "double-threes" rule. You can't place pieces where you would get 2 <strong>unblocked</strong> {{$root.gameState.game.configuration.numberInARowRequired - 2}}s in a row.
+            Easy Wins are based on the "double-threes" rule. You can't place pieces where you would get 2 <strong>unblocked</strong> {{$data.$vm.gameState.game.configuration.numberInARowRequired - 2}}s in a row.
         </small>
     </div>
-    <div class="mt-3" v-show="!$root.gameState.game.configuration.allowDoubleThrees">
+    <div class="mt-3" v-show="!$data.$vm.gameState.game.configuration.allowDoubleThrees">
         <div class="form-check">
             <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" v-model="$root.gameState.game.configuration.allowDoubleFours">
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowDoubleFours">
                 Allow 2x N-1 (double 4s)
             </label>
         </div>
 
         <small class="form-text text-secondary config__help-text">
-            Based on the "double-fours" rule. You can't place pieces where you would get 2 {{$root.gameState.game.configuration.numberInARowRequired - 1}}s in a row.
+            Based on the "double-fours" rule. You can't place pieces where you would get 2 {{$data.$vm.gameState.game.configuration.numberInARowRequired - 1}}s in a row.
         </small>
     </div>
 </fieldset>
@@ -263,7 +276,7 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
     };
 
-    gameObject.events = {
+    gameViewModel.events = {
         cellClicked: function (cell) {
             let gameState = viewModel.gameState,
                 game = gameState.game,

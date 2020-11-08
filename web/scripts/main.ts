@@ -1021,7 +1021,6 @@ app.main = (function () {
     page.initialise = function () {
         app.game = app.makeGameObject(connection, app, page.viewModel);
         page.viewModel.gameState.game = app.game.hooks.makeGame();
-        page.viewModel.game = app.game;
 
         if (localStorage.getItem(app.gameName + '-player-config')) {
             try {
@@ -1069,7 +1068,7 @@ app.main = (function () {
 </svg>`
         });
 
-        _.each(app.game.vueComponents, function (component, key) {
+        _.forEach(app.game.vueComponents, function (component, key) {
             page.pageVue.component(key, component);
         });
 

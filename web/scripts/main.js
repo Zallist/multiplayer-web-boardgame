@@ -823,7 +823,6 @@ app.main = (function () {
     page.initialise = function () {
         app.game = app.makeGameObject(connection, app, page.viewModel);
         page.viewModel.gameState.game = app.game.hooks.makeGame();
-        page.viewModel.game = app.game;
         if (localStorage.getItem(app.gameName + '-player-config')) {
             try {
                 var playerConfig = JSON.parse(localStorage.getItem(app.gameName + '-player-config'));
@@ -854,7 +853,7 @@ app.main = (function () {
             props: ['percent', 'color'],
             template: "\n<svg viewBox=\"0 0 100 100\" height=\"1em\" style=\"height: 100%; transform: rotate(-90deg); border-radius: 50%; fill: none; stroke-width: 100%;\"\n     :style=\"{ 'stroke': color || '#7f8c8d', 'stroke-dasharray': ((Math.min(Math.max(percent,0),100) || 0) * Math.PI) + ', 999' }\">\n    <circle cx=\"50\" cy=\"50\" r=\"50\"></circle>  \n</svg>"
         });
-        _.each(app.game.vueComponents, function (component, key) {
+        _.forEach(app.game.vueComponents, function (component, key) {
             page.pageVue.component(key, component);
         });
         page.pageVue.mount('#app');

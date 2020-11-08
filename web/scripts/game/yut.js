@@ -1,15 +1,26 @@
 var app = app || {};
 app.makeGameObject = function (connection, app, viewModel) {
-    var gameObject = {};
+    var gameObject = {}, gameViewModel = Vue.reactive({});
+    gameObject.viewModel = gameViewModel;
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
-            data: function () { return viewModel; },
-            template: "\n<div class=\"yut__wrap\">\n    <div class=\"game__board\">\n        <div class=\"game__row\" v-for=\"row in $root.gameState.game.boardCells\">\n            <div v-for=\"cell in row\"\n                 @click.prevent=\"$root.game.events.cellClicked(cell)\"\n                 :class=\"{ 'game__cell': true, 'game__cell--available': cell.next.length > 0 }\">\n\n            \n            </div>\n        </div>\n    </div>\n    <div class=\"yut__sidebar\">\n        \n    </div>\n    <div class=\"yut__footer\">\n        <div class=\"d-flex flex-row\">\n            <div class=\"flex-fill\"\n                 v-for=\"group in $root.game.playerPiecesGrouped\">\n                <div><label :style=\"{ color: group.player.metadata.color }\">{{ group.player.name }}</label></div>\n                <div class=\"row\">\n                    <div v-for=\"piece in group.pieces\"\n                         class=\"col\">\n                        <div class=\"piece\"\n                             :class=\"{ \n                                'piece--placable': $root.gameState.currentTurn === $root.player.id && $root.gameState.game.currentRoll !== null && piece.x === null && piece.y === null && !piece.finished,\n                                'piece--finished': piece.finished\n                             }\"\n                             @click=\"$root.game.events.pieceClicked(piece)\">\n                            <player-avatar :player=\"group.player\"></player-avatar>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"yut__corner\">\n        <button type=\"button\" class=\"roll__button btn btn-outline-primary btn-block d-none d-lg-block btn-lg\"\n                :disabled=\"$root.gameState.currentTurn !== $root.player.id || $root.gameState.game.currentRoll !== null\"\n                @click.prevent=\"$root.game.events.rollClicked()\">\n            Roll\n        </button>\n        <button type=\"button\" class=\"roll__button btn btn-outline-primary btn-block d-block d-lg-none\"\n                :disabled=\"$root.gameState.currentTurn !== $root.player.id || $root.gameState.game.currentRoll !== null\"\n                @click.prevent=\"$root.game.events.rollClicked()\">\n            Roll\n        </button>\n    </div>\n</div>\n"
+            data: function () {
+                return {
+                    $vm: viewModel,
+                    $game: gameViewModel
+                };
+            },
+            template: "\n<div class=\"yut__wrap\">\n    <div class=\"game__board\">\n        <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n            <div v-for=\"cell in row\"\n                 @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n                 :class=\"{ \n                    'game__cell': true, \n                    'game__cell--available': cell.next.length > 0,\n                    'game__cell--placable': $data.$game.canPlaceOnCell(cell.x, cell.y)\n                 }\">\n\n            \n            </div>\n        </div>\n    </div>\n    <div class=\"yut__sidebar\">\n        \n    </div>\n    <div class=\"yut__footer\">\n        <div class=\"d-flex flex-row\">\n            <div class=\"flex-fill\"\n                 v-for=\"group in $data.$game.playerPiecesGrouped\">\n                <div><label :style=\"{ color: group.player.metadata.color }\">{{ group.player.name }}</label></div>\n                <div class=\"row\">\n                    <div v-for=\"piece in group.pieces\"\n                         class=\"col\">\n                        <div class=\"piece\"\n                             :class=\"{ \n                                'piece--placable': $data.$vm.gameState.currentTurn === $data.$vm.player.id && $data.$vm.gameState.game.currentRoll !== null && piece.x === null && piece.y === null && !piece.finished,\n                                'piece--finished': piece.finished\n                             }\"\n                             @click=\"$data.$game.events.pieceClicked(piece)\">\n                            <player-avatar :player=\"group.player\"></player-avatar>\n                        </div>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"yut__corner\">\n        <button type=\"button\" class=\"roll__button btn btn-outline-primary btn-block d-none d-lg-block btn-lg\"\n                :disabled=\"$data.$vm.gameState.currentTurn !== $data.$vm.player.id || $data.$vm.gameState.game.currentRoll !== null\"\n                @click.prevent=\"$data.$game.events.rollClicked()\">\n            Roll\n        </button>\n        <button type=\"button\" class=\"roll__button btn btn-outline-primary btn-block d-block d-lg-none\"\n                :disabled=\"$data.$vm.gameState.currentTurn !== $data.$vm.player.id || $data.$vm.gameState.game.currentRoll !== null\"\n                @click.prevent=\"$data.$game.events.rollClicked()\">\n            Roll\n        </button>\n    </div>\n</div>\n"
         },
         'config-panel': {
-            data: function () { return viewModel; },
-            template: "\n<fieldset :disabled=\"$root.isConnecting || $root.isConnected\">\n    <div class=\"mb-3\" v-show=\"!$root.isConnected\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-outline-primary mr-1\" @click=\"$root.game.events.setPreset('yut')\">Yut Nori</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$root.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model=\"$root.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n</fieldset>\n"
+            data: function () {
+                return {
+                    $vm: viewModel,
+                    $game: gameViewModel
+                };
+            },
+            template: "\n<fieldset :disabled=\"$data.$vm.isConnecting || $data.$vm.isConnected\">\n    <div class=\"mb-3\" v-show=\"!$data.$vm.isConnected\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-outline-primary mr-1\" @click=\"$data.$game.events.setPreset('yut')\">Yut Nori</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"form-control form-control-sm form-control-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n</fieldset>\n"
         }
     };
     gameObject.hooks = {
@@ -21,43 +32,43 @@ app.makeGameObject = function (connection, app, viewModel) {
                     viewModel.helpers.addMessage(null, fromPlayer.name + ' rolled a ' + viewModel.gameState.game.currentRoll, fromPlayer.metadata.color);
                     break;
                 case 'end-turn':
-                    gameObject.selectedCell = null;
-                    gameObject.selectedPiece = null;
+                    gameViewModel.selectedCell = null;
+                    gameViewModel.selectedPiece = null;
                     viewModel.gameState.game.currentRoll = null;
                     pieces = [];
                     if (data.pieceId) {
-                        pieces.push.apply(pieces, _.filter(viewModel.gameState.game.playerPieces, { pieceId: data.pieceId }));
+                        pieces.push.apply(pieces, _.filter(viewModel.gameState.game.playerPieces, { pieceId: data.pieceId, playerId: fromPlayerId }));
                     }
                     else {
+                        pieces.push.apply(pieces, _.filter(gameViewModel.piecesOnCell(data.cellFromX, data.cellFromY), { playerId: fromPlayerId }));
+                    }
+                    if (data.finish) {
+                        _.forEach(pieces, function (piece) {
+                            piece.x = null;
+                            piece.y = null;
+                            piece.finished = true;
+                        });
+                    }
+                    else {
+                        _.forEach(pieces, function (piece) {
+                            piece.x = data.cellToX;
+                            piece.y = data.cellToY;
+                        });
+                        // And get rid of the ones to get rid of
+                        pieces = _.reject(gameViewModel.piecesOnCell(data.cellToX, data.cellToY), { playerId: fromPlayerId });
+                        if (data.removeSpecificPlayerId) {
+                            pieces = _.filter(pieces, { playerId: data.removeSpecificPlayerId });
+                        }
+                        _.forEach(pieces, function (piece) {
+                            piece.x = null;
+                            piece.y = null;
+                        });
                     }
                     if (_.some(viewModel.gameState.game.playerPieces, { finish: false, playerId: fromPlayerId })) {
                         // Calculate win after doing stuff
                         // Means that the user isn't telling us they won, but we're finding out they won
                         data.isWin = true;
                     }
-                    /*
-                    if (_.isNumber(data.cellX) && _.isNumber(data.cellY)) {
-                        viewModel.gameState.game.boardCells[data.cellY][data.cellX].ownedBy = fromPlayerId;
-                        viewModel.gameState.game.lastPlacedCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
-
-                        if (fromPlayerId === viewModel.player.id) {
-                            if (data.isWin) {
-                                gameObject.assets.sounds['my_win'].play();
-                            }
-                            else {
-                                gameObject.assets.sounds['my_piece_placed'].play();
-                            }
-                        }
-                        else {
-                            if (data.isWin) {
-                                gameObject.assets.sounds['other_win'].play();
-                            }
-                            else {
-                                gameObject.assets.sounds['other_piece_placed'].play();
-                            }
-                        }
-                    }
-                    */
                     break;
                 case 'player-joined':
                     gameObject.assets.sounds['player_joined'].play();
@@ -220,7 +231,7 @@ app.makeGameObject = function (connection, app, viewModel) {
             return true;
         }
     };
-    gameObject.events = {
+    gameViewModel.events = {
         finishClicked: function () {
             var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, nextPlayerId;
             // If the game's started
@@ -237,12 +248,12 @@ app.makeGameObject = function (connection, app, viewModel) {
                 viewModel.helpers.addMessage(null, 'Roll first');
                 return;
             }
-            if (viewModel.selectedCell || viewModel.selectedPiece) {
-                if (gameObject.availablePlacements.value.finish) {
+            if (gameViewModel.selectedCell || gameViewModel.selectedPiece) {
+                if (gameViewModel.availablePlacements.finish) {
                     connection.send({
-                        pieceId: viewModel.selectedPiece ? viewModel.selectedPiece.pieceId : null,
-                        cellFromX: viewModel.selectedCell ? viewModel.selectedCell.x : null,
-                        cellFromY: viewModel.selectedCell ? viewModel.selectedCell.y : null,
+                        pieceId: gameViewModel.selectedPiece ? gameViewModel.selectedPiece.pieceId : null,
+                        cellFromX: gameViewModel.selectedCell ? gameViewModel.selectedCell.x : null,
+                        cellFromY: gameViewModel.selectedCell ? gameViewModel.selectedCell.y : null,
                         finish: true,
                         type: 'end-turn',
                         isWin: false,
@@ -267,15 +278,15 @@ app.makeGameObject = function (connection, app, viewModel) {
                 viewModel.helpers.addMessage(null, 'Roll first');
                 return;
             }
-            if (viewModel.selectedCell === cell) {
-                viewModel.selectedCell = null;
+            if (gameViewModel.selectedCell === cell) {
+                gameViewModel.selectedCell = null;
             }
-            else if (viewModel.selectedCell || viewModel.selectedPiece) {
-                if (gameObject.canPlaceOnCell(cell.x, cell.y)) {
+            else if (gameViewModel.selectedCell || gameViewModel.selectedPiece) {
+                if (gameViewModel.canPlaceOnCell(cell.x, cell.y)) {
                     connection.send({
-                        pieceId: viewModel.selectedPiece ? viewModel.selectedPiece.pieceId : null,
-                        cellFromX: viewModel.selectedCell ? viewModel.selectedCell.x : null,
-                        cellFromY: viewModel.selectedCell ? viewModel.selectedCell.y : null,
+                        pieceId: gameViewModel.selectedPiece ? gameViewModel.selectedPiece.pieceId : null,
+                        cellFromX: gameViewModel.selectedCell ? gameViewModel.selectedCell.x : null,
+                        cellFromY: gameViewModel.selectedCell ? gameViewModel.selectedCell.y : null,
                         cellToX: cell.x,
                         cellToY: cell.y,
                         type: 'end-turn',
@@ -284,8 +295,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                     }, true);
                 }
             }
-            else if (_.some(gameObject.piecesOnCell(cell.x, cell.y), { playerId: viewModel.player.id })) {
-                viewModel.selectedCell = cell;
+            else if (_.some(gameViewModel.piecesOnCell(cell.x, cell.y), { playerId: viewModel.player.id })) {
+                gameViewModel.selectedCell = cell;
             }
         },
         pieceClicked: function (piece) {
@@ -308,8 +319,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                 viewModel.helpers.addMessage(null, 'Roll first');
                 return;
             }
-            gameObject.selectedCell = null;
-            gameObject.selectedPiece = piece;
+            gameViewModel.selectedCell = null;
+            gameViewModel.selectedPiece = piece;
         },
         rollClicked: function () {
             var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, rolled;
@@ -348,7 +359,6 @@ app.makeGameObject = function (connection, app, viewModel) {
             }
         }
     };
-    gameObject.helpers = {};
     // initialise
     gameObject.assets = (function () {
         var assets;
@@ -413,16 +423,16 @@ app.makeGameObject = function (connection, app, viewModel) {
         };
         return assets;
     })();
-    gameObject.selectedCell = null;
-    gameObject.selectedPiece = null;
-    gameObject.getCellsAfterTravelling = function (cell, distance) {
-        var result, travel, i;
+    gameViewModel.selectedCell = null;
+    gameViewModel.selectedPiece = null;
+    gameViewModel.getCellsAfterTravelling = function (cell, distance) {
+        var gameState = viewModel.gameState, game = gameState.game, result, travel, i;
         result = {
             cells: [],
             finish: false
         };
         travel = function (cell, distance, isFirst) {
-            var i, nextCell;
+            var i, nextCellDelta, nextCell;
             if (distance === 0) {
                 result.cells.push(cell);
             }
@@ -431,7 +441,8 @@ app.makeGameObject = function (connection, app, viewModel) {
             }
             else {
                 for (i = 0; i < cell.next.length; i++) {
-                    nextCell = cell.next[i];
+                    nextCellDelta = cell.next[i];
+                    nextCell = game.boardCells[cell.y + nextCellDelta.y][cell.x + nextCellDelta.x];
                     travel(nextCell, distance - 1, false);
                 }
             }
@@ -439,27 +450,29 @@ app.makeGameObject = function (connection, app, viewModel) {
         travel(cell, distance, true);
         return result;
     };
-    gameObject.allCells = Vue.computed(function () { return _.flatten(viewModel.gameState && viewModel.gameState.game ? viewModel.gameState.game.boardCells : []); });
-    gameObject.availablePlacements = Vue.computed(function () {
-        var placements, cellStart, travelled;
+    gameViewModel.allCells = Vue.computed(function () { return _.flatten(viewModel.gameState && viewModel.gameState.game ? viewModel.gameState.game.boardCells : []); });
+    gameViewModel.availablePlacements = Vue.computed(function () {
+        var placements, cellStart = null, travelled;
         placements = {
             cells: [],
             finish: false
         };
-        if (viewModel.gameState.currentTurn === viewModel.player.id && gameObject.currentRoll !== null) {
-            if (viewModel.selectedPiece) {
-                cellStart = _.find(gameObject.allCells.value, { start: true });
+        if (viewModel.gameState.currentTurn === viewModel.player.id && viewModel.gameState.game.currentRoll !== null) {
+            if (gameViewModel.selectedPiece) {
+                cellStart = _.find(gameViewModel.allCells, { start: true });
             }
             else {
-                cellStart = viewModel.selectedCell;
+                cellStart = gameViewModel.selectedCell;
             }
-            travelled = gameObject.getCellsAfterTravelling(cellStart, gameObject.currentRoll);
-            placements.cells.push.apply(placements.cells, travelled.cells);
-            placements.finish = travelled.finish;
+            if (cellStart) {
+                travelled = gameViewModel.getCellsAfterTravelling(cellStart, viewModel.gameState.game.currentRoll);
+                placements.cells.push.apply(placements.cells, travelled.cells);
+                placements.finish = travelled.finish;
+            }
         }
         return placements;
     });
-    gameObject.piecesByCellMap = Vue.computed(function () {
+    gameViewModel.piecesByCellMap = Vue.computed(function () {
         var map = {};
         if (viewModel.gameState && viewModel.gameState.game) {
             map = _.groupBy(viewModel.gameState.game.playerPieces, function (piece) {
@@ -468,7 +481,7 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
         return map;
     });
-    gameObject.playerPiecesGrouped = Vue.computed(function () {
+    gameViewModel.playerPiecesGrouped = Vue.computed(function () {
         var piecesGrouped, playerId, players = [];
         if (viewModel.gameState && viewModel.gameState.game) {
             piecesGrouped = _.groupBy(viewModel.gameState.game.playerPieces, 'playerId');
@@ -482,9 +495,9 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
         return players;
     });
-    gameObject.canPlaceOnCell = function (x, y) { return _.some(gameObject.availablePlacements.value.cells, { x: x, y: y }); };
-    gameObject.piecesOnCell = function (x, y) {
-        var map = gameObject.piecesByCellMap.value, key = 'x' + x + '~~y' + y;
+    gameViewModel.canPlaceOnCell = function (x, y) { return _.some(gameViewModel.availablePlacements.cells, { x: x, y: y }); };
+    gameViewModel.piecesOnCell = function (x, y) {
+        var map = gameViewModel.piecesByCellMap, key = 'x' + x + '~~y' + y;
         if (map[key]) {
             return map[key];
         }
