@@ -403,4 +403,3 @@ app.makeGameObject = function (connection, app, viewModel) {
     })();
     return gameObject;
 };
-//# sourceMappingURL=omok.js.map

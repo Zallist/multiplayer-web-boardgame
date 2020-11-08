@@ -525,4 +525,3 @@ app.makeGameObject = function (connection, app, viewModel) {
     };
     return gameObject;
 };
-//# sourceMappingURL=yut.js.map

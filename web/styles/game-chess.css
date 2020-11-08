@@ -1,9 +1,10 @@
-﻿.game__board {
+.game__board {
   display: flex;
   flex: 1;
   flex-direction: column;
   flex-flow: column nowrap;
-  align-items: stretch; }
+  align-items: stretch;
+}
 
 .game__row {
   display: flex;
@@ -13,9 +14,11 @@
   align-items: stretch;
   background: transparent;
   background-image: none !important;
-  border-top: 1px solid #CCC; }
-  .game__row:last-child {
-    border-bottom: 1px solid #CCC; }
+  border-top: 1px solid #CCC;
+}
+.game__row:last-child {
+  border-bottom: 1px solid #CCC;
+}
 
 .game__cell {
   position: relative;
@@ -23,29 +26,38 @@
   cursor: pointer;
   background: transparent;
   background-image: none !important;
-  border-left: 1px solid #CCC; }
-  .game__cell:last-child {
-    border-right: 1px solid #CCC; }
-  .game__cell.game__cell--placable {
-    background-color: #2980b9; }
-  .game__cell .chess__piece {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-    text-align: center; }
-    .game__cell .chess__piece > i {
-      flex: 1; }
-
+  border-left: 1px solid #CCC;
+}
+.game__cell:last-child {
+  border-right: 1px solid #CCC;
+}
+.game__cell.game__cell--placable {
+  background-color: #2980b9;
+}
+.game__cell .chess__piece {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  text-align: center;
+}
+.game__cell .chess__piece > i {
+  flex: 1;
+}
 @keyframes wiggle {
   0% {
-    transform: rotate(8deg); }
+    transform: rotate(8deg);
+  }
   50% {
-    transform: rotate(-8deg); }
+    transform: rotate(-8deg);
+  }
   100% {
-    transform: rotate(8deg); } }
-    .game__cell .chess__piece.chess__piece--last-placed > i {
-      animation: wiggle 0.5s infinite; }
+    transform: rotate(8deg);
+  }
+}
+.game__cell .chess__piece.chess__piece--last-placed > i {
+  animation: wiggle 0.5s infinite;
+}

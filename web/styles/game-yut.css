@@ -1,38 +1,41 @@
-﻿.logo__main {
-  background-image: url("images/game/yut/logo.png"); }
+.logo__main {
+  background-image: url("images/game/yut/logo.png");
+}
 
 .yut__wrap .game__board {
   position: absolute;
   top: 0;
   left: 0;
   right: 20%;
-  bottom: 20%; }
-
+  bottom: 20%;
+}
 .yut__wrap .yut__footer {
   position: absolute;
   top: 80%;
   left: 0;
   right: 20%;
-  bottom: 0; }
-
+  bottom: 0;
+}
 .yut__wrap .yut__sidebar {
   position: absolute;
   top: 0;
   left: 80%;
   right: 0;
-  bottom: 20%; }
-
+  bottom: 20%;
+}
 .yut__wrap .yut__corner {
   position: absolute;
   top: 80%;
   left: 80%;
   right: 0;
-  bottom: 0; }
-  .yut__wrap .yut__corner .roll__button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); }
+  bottom: 0;
+}
+.yut__wrap .yut__corner .roll__button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
 .game__board {
   display: flex;
@@ -43,84 +46,107 @@
   background-repeat: no-repeat;
   background-image: url("images/game/yut/yut-game-directions.svg");
   background-size: 100% 100%;
-  background-position: center center; }
+  background-position: center center;
+}
 
 .game__row {
   display: flex;
   flex: 1;
   flex-direction: row;
   flex-flow: row nowrap;
-  align-items: stretch; }
+  align-items: stretch;
+}
 
 .game__cell {
   position: relative;
-  flex: 1; }
-  .game__cell.game__cell--available {
-    cursor: pointer; }
-    .game__cell.game__cell--available .game__cell__content {
-      position: absolute;
-      top: 5%;
-      bottom: 5%;
-      left: 5%;
-      right: 5%;
-      border-radius: 5%;
-      transition: border-color,background-color ease-in-out 0.25s;
-      border: 2px solid #2c3e50; }
-      .game__cell.game__cell--available .game__cell__content:hover {
-        border-color: #27ae60; }
-  .game__cell.game__cell--selectable .game__cell__content {
-    cursor: pointer; }
-    .game__cell.game__cell--selectable .game__cell__content:hover {
-      border-color: #27ae60; }
-  .game__cell.game__cell--selected .game__cell__content {
-    cursor: default;
-    border-color: #27ae60 !important; }
-  .game__cell.game__cell--placable .game__cell__content {
-    cursor: pointer;
-    border-color: #2980b9;
-    background-color: #2980b9; }
-
+  flex: 1;
+}
+.game__cell.game__cell--available {
+  cursor: pointer;
+}
+.game__cell.game__cell--available .game__cell__content {
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  left: 5%;
+  right: 5%;
+  border-radius: 5%;
+  transition: border-color, background-color ease-in-out 0.25s;
+  border: 2px solid #2c3e50;
+}
+.game__cell.game__cell--available .game__cell__content:hover {
+  border-color: #27ae60;
+}
+.game__cell.game__cell--selectable .game__cell__content {
+  cursor: pointer;
+}
+.game__cell.game__cell--selectable .game__cell__content:hover {
+  border-color: #27ae60;
+}
+.game__cell.game__cell--selected .game__cell__content {
+  cursor: default;
+  border-color: #27ae60 !important;
+}
+.game__cell.game__cell--placable .game__cell__content {
+  cursor: pointer;
+  border-color: #2980b9;
+  background-color: #2980b9;
+}
 @keyframes wiggle {
   0% {
-    transform: rotate(8deg); }
+    transform: rotate(8deg);
+  }
   50% {
-    transform: rotate(-8deg); }
+    transform: rotate(-8deg);
+  }
   100% {
-    transform: rotate(8deg); } }
-  .game__cell.game__cell--last-placed .cell__piece {
-    animation: wiggle 0.5s infinite; }
-  .game__cell .game__cell__content {
-    display: flex;
-    flex-flow: row wrap; }
-  .game__cell .cell__piece {
-    flex: 1;
-    font-size: 150%; }
-    .game__cell .cell__piece > * {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%); }
-    .game__cell .cell__piece .cell__piece-count {
-      color: white;
-      font-weight: bold;
-      font-size: 33%; }
+    transform: rotate(8deg);
+  }
+}
+.game__cell.game__cell--last-placed .cell__piece {
+  animation: wiggle 0.5s infinite;
+}
+.game__cell .game__cell__content {
+  display: flex;
+  flex-flow: row wrap;
+}
+.game__cell .cell__piece {
+  flex: 1;
+  font-size: 150%;
+}
+.game__cell .cell__piece > * {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.game__cell .cell__piece .cell__piece-count {
+  color: white;
+  font-weight: bold;
+  font-size: 33%;
+}
 
 .piece {
   position: relative;
   font-size: 1.1em;
   text-align: center;
   padding: 0.25em 0;
-  transition: border-color,background-color ease-in-out 0.25s;
+  transition: border-color, background-color ease-in-out 0.25s;
   border: 2px solid #2c3e50;
-  border-radius: 0.25em; }
-  .piece.piece--placable {
-    cursor: pointer;
-    border-color: #2980b9; }
-    .piece.piece--placable:hover {
-      background-color: #2980b9; }
-  .piece.piece--selected {
-    border-color: #2980b9 !important;
-    background-color: #2980b9 !important; }
-  .piece.piece--finished {
-    border-color: #27ae60 !important;
-    cursor: default !important; }
+  border-radius: 0.25em;
+}
+.piece.piece--placable {
+  cursor: pointer;
+  border-color: #2980b9;
+}
+.piece.piece--placable:hover {
+  background-color: #2980b9;
+}
+.piece.piece--selected {
+  border-color: #2980b9 !important;
+  background-color: #2980b9 !important;
+}
+.piece.piece--finished {
+  border-color: #27ae60 !important;
+  cursor: default !important;
+}

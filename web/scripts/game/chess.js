@@ -469,4 +469,3 @@ app.makeGameObject = function (connection, app, viewModel) {
     };
     return gameObject;
 };
-//# sourceMappingURL=chess.js.map

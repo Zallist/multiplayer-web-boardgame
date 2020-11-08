@@ -1,0 +1,12 @@
+{
+    "compile-hero.disable-compile-files-on-did-save-code": false,
+    "compile-hero.generate-minified-css": true,
+    "compile-hero.jade-output-directory": "./",
+    "compile-hero.javascript-output-directory": "./",
+    "compile-hero.less-output-directory": "./",
+    "compile-hero.pug-output-directory": "./",
+    "compile-hero.sass-output-directory": "./",
+    "compile-hero.scss-output-directory": "./",
+    "compile-hero.typescript-output-directory": "./",
+    "compile-hero.typescriptx-output-directory": "./"
+}

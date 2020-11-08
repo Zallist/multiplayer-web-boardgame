@@ -84,8 +84,7 @@ app.main = (function () {
                 }, connection.getApiConfig())
                     .then(function (resp) {
                     connected();
-                })
-                    .catch(throwError);
+                })["catch"](throwError);
             }
             function startHub(info) {
                 viewModel.connectionStatus = 'Connecting...';
@@ -105,14 +104,12 @@ app.main = (function () {
                     viewModel.helpers.addMessage(null, "Game disconnected.", 'red');
                 });
                 connection.hub.start()
-                    .then(joinRoom)
-                    .catch(throwError);
+                    .then(joinRoom)["catch"](throwError);
             }
             function negotiate() {
                 viewModel.connectionStatus = 'Negotiating...';
                 axios.post(connection.serverUrl + '/api/negotiate?userid=' + encodeURIComponent(connection.getUserId()) + '&hubname=game', null, connection.getApiConfig())
-                    .then(function (resp) { startHub(resp.data); })
-                    .catch(throwError);
+                    .then(function (resp) { startHub(resp.data); })["catch"](throwError);
             }
             viewModel.isConnected = false;
             viewModel.isConnecting = true;
@@ -153,8 +150,7 @@ app.main = (function () {
                 connection.hub.invoke('AddToRoom', viewModel.roomId)
                     .then(function (resp) {
                     connected();
-                })
-                    .catch(throwError);
+                })["catch"](throwError);
             }
             function startHub() {
                 viewModel.connectionStatus = 'Connecting...';
@@ -175,8 +171,7 @@ app.main = (function () {
                 connection.hub.start()
                     .then(function () {
                     viewModel.connectionStatus = 'Waiting for id...';
-                })
-                    .catch(throwError);
+                })["catch"](throwError);
             }
             viewModel.isConnected = false;
             viewModel.isConnecting = true;
@@ -230,16 +225,14 @@ app.main = (function () {
                 roomId: viewModel.roomId,
                 data: data
             }, connection.getApiConfig())
-                .then(function (resp) { })
-                .catch(function (error) { return console.error('An error occurred in network request'); });
+                .then(function (resp) { })["catch"](function (error) { return console.error('An error occurred in network request'); });
         },
         sendUsingSignalR: function (data) {
             return connection.hub.invoke('SendMessage', viewModel.roomId, {
                 from: connection.getUserId(),
                 data: data
             })
-                .then(function (resp) { })
-                .catch(function (error) { return console.error('An error occurred in network request'); });
+                .then(function (resp) { })["catch"](function (error) { return console.error('An error occurred in network request'); });
         },
         send: function (data, toSelf) {
             if (toSelf) {
@@ -258,7 +251,7 @@ app.main = (function () {
                     // Don't need to handle our own calls since we do that magically
                     connection.handleData(dataWrap.from, dataWrap.data);
                 }
-            },
+            }
         },
         handleData: function (fromPlayerId, data) {
             var fromPlayer, playerIndex;
@@ -862,4 +855,3 @@ app.main = (function () {
     return page;
 })();
 app.helpers.pageReady(app.main.initialise);
-//# sourceMappingURL=main.js.map
