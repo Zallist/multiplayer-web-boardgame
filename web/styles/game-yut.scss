@@ -1,5 +1,4 @@
 ﻿#game-panel {
-
 }
 
 .yut__wrap {
@@ -49,7 +48,6 @@
     flex-direction: column;
     flex-flow: column nowrap;
     align-items: stretch;
-
     background-repeat: no-repeat;
     background-image: url('images/game/yut/yut-game-directions.svg');
     background-size: 100% 100%;
@@ -71,20 +69,110 @@
     &.game__cell--available {
         cursor: pointer;
 
-        &:after {
-            content: ' ';
+        .game__cell__content {
             position: absolute;
             top: 5%;
             bottom: 5%;
             left: 5%;
             right: 5%;
             border-radius: 5%;
-            transition: border-color ease-in-out 0.25s;
+            transition: border-color,background-color ease-in-out 0.25s;
             border: 2px solid #2c3e50;
-        }
 
-        &:hover:after {
+            &:hover {
+                border-color: #27ae60;
+            }
+        }
+    }
+
+    &.game__cell--selectable .game__cell__content {
+        cursor: pointer;
+
+        &:hover {
             border-color: #27ae60;
         }
+    }
+
+    &.game__cell--selected .game__cell__content {
+        cursor: default;
+        border-color: #27ae60 !important;
+    }
+
+    &.game__cell--placable .game__cell__content {
+        cursor: pointer;
+        border-color: #2980b9;
+        background-color: #2980b9;
+    }
+
+    &.game__cell--last-placed {
+        @keyframes wiggle {
+            0% {
+                transform: rotate(8deg);
+            }
+
+            50% {
+                transform: rotate(-8deg);
+            }
+
+            100% {
+                transform: rotate(8deg);
+            }
+        }
+
+        .cell__piece {
+            animation: wiggle 0.5s infinite;
+        }
+    }
+
+    .game__cell__content {
+        display: flex;
+        flex-flow: row wrap;
+    }
+
+    .cell__piece {
+        flex: 1;
+        font-size: 150%;
+
+        & > * {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%,-50%);
+        }
+
+        .cell__piece-count {
+            color: white;
+            font-weight: bold;
+            font-size: 33%;
+        }
+    }
+}
+
+.piece {
+    position: relative;
+    font-size: 1.1em;
+    text-align: center;
+    padding: 0.25em 0;
+    transition: border-color,background-color ease-in-out 0.25s;
+    border: 2px solid #2c3e50;
+    border-radius: 0.25em;
+
+    &.piece--placable {
+        cursor: pointer;
+        border-color: #2980b9;
+
+        &:hover {
+            background-color: #2980b9;
+        }
+    }
+
+    &.piece--selected {
+        border-color: #2980b9 !important;
+        background-color: #2980b9 !important;
+    }
+
+    &.piece--finished {
+        border-color: #27ae60 !important;
+        cursor: default !important;
     }
 }

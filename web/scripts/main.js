@@ -477,8 +477,7 @@ app.main = (function () {
                 if (!viewModel.player.name) {
                     document.getElementById('name-form').reportValidity();
                 }
-                else {
-                    app.game.hooks.setup();
+                else if (app.game.hooks.setup()) {
                     viewModel.helpers.recordPlayer();
                     viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
