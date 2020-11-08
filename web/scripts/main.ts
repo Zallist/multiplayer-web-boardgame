@@ -3,6 +3,7 @@ declare var _: any;
 declare var chance: any;
 declare var axios: any;
 declare var signalR: any;
+declare var randomColor: any;
 
 var app = app || {};
 
