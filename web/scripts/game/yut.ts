@@ -3,7 +3,7 @@
 declare var Howl: any;
 
 app.makeGameObject = function (connection, app, viewModel) {
-    const gameObject:any = {};
+    const gameObject: any = {};
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
@@ -506,7 +506,7 @@ app.makeGameObject = function (connection, app, viewModel) {
     // initialise
     gameObject.assets = (function () {
         let assets;
-        
+
         assets = {};
 
         assets.sounds = {
@@ -606,19 +606,13 @@ app.makeGameObject = function (connection, app, viewModel) {
         return result;
     };
 
-    gameObject.allCells = Vue.computed(function () {
-        if (viewModel.gameState && viewModel.gameState.game) {
-            return _.flatten(viewModel.gameState.game.boardCells);
-        }
-        else {
-            return [];
-        }
-    });
+    gameObject.allCells = Vue.computed(() => _.flatten(viewModel.gameState && viewModel.gameState.game ? viewModel.gameState.game.boardCells : []));
+
     gameObject.availablePlacements = Vue.computed(function () {
         let placements,
             cellStart,
             travelled;
-        
+
         placements = {
             cells: [],
             finish: false
@@ -671,9 +665,8 @@ app.makeGameObject = function (connection, app, viewModel) {
         return players;
     });
 
-    gameObject.canPlaceOnCell = function (x, y) {
-        return _.some(gameObject.availablePlacements.value.cells, { x: x, y: y });
-    };
+    gameObject.canPlaceOnCell = (x, y) => _.some(gameObject.availablePlacements.value.cells, { x: x, y: y });
+
     gameObject.piecesOnCell = function (x, y) {
         let map = gameObject.piecesByCellMap.value,
             key = 'x' + x + '~~y' + y;

@@ -439,14 +439,7 @@ app.makeGameObject = function (connection, app, viewModel) {
         travel(cell, distance, true);
         return result;
     };
-    gameObject.allCells = Vue.computed(function () {
-        if (viewModel.gameState && viewModel.gameState.game) {
-            return _.flatten(viewModel.gameState.game.boardCells);
-        }
-        else {
-            return [];
-        }
-    });
+    gameObject.allCells = Vue.computed(function () { return _.flatten(viewModel.gameState && viewModel.gameState.game ? viewModel.gameState.game.boardCells : []); });
     gameObject.availablePlacements = Vue.computed(function () {
         var placements, cellStart, travelled;
         placements = {
@@ -489,9 +482,7 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
         return players;
     });
-    gameObject.canPlaceOnCell = function (x, y) {
-        return _.some(gameObject.availablePlacements.value.cells, { x: x, y: y });
-    };
+    gameObject.canPlaceOnCell = function (x, y) { return _.some(gameObject.availablePlacements.value.cells, { x: x, y: y }); };
     gameObject.piecesOnCell = function (x, y) {
         var map = gameObject.piecesByCellMap.value, key = 'x' + x + '~~y' + y;
         if (map[key]) {

@@ -14,6 +14,20 @@ app.main = (function () {
             getUrlParameter: function (key, useHash) {
                 let urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
                 return urlParams.has(key) ? urlParams.get(key) : null;
+            },
+            getCurrentUrlWithArguments: (args) => {
+                let url, queryString;
+
+                url = window.location.origin + window.location.pathname;
+                queryString = new URLSearchParams(window.location.search);
+
+                _.forEach(args, (value, key) => {
+                    queryString.set(key, value);
+                });
+
+                url += '?' + queryString.toString();
+
+                return url;
             }
         }
     };
@@ -400,6 +414,13 @@ app.main = (function () {
                     break;
                 case 'game-state':
                     if (viewModel.isHost) break;
+
+                    if (data.gameState.gameName !== app.gameName) {
+                        alert('Incorrect game, redirecting to ' + data.gameState.gameName);
+                        window.location.replace(page.helpers.getCurrentUrlWithArguments({ game: data.gameState.gameName }));
+                        return;
+                    }
+
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
                     viewModel.player = viewModel.players[viewModel.player.id];
 
@@ -529,17 +550,8 @@ app.main = (function () {
                 localStorage.setItem(app.gameName + '-player-config', JSON.stringify(viewModel.player));
             };
 
-            helpers.getGameLink = function () {
-                let url, queryString;
+            helpers.getGameLink = () => page.helpers.getCurrentUrlWithArguments({ roomId: viewModel.roomId });
 
-                url = window.location.origin + window.location.pathname;
-                queryString = new URLSearchParams(window.location.search);
-                queryString.set('roomId', viewModel.roomId);
-
-                url += '?' + queryString.toString();
-
-                return url;
-            };
             helpers.copyGameLink = function () {
                 app.helpers.copyTextToClipboard(helpers.getGameLink());
                 viewModel.copyGameLinkText = 'Copied!';
@@ -941,6 +953,7 @@ app.main = (function () {
 
         // == game state ==
         viewModel.gameState = {
+            gameName: app.gameName,
             started: false,
             turnOrder: [],
             currentTurn: null,
