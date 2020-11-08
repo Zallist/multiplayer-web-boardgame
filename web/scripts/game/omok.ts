@@ -1,14 +1,14 @@
-﻿declare var Howl: any;
+﻿var app = app || {};
 
-var makeGameObject = function (connection, app, viewModel) {
-    var gameObject;
-    
-    gameObject = {};
+declare var Howl: any;
+
+app.makeGameObject = function (connection, app, viewModel) {
+    const gameObject: any = {};
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
-            data: function () { return viewModel; },
+            data: () => viewModel,
             template: `
 <div class="game__board">
     <div class="game__row" v-for="row in $root.gameState.game.boardCells">
@@ -30,7 +30,7 @@ var makeGameObject = function (connection, app, viewModel) {
 `
         },
         'config-panel': {
-            data: function () { return viewModel; },
+            data: () => viewModel,
             template: `
 <fieldset :disabled="$root.isConnecting || $root.isConnected">
     <div class="mb-3" v-show="!$root.isConnected">
@@ -206,7 +206,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         setup: function () {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configuration,
                 x, y,
@@ -265,7 +265,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.events = {
         cellClicked: function (cell) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 countInDirection = [],
@@ -338,7 +338,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         setPreset: function (presetName) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configuration;
 
@@ -369,7 +369,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.helpers = {
         isEasyWin: function (cell, playerId) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 easyWinCount = 0;
@@ -377,7 +377,7 @@ var makeGameObject = function (connection, app, viewModel) {
             cell.ownedBy = playerId;
 
             function checkDir(xDir, yDir) {
-                var count;
+                let count;
 
                 count = gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
 
@@ -392,7 +392,7 @@ var makeGameObject = function (connection, app, viewModel) {
                 return false;
             }
             function checkSkipDir(xDir, yDir) {
-                var count;
+                let count;
 
                 count = gameObject.helpers.getCellsOwnedInARow(cell.x, cell.y, xDir, yDir);
 
@@ -435,7 +435,7 @@ var makeGameObject = function (connection, app, viewModel) {
         getCellsOwnedInARow: function (xStart, yStart, xDelta, yDelta, playerId) {
             // xyDelta = which direction to go to find start
 
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 cell = null, firstOwnedCell = null,
@@ -451,7 +451,7 @@ var makeGameObject = function (connection, app, viewModel) {
                 xStart >= config.gridSize || yStart >= config.gridSize) return ret;
 
             function travel(x, y, xDelta, yDelta) {
-                var cell = null;
+                let cell = null;
 
                 x += xDelta;
                 y += yDelta;
@@ -503,7 +503,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         checkForTie: function () {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 y, x,
                 row, cell;
@@ -531,7 +531,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     // initialise
     gameObject.assets = (function () {
-        var assets;
+        let assets;
         
         assets = {};
 

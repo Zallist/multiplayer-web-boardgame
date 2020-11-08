@@ -1,14 +1,14 @@
-﻿declare var Howl: any;
+﻿var app = app || {};
 
-var makeGameObject = function (connection, app, viewModel) {
-    var gameObject;
-    
-    gameObject = {};
+declare var Howl: any;
+
+app.makeGameObject = function (connection, app, viewModel) {
+    const gameObject:any = {};
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
-            data: function () { return viewModel; },
+            data: () => viewModel,
             template: `
 <div class="yut__wrap">
     <div class="game__board">
@@ -61,7 +61,7 @@ var makeGameObject = function (connection, app, viewModel) {
 `
         },
         'config-panel': {
-            data: function () { return viewModel; },
+            data: () => viewModel,
             template: `
 <fieldset :disabled="$root.isConnecting || $root.isConnected">
     <div class="mb-3" v-show="!$root.isConnected">
@@ -89,7 +89,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
-            var pieces;
+            let pieces;
 
             switch (_.trim(data.type).toLowerCase()) {
                 case 'roll':
@@ -194,7 +194,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         setup: function () {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configuration,
                 x, y, i, j,
@@ -335,7 +335,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.events = {
         finishClicked: function () {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 nextPlayerId;
@@ -373,7 +373,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         cellClicked: function (cell) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 nextPlayerId;
@@ -418,7 +418,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         pieceClicked: function (piece) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart;
 
@@ -449,7 +449,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         rollClicked: function () {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 rolled;
@@ -479,7 +479,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         setPreset: function (presetName) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configuration;
 
@@ -505,7 +505,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     // initialise
     gameObject.assets = (function () {
-        var assets;
+        let assets;
         
         assets = {};
 
@@ -575,7 +575,7 @@ var makeGameObject = function (connection, app, viewModel) {
     gameObject.selectedPiece = null;
 
     gameObject.getCellsAfterTravelling = function (cell, distance) {
-        var result,
+        let result,
             travel,
             i;
 
@@ -585,7 +585,7 @@ var makeGameObject = function (connection, app, viewModel) {
         };
 
         travel = function (cell, distance, isFirst) {
-            var i, nextCell;
+            let i, nextCell;
 
             if (distance === 0) {
                 result.cells.push(cell);
@@ -615,7 +615,7 @@ var makeGameObject = function (connection, app, viewModel) {
         }
     });
     gameObject.availablePlacements = Vue.computed(function () {
-        var placements,
+        let placements,
             cellStart,
             travelled;
         
@@ -641,7 +641,7 @@ var makeGameObject = function (connection, app, viewModel) {
         return placements;
     });
     gameObject.piecesByCellMap = Vue.computed(function () {
-        var map = {};
+        let map = {};
 
         if (viewModel.gameState && viewModel.gameState.game) {
             map = _.groupBy(viewModel.gameState.game.playerPieces, function (piece) {
@@ -652,7 +652,7 @@ var makeGameObject = function (connection, app, viewModel) {
         return map;
     });
     gameObject.playerPiecesGrouped = Vue.computed(function () {
-        var piecesGrouped,
+        let piecesGrouped,
             playerId,
             players = [];
 
@@ -675,7 +675,7 @@ var makeGameObject = function (connection, app, viewModel) {
         return _.some(gameObject.availablePlacements.value.cells, { x: x, y: y });
     };
     gameObject.piecesOnCell = function (x, y) {
-        var map = gameObject.piecesByCellMap.value,
+        let map = gameObject.piecesByCellMap.value,
             key = 'x' + x + '~~y' + y;
 
         if (map[key]) {

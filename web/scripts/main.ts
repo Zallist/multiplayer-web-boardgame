@@ -7,21 +7,18 @@ declare var signalR: any;
 var app = app || {};
 
 app.main = (function () {
-    var page,
-        viewModel,
-        connection,
-        viewModelFunctions;
+    let viewModel;
 
-    page = {
-        helpers: {}
+    const page: any = {
+        helpers: {
+            getUrlParameter: function (key, useHash) {
+                let urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
+                return urlParams.has(key) ? urlParams.get(key) : null;
+            }
+        }
     };
 
-    page.helpers.getUrlParameter = function (key, useHash) {
-        var urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
-        return urlParams.has(key) ? urlParams.get(key) : null;
-    };
-
-    connection = {
+    const connection = {
         // Populated by /scripts/server.url.js
         // Can also be populated by ?serverUrl and &serverType
         serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || 'http://localhost:5000/',
@@ -59,7 +56,7 @@ app.main = (function () {
 
         connectUsingApi: function (onConnected) {
             function throwError(error) {
-                var parsed;
+                let parsed;
 
                 parsed = {};
                 _.merge(parsed, error);
@@ -86,7 +83,7 @@ app.main = (function () {
                 connection.send({
                     type: 'player-joined',
                     player: viewModel.player
-                });
+                }, false);
 
                 if (_.isFunction(onConnected)) {
                     onConnected();
@@ -147,7 +144,7 @@ app.main = (function () {
         },
         connectUsingSignalR: function (onConnected) {
             function throwError(error) {
-                var parsed;
+                let parsed;
 
                 parsed = {};
                 _.merge(parsed, error);
@@ -175,7 +172,7 @@ app.main = (function () {
                 connection.send({
                     type: 'player-joined',
                     player: viewModel.player
-                });
+                }, false);
 
                 if (_.isFunction(onConnected)) {
                     onConnected();
@@ -229,7 +226,7 @@ app.main = (function () {
         connect: function () {
             function onConnected() {
                 setInterval(function () {
-                    var hostPlayer, currentPlayer;
+                    let hostPlayer, currentPlayer;
 
                     if (viewModel.gameState.started) {
                         if (viewModel.isHost) {
@@ -281,24 +278,16 @@ app.main = (function () {
                 roomId: viewModel.roomId,
                 data: data
             }, connection.getApiConfig())
-                .then(function (resp) {
-
-                })
-                .catch(function (error) {
-                    console.error('An error occurred in network request');
-                });
+                .then((resp) => { })
+                .catch((error) => console.error('An error occurred in network request'));
         },
         sendUsingSignalR: function (data) {
             return connection.hub.invoke('SendMessage', viewModel.roomId, {
                 from: connection.getUserId(),
                 data: data
             })
-                .then(function (resp) {
-
-                })
-                .catch(function (error) {
-                    console.error('An error occurred in network request');
-                });
+                .then((resp) => { })
+                .catch((error) => console.error('An error occurred in network request'));
         },
         send: function (data, toSelf) {
             if (toSelf) {
@@ -323,7 +312,7 @@ app.main = (function () {
         },
 
         handleData: function (fromPlayerId, data) {
-            var fromPlayer, playerIndex;
+            let fromPlayer, playerIndex;
 
             fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
@@ -348,12 +337,12 @@ app.main = (function () {
                         connection.send({
                             type: 'players',
                             players: viewModel.players
-                        });
+                        }, false);
                         connection.send({
                             type: 'game-state',
                             players: viewModel.players,
                             gameState: viewModel.gameState
-                        });
+                        }, false);
                     }
                     break;
                 case 'player-disconnected':
@@ -426,7 +415,7 @@ app.main = (function () {
                     break;
                 case 'game-started':
                     _.each(data.playerIds, function (id) {
-                        var player = viewModel.players[id];
+                        let player = viewModel.players[id];
 
                         if (player) {
                             player.isPlaying = true;
@@ -497,14 +486,12 @@ app.main = (function () {
         }
     };
 
-    viewModelFunctions = {
+    const viewModelFunctions = {
         getHelpers: function (viewModel) {
-            var helpers;
-
-            helpers = {};
+            const helpers: any = {};
 
             helpers.addMessage = function (playerId, message, color) {
-                var doScroll = false,
+                let doScroll = false,
                     chatbox = document.getElementById('chat-messages');
 
                 if (chatbox) {
@@ -526,16 +513,15 @@ app.main = (function () {
             };
 
             helpers.submitMyMessage = function () {
-                var message = _.trim(viewModel.myMessage);
+                let message = _.trim(viewModel.myMessage);
 
                 viewModel.myMessage = '';
 
                 if (message.length > 0) {
-                    helpers.addMessage(viewModel.player.id, message);
                     connection.send({
                         type: 'message',
                         message: message
-                    });
+                    }, true);
                 }
             };
 
@@ -544,7 +530,7 @@ app.main = (function () {
             };
 
             helpers.getGameLink = function () {
-                var url, queryString;
+                let url, queryString;
 
                 url = window.location.origin + window.location.pathname;
                 queryString = new URLSearchParams(window.location.search);
@@ -596,11 +582,11 @@ app.main = (function () {
                 }
             };
 
-            var unknownPlayer = null,
+            let unknownPlayer = null,
                 systemPlayer = null;
 
             helpers.getPlayer = function (playerId, returnNullIfNotFound) {
-                var player = null;
+                let player = null;
 
                 if (!playerId) {
                     if (!systemPlayer) {
@@ -640,7 +626,7 @@ app.main = (function () {
             };
 
             helpers.getNextPlayer = function () {
-                var playerIndex;
+                let playerIndex;
 
                 playerIndex = _.indexOf(viewModel.gameState.turnOrder, viewModel.gameState.currentTurn);
                 playerIndex += 1;
@@ -652,7 +638,7 @@ app.main = (function () {
                 return viewModel.gameState.turnOrder[playerIndex];
             };
 
-            var currentTurnStarted = null,
+            let currentTurnStarted = null,
                 currentTurnTracker = null;
 
             helpers.timeOnCurrentTurn = function () {
@@ -684,7 +670,7 @@ app.main = (function () {
                 }
 
                 currentTurnTracker = setInterval(function () {
-                    var timeSpent = (Date.now() - currentTurnStarted) / 1000.0,
+                    let timeSpent = (Date.now() - currentTurnStarted) / 1000.0,
                         timeRemaining = viewModel.gameState.turnTime - timeSpent;
 
                     if (timeRemaining < 0) {
@@ -707,7 +693,7 @@ app.main = (function () {
             };
 
             helpers.doStartTurn = function () {
-                var currentPlayer = helpers.getPlayer(viewModel.gameState.currentTurn);
+                let currentPlayer = helpers.getPlayer(viewModel.gameState.currentTurn);
 
                 if (currentPlayer.id) {
                     helpers.addMessage(null, "It's " + currentPlayer.name + "'" + (_.endsWith(currentPlayer.name, 's') ? "" : "s") + " turn", currentPlayer.metadata.color);
@@ -748,7 +734,7 @@ app.main = (function () {
             };
 
             helpers.calculateSizes = function () {
-                var gamePanel;
+                let gamePanel;
 
                 gamePanel = document.getElementById('game-panel');
 
@@ -770,9 +756,7 @@ app.main = (function () {
         },
 
         getMakers: function (viewModel) {
-            var makers;
-
-            makers = {};
+            const makers: any = {};
 
             makers.makePlayer = function (player) {
                 player = _.merge({
@@ -815,9 +799,7 @@ app.main = (function () {
         },
 
         getEvents: function (viewModel) {
-            var events;
-
-            events = {};
+            const events: any = {};
 
             events.toggleReady = function () {
                 viewModel.player.isReady = !viewModel.player.isReady;
@@ -828,7 +810,7 @@ app.main = (function () {
             };
 
             events.startGame = function () {
-                var playersPlaying, playingIds;
+                let playersPlaying, playingIds;
 
                 viewModel.player.isReady = true;
 
@@ -877,13 +859,11 @@ app.main = (function () {
             return events;
         },
 
-        getComputed: function () {
-            var computed;
-
-            computed = {};
+        getComputed: function (viewModel) {
+            const computed: any = {};
 
             computed.anyReady = Vue.computed(function () {
-                var players;
+                let players;
 
                 players = _.reject(viewModel.players, { id: viewModel.player.id });
                 players = _.reject(players, 'isDisconnected');
@@ -893,12 +873,12 @@ app.main = (function () {
             });
 
             computed.playersSortedByImportance = Vue.computed(function () {
-                var players;
+                let players;
 
                 players = _.reject(viewModel.players, 'isDisconnected');
                 players = _.sortBy(players, [
                     function (player) {
-                        var index;
+                        let index;
 
                         index = viewModel.gameState.turnOrder.indexOf(player.id);
 
@@ -930,15 +910,15 @@ app.main = (function () {
     };
 
     function makeVM() {
-        var viewModel = Vue.reactive({});
+        const viewModel = Vue.reactive({
+            computed: {},
+            events: {},
+            helpers: {},
+            makers: {}
+        });
 
-        viewModel.events = {};
         _.merge(viewModel.events, viewModelFunctions.getEvents(viewModel));
-
-        viewModel.helpers = {};
         _.merge(viewModel.helpers, viewModelFunctions.getHelpers(viewModel));
-
-        viewModel.makers = {};
         _.merge(viewModel.makers, viewModelFunctions.getMakers(viewModel));
 
         viewModel.roomId = page.helpers.getUrlParameter('roomId');
@@ -979,9 +959,6 @@ app.main = (function () {
         viewModel.gamePanelHeight = window.innerHeight;
         viewModel.gamePanelWidth = window.innerWidth;
 
-        viewModel.computed = {};
-        _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
-
         // Config stuff
         viewModel.availableColors = randomColor({ luminosity: 'bright', count: 12 });
         viewModel.availableAvatarCssClasses = [
@@ -1020,6 +997,8 @@ app.main = (function () {
             viewModel.player.metadata.avatar.value = _.sample(viewModel.availableAvatarCssClasses).cssClass;
         }
 
+        _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
+
         return viewModel;
     }
 
@@ -1027,17 +1006,17 @@ app.main = (function () {
     page.viewModel = viewModel;
 
     page.initialise = function () {
-        app.game = makeGameObject(connection, app, page.viewModel);
+        app.game = app.makeGameObject(connection, app, page.viewModel);
         page.viewModel.gameState.game = app.game.hooks.makeGame();
         page.viewModel.game = app.game;
 
         if (localStorage.getItem(app.gameName + '-player-config')) {
             try {
-                var playerConfig = JSON.parse(localStorage.getItem(app.gameName + '-player-config'));
+                let playerConfig = JSON.parse(localStorage.getItem(app.gameName + '-player-config'));
 
                 viewModel.player.name = playerConfig.name;
 
-                _.mergeWith(viewModel.player.metadata, playerConfig.metadata, function (objValue, srcValue, key) {
+                _.mergeWith(viewModel.player.metadata, playerConfig.metadata, (objValue, srcValue, key) => {
                     if (objValue === viewModel.player.metadata.gameStats && key === 'gameStats' ||
                         objValue === viewModel.player.metadata.color && key === 'color') {
                         return objValue;
@@ -1048,8 +1027,12 @@ app.main = (function () {
         }
 
         page.pageVue = Vue.createApp({
-            data: function () { return page.viewModel; },
-            directives: customVueDirectives
+            data: () => page.viewModel,
+            directives: {
+                focus: {
+                    mounted: (el) => el.focus()
+                }
+            }
         });
 
         page.pageVue.component('player-avatar', {

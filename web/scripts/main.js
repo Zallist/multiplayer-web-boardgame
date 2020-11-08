@@ -1,14 +1,15 @@
 var app = app || {};
 app.main = (function () {
-    var page, viewModel, connection, viewModelFunctions;
-    page = {
-        helpers: {}
+    var viewModel;
+    var page = {
+        helpers: {
+            getUrlParameter: function (key, useHash) {
+                var urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
+                return urlParams.has(key) ? urlParams.get(key) : null;
+            }
+        }
     };
-    page.helpers.getUrlParameter = function (key, useHash) {
-        var urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
-        return urlParams.has(key) ? urlParams.get(key) : null;
-    };
-    connection = {
+    var connection = {
         // Populated by /scripts/server.url.js
         // Can also be populated by ?serverUrl and &serverType
         serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || 'http://localhost:5000/',
@@ -60,7 +61,7 @@ app.main = (function () {
                 connection.send({
                     type: 'player-joined',
                     player: viewModel.player
-                });
+                }, false);
                 if (_.isFunction(onConnected)) {
                     onConnected();
                 }
@@ -132,7 +133,7 @@ app.main = (function () {
                 connection.send({
                     type: 'player-joined',
                     player: viewModel.player
-                });
+                }, false);
                 if (_.isFunction(onConnected)) {
                     onConnected();
                 }
@@ -219,22 +220,16 @@ app.main = (function () {
                 roomId: viewModel.roomId,
                 data: data
             }, connection.getApiConfig())
-                .then(function (resp) {
-            })
-                .catch(function (error) {
-                console.error('An error occurred in network request');
-            });
+                .then(function (resp) { })
+                .catch(function (error) { return console.error('An error occurred in network request'); });
         },
         sendUsingSignalR: function (data) {
             return connection.hub.invoke('SendMessage', viewModel.roomId, {
                 from: connection.getUserId(),
                 data: data
             })
-                .then(function (resp) {
-            })
-                .catch(function (error) {
-                console.error('An error occurred in network request');
-            });
+                .then(function (resp) { })
+                .catch(function (error) { return console.error('An error occurred in network request'); });
         },
         send: function (data, toSelf) {
             if (toSelf) {
@@ -275,12 +270,12 @@ app.main = (function () {
                         connection.send({
                             type: 'players',
                             players: viewModel.players
-                        });
+                        }, false);
                         connection.send({
                             type: 'game-state',
                             players: viewModel.players,
                             gameState: viewModel.gameState
-                        });
+                        }, false);
                     }
                     break;
                 case 'player-disconnected':
@@ -408,10 +403,9 @@ app.main = (function () {
             }
         }
     };
-    viewModelFunctions = {
+    var viewModelFunctions = {
         getHelpers: function (viewModel) {
-            var helpers;
-            helpers = {};
+            var helpers = {};
             helpers.addMessage = function (playerId, message, color) {
                 var doScroll = false, chatbox = document.getElementById('chat-messages');
                 if (chatbox) {
@@ -433,11 +427,10 @@ app.main = (function () {
                 var message = _.trim(viewModel.myMessage);
                 viewModel.myMessage = '';
                 if (message.length > 0) {
-                    helpers.addMessage(viewModel.player.id, message);
                     connection.send({
                         type: 'message',
                         message: message
-                    });
+                    }, true);
                 }
             };
             helpers.recordPlayer = function () {
@@ -615,8 +608,7 @@ app.main = (function () {
             return helpers;
         },
         getMakers: function (viewModel) {
-            var makers;
-            makers = {};
+            var makers = {};
             makers.makePlayer = function (player) {
                 player = _.merge({
                     id: null,
@@ -654,8 +646,7 @@ app.main = (function () {
             return makers;
         },
         getEvents: function (viewModel) {
-            var events;
-            events = {};
+            var events = {};
             events.toggleReady = function () {
                 viewModel.player.isReady = !viewModel.player.isReady;
                 connection.send({
@@ -704,9 +695,8 @@ app.main = (function () {
             };
             return events;
         },
-        getComputed: function () {
-            var computed;
-            computed = {};
+        getComputed: function (viewModel) {
+            var computed = {};
             computed.anyReady = Vue.computed(function () {
                 var players;
                 players = _.reject(viewModel.players, { id: viewModel.player.id });
@@ -743,12 +733,14 @@ app.main = (function () {
         }
     };
     function makeVM() {
-        var viewModel = Vue.reactive({});
-        viewModel.events = {};
+        var viewModel = Vue.reactive({
+            computed: {},
+            events: {},
+            helpers: {},
+            makers: {}
+        });
         _.merge(viewModel.events, viewModelFunctions.getEvents(viewModel));
-        viewModel.helpers = {};
         _.merge(viewModel.helpers, viewModelFunctions.getHelpers(viewModel));
-        viewModel.makers = {};
         _.merge(viewModel.makers, viewModelFunctions.getMakers(viewModel));
         viewModel.roomId = page.helpers.getUrlParameter('roomId');
         viewModel.isHost = false;
@@ -779,8 +771,6 @@ app.main = (function () {
         // Window state stuff
         viewModel.gamePanelHeight = window.innerHeight;
         viewModel.gamePanelWidth = window.innerWidth;
-        viewModel.computed = {};
-        _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
         // Config stuff
         viewModel.availableColors = randomColor({ luminosity: 'bright', count: 12 });
         viewModel.availableAvatarCssClasses = [
@@ -816,12 +806,13 @@ app.main = (function () {
             viewModel.player.metadata.avatar.type = 'css-class';
             viewModel.player.metadata.avatar.value = _.sample(viewModel.availableAvatarCssClasses).cssClass;
         }
+        _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
         return viewModel;
     }
     viewModel = makeVM();
     page.viewModel = viewModel;
     page.initialise = function () {
-        app.game = makeGameObject(connection, app, page.viewModel);
+        app.game = app.makeGameObject(connection, app, page.viewModel);
         page.viewModel.gameState.game = app.game.hooks.makeGame();
         page.viewModel.game = app.game;
         if (localStorage.getItem(app.gameName + '-player-config')) {
@@ -839,7 +830,11 @@ app.main = (function () {
         }
         page.pageVue = Vue.createApp({
             data: function () { return page.viewModel; },
-            directives: customVueDirectives
+            directives: {
+                focus: {
+                    mounted: function (el) { return el.focus(); }
+                }
+            }
         });
         page.pageVue.component('player-avatar', {
             props: ['player'],

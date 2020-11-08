@@ -1,7 +1,6 @@
 var app = app || {};
 app.helpers = (function () {
-    var helpers;
-    helpers = {};
+    var helpers = {};
     helpers.removeFromArray = function (array, item) {
         var index;
         index = array.indexOf(item);

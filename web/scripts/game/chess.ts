@@ -1,14 +1,14 @@
-﻿declare var Howl: any;
+﻿var app = app || {};
 
-var makeGameObject = function (connection, app, viewModel) {
-    var gameObject;
-    
-    gameObject = {};
+declare var Howl: any;
+
+app.makeGameObject = function (connection, app, viewModel) {
+    const gameObject: any = {};
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
-            data: function () { return viewModel; },
+            data: () => viewModel,
             template: `
 <div class="game__board" v-for="availableMoves in [$root.game.helpers.getPossibleMoves($root.game.selectedCell)]">
     <div class="game__row" v-for="row in $root.gameState.game.boardCells">
@@ -32,7 +32,7 @@ var makeGameObject = function (connection, app, viewModel) {
 `
         },
         'config-panel': {
-            data: function () { return viewModel; },
+            data: () => viewModel,
             template: `
 <fieldset :disabled="$root.isConnecting || $root.isConnected">
     <div class="mb-3" v-show="!$root.isConnected">
@@ -85,7 +85,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
-            var fromCell, toCell;
+            let fromCell, toCell;
 
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
@@ -191,7 +191,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         setup: function () {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configuration,
                 x, y,
@@ -240,7 +240,7 @@ var makeGameObject = function (connection, app, viewModel) {
                 case 0:
                 default:
                     setPieces = function () {
-                        var i, x;
+                        let i, x;
 
                         for (i = 0; i < Math.min(_.size(gameState.turnOrder), 2); i++) {
                             row = game.boardCells[i * (_.size(game.boardCells) - 1)]; // first or last row
@@ -299,7 +299,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.events = {
         cellClicked: function (cell) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 availableMoves, fromCell,
@@ -353,7 +353,7 @@ var makeGameObject = function (connection, app, viewModel) {
         },
 
         setPreset: function (presetName) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configuration;
 
@@ -381,14 +381,14 @@ var makeGameObject = function (connection, app, viewModel) {
 
     gameObject.helpers = {
         getPlayerFromIndex: function (playerIndex) {
-            var player = viewModel.gameState.turnOrder[playerIndex];
+            let player = viewModel.gameState.turnOrder[playerIndex];
             return player ? viewModel.helpers.getPlayer(player) : null;
         },
         getPlayerIndexFromId: function (playerId) {
             return viewModel.gameState.turnOrder.indexOf(playerId);
         },
         getPossibleMoves: function (cell, player, piece) {
-            var gameState = viewModel.gameState,
+            let gameState = viewModel.gameState,
                 game = gameState.game,
                 config = game.configurationAtStart,
                 moves, x, y;
@@ -416,7 +416,7 @@ var makeGameObject = function (connection, app, viewModel) {
                     y >= 0 && y < config.gridHeight;
             }
             function addCell(x, y) {
-                var cell;
+                let cell;
 
                 if (isCell(x, y)) {
                     cell = game.boardCells[y][x];
@@ -427,7 +427,7 @@ var makeGameObject = function (connection, app, viewModel) {
                 }
             }
             function addAllInLine(startX, startY, travelX, travelY) {
-                var cell;
+                let cell;
 
                 if (travelX === 0 && travelY === 0) {
                     return;
@@ -538,7 +538,7 @@ var makeGameObject = function (connection, app, viewModel) {
 
     // initialise
     gameObject.assets = (function () {
-        var assets;
+        let assets;
         
         assets = {};
 

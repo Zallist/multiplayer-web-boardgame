@@ -5,9 +5,7 @@ declare var _: any;
 var app = app || {};
 
 app.helpers = (function () {
-    var helpers;
-    
-    helpers = { };
+    const helpers: any = {};
 
     helpers.removeFromArray = function (array, item) {
         var index;
