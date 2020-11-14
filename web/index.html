@@ -21,12 +21,11 @@
         <div id="app-content" style="display: none;" v-show="true" class="h-100 overflow-auto">
             <div class="container h-100 overflow-auto" v-if="!$root.isConnected && !$root.isConnecting">
                 <div class="row">
-                    <div class="col-12 col-sm-6 col-md-8 order-1 order-sm-2">
+                    <div class="col-12 col-md-6">
                         <div class="logo__main"></div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4 order-2 order-sm-1">
-                        <form id="name-form" @submit.prevent>
-                            <div class="input-group input-group-sm mt-3">
+                        
+                        <form id="name-form" @submit.prevent class="mt-3">
+                            <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">Name</span>
                                 </div>
@@ -34,36 +33,41 @@
                             </div>
                         </form>
 
-                        <hr />
-
-                        <form @submit.prevent="$root.helpers.joinGame">
-                            <div class="input-group input-group-sm mt-3">
+                        <form @submit.prevent="$root.helpers.joinGame" class="mt-3">
+                            <div class="input-group input-group-sm">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">Room</span>
                                 </div>
                                 <input type="text" class="form-control" v-model="$root.roomId" required maxlength="40" />
                             </div>
 
-                            <button type="submit" class="btn btn-outline-primary btn-block mt-3 btn-lg">Join Room</button>
+                            <button type="submit" class="btn btn-primary btn-block mt-3 btn-lg">Join Room</button>
                         </form>
-
-                        <hr />
 
                         <form @submit.prevent="$root.helpers.createGame" class="mt-3">
-                            <div class="row">
-                                <div class="col">
-                                    <button type="submit" class="btn btn-block btn-outline-primary btn-lg">Create</button>
-                                </div>
-                                <div class="col">
-                                    <button type="button" class="btn btn-block btn-outline-secondary btn-lg" @click="$root.viewGameConfig = !$root.viewGameConfig">Config</button>
-                                </div>
-                            </div>
+                            <button type="submit" class="btn btn-block btn-primary btn-lg">Create Room</button>
                         </form>
 
+                        <div class="row mt-3">
+                            <div class="col">
+                                <button type="button" class="btn btn-lg d-block mx-auto btn-icon btn-config" @click="$root.events.viewConfig()">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-lg d-block mx-auto btn-icon btn-stats" @click="$root.events.viewStats()">
+                                    <i class="fas fa-trophy"></i>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-lg d-block mx-auto btn-icon btn-help" @click="$root.events.viewHelp()">
+                                    <i class="fas fa-question"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12 col-sm-6 col-md-8">
+
+                    <div class="col-12 col-md-6">
                         <div class="row">
                             <div class="col-12 col-sm-12 col-md-4 order-1 order-sm-1 order-md-2">
                                 <h3>
@@ -108,35 +112,6 @@
                                                 ]"
                                                 @click="$root.player.metadata.avatar.value = icon.cssClass;"></button>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-sm-6 col-md-4">
-                        <h3>
-                            <i class="fas fa-trophy"></i>
-                            Stats
-                        </h3>
-                        <div class="chat__box" style="height: auto; min-height: 100px;">
-                            <div class="chat__messages">
-                                <strong>{{ $root.player.metadata.totalStats.wins }}</strong>
-                                {{ ' win' + ($root.player.metadata.totalStats.wins === 1 ? '' : 's') }}
-                                and
-                                <strong>{{ $root.player.metadata.totalStats.losses }}</strong>
-                                {{ ' loss' + ($root.player.metadata.totalStats.losses === 1 ? '' : 'es') }}
-                                <br />
-                                <strong>{{ $root.player.metadata.totalStats.piecesPlaced }}</strong>
-                                {{ ' piece' + ($root.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}
-                                placed
-                                <br />
-                                <strong>{{ (($root.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>
-                                {{ ' minute' + ((($root.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}
-                                in game,
-                                <strong>{{ (($root.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> your turn
-                                <div v-if="$root.player.metadata.totalStats.timesHacked > 0">
-                                    <strong>{{ $root.player.metadata.totalStats.timesHacked }}</strong>
-                                    {{ ' time' + ($root.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}
-                                    detected hacking
                                 </div>
                             </div>
                         </div>

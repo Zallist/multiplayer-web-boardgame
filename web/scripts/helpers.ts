@@ -43,20 +43,26 @@ app.helpers = (function () {
         var dialog, app, data;
 
         options = _.merge({
+            components: [],
+            dialogClass: '',
             notEscapable: false,
             backdrop: true,
             title: null,
             content: 'Content...',
             onOK: function () { },
             onCancel: function () { },
-            buttons: [{
+            buttons: null
+        }, options);
+
+        if (!options.buttons) {
+            options.buttons = [{
                 text: 'OK',
                 action: options.onOK
             }, {
                 text: 'Cancel',
                 action: options.onCancel
-            }]
-        }, options);
+            }];
+        }
 
         data = {
             options: options,
@@ -79,7 +85,7 @@ app.helpers = (function () {
         dialog.innerHTML = `
 <div class="modal-backdrop fade show" v-if="$root.options.backdrop"></div>
 <div class="modal fade show" role="dialog" tabindex="-1" @keydown.esc="$root.escape" @click="$root.escape" style="display: block;">
-  <div class="modal-dialog" role="document" @click.stop>
+  <div class="modal-dialog" role="document" @click.stop :class="$root.options.dialogClass">
     <div class="modal-content">
       <div class="modal-header" v-if="$root.options.title || !$root.options.notEscapable">
         <h5 class="modal-title" v-if="$root.options.title">{{ $root.options.title }}</h5>
@@ -88,12 +94,12 @@ app.helpers = (function () {
         </button>
       </div>
       <div class="modal-body">
-        <p>{{ $root.options.content }}</p>
+      ` + (data.options.contentHtml ? data.options.contentHtml : `<p>{{ $root.options.content }}</p>`) + `
       </div>
       <div class="modal-footer" v-if="$root.options.buttons && $root.options.buttons.length > 0">
-        <button type="button" class="btn flex-fill" 
+        <button type="button" class="btn btn-lg flex-fill" 
           v-for="(button, buttonIndex) in $root.options.buttons"
-          :class="[ 'btn-outline-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]"
+          :class="[ 'btn-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]"
           @click="$root.close(button.action)">
           {{ button.text }}
         </button>
@@ -105,10 +111,15 @@ app.helpers = (function () {
         app = Vue.createApp({
             data: function () { return data; }
         });
+        
+        _.forEach(data.options.vueComponents, function (component, key) {
+            app.component(key, component);
+        });
 
         app.mount(dialog);
         document.body.appendChild(dialog);
         document.body.classList.add('modal-open');
+        dialog.getElementsByClassName('modal')[0].focus();
     };
 
     helpers.copyTextToClipboard = function (text) {

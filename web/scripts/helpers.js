@@ -29,20 +29,25 @@ app.helpers = (function () {
         // Assumes we've got bootstrap and Vue
         var dialog, app, data;
         options = _.merge({
+            components: [],
+            dialogClass: '',
             notEscapable: false,
             backdrop: true,
             title: null,
             content: 'Content...',
             onOK: function () { },
             onCancel: function () { },
-            buttons: [{
+            buttons: null
+        }, options);
+        if (!options.buttons) {
+            options.buttons = [{
                     text: 'OK',
                     action: options.onOK
                 }, {
                     text: 'Cancel',
                     action: options.onCancel
-                }]
-        }, options);
+                }];
+        }
         data = {
             options: options,
             close: function (doCall) {
@@ -59,13 +64,17 @@ app.helpers = (function () {
             }
         };
         dialog = document.createElement('div');
-        dialog.innerHTML = "\n<div class=\"modal-backdrop fade show\" v-if=\"$root.options.backdrop\"></div>\n<div class=\"modal fade show\" role=\"dialog\" tabindex=\"-1\" @keydown.esc=\"$root.escape\" @click=\"$root.escape\" style=\"display: block;\">\n  <div class=\"modal-dialog\" role=\"document\" @click.stop>\n    <div class=\"modal-content\">\n      <div class=\"modal-header\" v-if=\"$root.options.title || !$root.options.notEscapable\">\n        <h5 class=\"modal-title\" v-if=\"$root.options.title\">{{ $root.options.title }}</h5>\n        <button type=\"button\" class=\"close\" aria-label=\"Close\" v-if=\"!$root.options.notEscapable\" @click=\"$root.escape\">\n          <span aria-hidden=\"true\">&times;</span>\n        </button>\n      </div>\n      <div class=\"modal-body\">\n        <p>{{ $root.options.content }}</p>\n      </div>\n      <div class=\"modal-footer\" v-if=\"$root.options.buttons && $root.options.buttons.length > 0\">\n        <button type=\"button\" class=\"btn flex-fill\" \n          v-for=\"(button, buttonIndex) in $root.options.buttons\"\n          :class=\"[ 'btn-outline-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]\"\n          @click=\"$root.close(button.action)\">\n          {{ button.text }}\n        </button>\n      </div>\n    </div>\n  </div>\n</div>\n";
+        dialog.innerHTML = "\n<div class=\"modal-backdrop fade show\" v-if=\"$root.options.backdrop\"></div>\n<div class=\"modal fade show\" role=\"dialog\" tabindex=\"-1\" @keydown.esc=\"$root.escape\" @click=\"$root.escape\" style=\"display: block;\">\n  <div class=\"modal-dialog\" role=\"document\" @click.stop :class=\"$root.options.dialogClass\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\" v-if=\"$root.options.title || !$root.options.notEscapable\">\n        <h5 class=\"modal-title\" v-if=\"$root.options.title\">{{ $root.options.title }}</h5>\n        <button type=\"button\" class=\"close\" aria-label=\"Close\" v-if=\"!$root.options.notEscapable\" @click=\"$root.escape\">\n          <span aria-hidden=\"true\">&times;</span>\n        </button>\n      </div>\n      <div class=\"modal-body\">\n      " + (data.options.contentHtml ? data.options.contentHtml : "<p>{{ $root.options.content }}</p>") + "\n      </div>\n      <div class=\"modal-footer\" v-if=\"$root.options.buttons && $root.options.buttons.length > 0\">\n        <button type=\"button\" class=\"btn btn-lg flex-fill\" \n          v-for=\"(button, buttonIndex) in $root.options.buttons\"\n          :class=\"[ 'btn-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]\"\n          @click=\"$root.close(button.action)\">\n          {{ button.text }}\n        </button>\n      </div>\n    </div>\n  </div>\n</div>\n";
         app = Vue.createApp({
             data: function () { return data; }
+        });
+        _.forEach(data.options.vueComponents, function (component, key) {
+            app.component(key, component);
         });
         app.mount(dialog);
         document.body.appendChild(dialog);
         document.body.classList.add('modal-open');
+        dialog.getElementsByClassName('modal')[0].focus();
     };
     helpers.copyTextToClipboard = function (text) {
         var textArea = document.createElement("textarea");

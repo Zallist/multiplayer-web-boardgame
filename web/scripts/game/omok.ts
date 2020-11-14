@@ -136,6 +136,17 @@ app.makeGameObject = function (connection, app, viewModel) {
     </div>
 </fieldset>
 `
+        }, 
+        'help-content': {
+            template: `
+<h3>How To Play</h3>
+<div>
+    <ul>
+        <li>Place a number of pieces (default: 5) in a row to win</li>
+        <li>Stop other players from winning to not lose</li>
+        <li>If playing with more than 2 players, be sneaky</li>
+    </ul>
+</div>`
         }
     };
 

@@ -1,3 +1,5 @@
+@import "_mixins";
+
 html {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -136,12 +138,14 @@ body {
 
 .logo__main {
     width: 100%;
-    height: 100%;
+
     min-height: 100px;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
-    background-image: url('images/logo.png');
+    background-image: url('images/logo.svg');
+
+    @include responsive-ratio(1,0.33);
 }
 
 @media (max-width: 768px) { // md- breakpoint

@@ -1,4 +1,12 @@
-﻿// Default fonts
+﻿@import "_mixins";
+
+// Variables
+$backgroundColor: #192E58;
+$panelBackgroundColor: rgb(63,166,221);
+$btnPrimaryColor: #b1ed58;
+$btnSecondaryColor: #95a5a6;
+
+// Default fonts
 button, h1, h2, h3, h4, h5, h6 {
     font-family: 'Luckiest Guy', sans-serif;
 }
@@ -8,18 +16,10 @@ button, h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
-@mixin padChild($top,$bottom,$left,$right) {
-    position: relative;
-    & > *:nth-child(1) {
-        position: absolute;
-        top: $top; bottom: $bottom;
-        left: $left; right: $right;
-        height: auto !important;
-    }
-}
+* { @include hardware; }
 
 body {
-    background-color: #192E58;
+    background-color: $backgroundColor;
 }
 #app {
     background-image: url('images/standard/background.svg');
@@ -38,7 +38,7 @@ body {
     @include padChild(7%,7%,7%,7%);
 }
 
-.btn {
+.btn[class*="btn-outline-"] {
     background-color: transparent;
     background-image: url('images/standard/button_full.svg');
     background-repeat: no-repeat;
@@ -177,4 +177,104 @@ body {
         background-color: #005c82;
         border: none;
     }
+}
+
+// Secondary styling
+.btn {
+    &.btn-primary,&.btn-secondary {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+
+        line-height: 1em;
+        padding-top: 0;
+        padding-bottom: 0;
+
+        @include stroke(2, $backgroundColor);
+
+        &.btn-lg {
+            font-size: 300%;
+            @include stroke(4, $backgroundColor);
+        }
+
+        &.btn-primary {
+            color: $btnPrimaryColor;
+            
+            &:hover, &:active {
+                color: lighten($color: $btnPrimaryColor, $amount: 20%);
+            }
+        }
+
+        &.btn-secondary {
+            color: $btnSecondaryColor;
+            
+            &:hover, &:active {
+                color: lighten($color: $btnSecondaryColor, $amount: 20%);
+            }
+        }
+    }
+    &.btn-icon {
+        background: #FFF !important;
+        border: $backgroundColor 8px solid !important;
+        box-shadow: 0px 8px 0 transparentize($color: $backgroundColor, $amount: 0.2) !important;
+
+        border-radius: 50%;
+        font-size: 3em;
+        line-height: 1em;
+        padding: 8px;
+
+        width: 1.75em; height: 1.75em;
+        text-align: center;
+
+        &.btn-config {
+            color: rgb(86, 86, 211);
+        }
+        &.btn-stats {
+            color: rgb(184, 184, 103);
+        }
+        &.btn-help {
+            color: grey;
+        }
+
+        &:hover, &:active {
+            $color: lighten($color: $backgroundColor, $amount: 20%);
+
+            color: $color !important;
+            border-color: $color !important;
+            box-shadow: 0px 8px 0 transparentize($color: $color, $amount: 0.2) !important;
+        }
+    }
+}
+
+.modal-header {    
+    .modal-title, .close {
+        @include stroke(2,#000);
+        color: #FFF;
+        font-size: 2rem;
+    }
+
+}
+
+.modal-content {
+    background: transparent;
+    border: none;
+}
+.modal-header {
+    border: none;
+}
+.modal-body {
+    background: $panelBackgroundColor;
+    border: 8px solid $backgroundColor;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    border-bottom-left-radius: 50% 32px;
+    border-bottom-right-radius: 50% 32px;
+
+    padding-bottom: 32px;
+}
+.modal-footer {
+    border: none;
+    margin-top: -32px;
+    padding: 0;
+    z-index: 1;
 }

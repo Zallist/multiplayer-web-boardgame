@@ -693,6 +693,33 @@ app.main = (function () {
                     ]
                 });
             };
+            events.viewConfig = function () {
+                viewModel.viewGameConfig = !viewModel.viewGameConfig;
+            };
+            events.viewHelp = function () {
+                app.helpers.makeDialog({
+                    vueComponents: app.game.vueComponents,
+                    title: 'Help & Credits',
+                    contentHtml: "\n<help-content></help-content>\n\n<h3>Credits</h3>\n<ul>\n    <li>\n        <strong>Zallist (Dan Whittaker)</strong>\n        <br />\n        Coding, web UI, networking, hosting\n    </li>\n    <li>\n        <strong>Katoonist (Kat Whittaker)</strong>\n        <br />\n        Images, piece icons, design\n    </li>\n    <li>\n        <strong><a href=\"https://freesound.org\">Freesound.org</a></strong>\n        <br />\n        Audio snippets\n    </li>\n</ul>\n                    ",
+                    buttons: []
+                });
+            };
+            events.viewStats = function (playerId) {
+                var player;
+                if (!playerId) {
+                    playerId = viewModel.player.id;
+                }
+                player = viewModel.helpers.getPlayer(playerId, true);
+                if (!player) {
+                    return;
+                }
+                app.helpers.makeDialog({
+                    player: player,
+                    title: 'Player Stats',
+                    contentHtml: "\n<div>\n    <strong>{{ $root.options.player.metadata.totalStats.wins }}</strong>\n    {{ ' win' + ($root.options.player.metadata.totalStats.wins === 1 ? '' : 's') }}\n    and\n    <strong>{{ $root.options.player.metadata.totalStats.losses }}</strong>\n    {{ ' loss' + ($root.options.player.metadata.totalStats.losses === 1 ? '' : 'es') }}\n    <br />\n    <strong>{{ $root.options.player.metadata.totalStats.piecesPlaced }}</strong>\n    {{ ' piece' + ($root.options.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}\n    placed\n    <br />\n    <strong>{{ (($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>\n    {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}\n    in game,\n    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> your turn\n    <div v-if=\"$root.options.player.metadata.totalStats.timesHacked > 0\">\n        <strong>{{ $root.options.player.metadata.totalStats.timesHacked }}</strong>\n        {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}\n        detected hacking\n    </div>\n</div>\n                    ",
+                    buttons: []
+                });
+            };
             return events;
         },
         getComputed: function (viewModel) {

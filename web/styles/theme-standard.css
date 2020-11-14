@@ -7,6 +7,11 @@ button, h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
 }
 
+* {
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
 body {
   background-color: #192E58;
 }
@@ -42,7 +47,7 @@ body {
   height: auto !important;
 }
 
-.btn {
+.btn[class*=btn-outline-] {
   background-color: transparent;
   background-image: url("images/standard/button_full.svg");
   background-repeat: no-repeat;
@@ -50,11 +55,11 @@ body {
   border: none;
   background-color: transparent;
 }
-.btn:hover:not(:disabled) {
+.btn[class*=btn-outline-]:hover:not(:disabled) {
   background-color: transparent;
   background-image: url("images/standard/button_full_hover.svg");
 }
-.btn:active {
+.btn[class*=btn-outline-]:active {
   background-color: transparent;
   background-image: url("images/standard/button_full_active.svg");
 }
@@ -193,4 +198,88 @@ body {
 *::-webkit-scrollbar-thumb:active {
   background-color: #005c82;
   border: none;
+}
+
+.btn.btn-primary, .btn.btn-secondary {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  line-height: 1em;
+  padding-top: 0;
+  padding-bottom: 0;
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58;
+}
+.btn.btn-primary.btn-lg, .btn.btn-secondary.btn-lg {
+  font-size: 300%;
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, -3px -3px 0 #192E58, -2px -3px 0 #192E58, -1px -3px 0 #192E58, 0px -3px 0 #192E58, 1px -3px 0 #192E58, 2px -3px 0 #192E58, 3px -3px 0 #192E58, -3px -2px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, 3px -2px 0 #192E58, -3px -1px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, 3px -1px 0 #192E58, -3px 0px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, 3px 0px 0 #192E58, -3px 1px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, 3px 1px 0 #192E58, -3px 2px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, 3px 2px 0 #192E58, -3px 3px 0 #192E58, -2px 3px 0 #192E58, -1px 3px 0 #192E58, 0px 3px 0 #192E58, 1px 3px 0 #192E58, 2px 3px 0 #192E58, 3px 3px 0 #192E58, -4px -4px 0 #192E58, -3px -4px 0 #192E58, -2px -4px 0 #192E58, -1px -4px 0 #192E58, 0px -4px 0 #192E58, 1px -4px 0 #192E58, 2px -4px 0 #192E58, 3px -4px 0 #192E58, 4px -4px 0 #192E58, -4px -3px 0 #192E58, -3px -3px 0 #192E58, -2px -3px 0 #192E58, -1px -3px 0 #192E58, 0px -3px 0 #192E58, 1px -3px 0 #192E58, 2px -3px 0 #192E58, 3px -3px 0 #192E58, 4px -3px 0 #192E58, -4px -2px 0 #192E58, -3px -2px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, 3px -2px 0 #192E58, 4px -2px 0 #192E58, -4px -1px 0 #192E58, -3px -1px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, 3px -1px 0 #192E58, 4px -1px 0 #192E58, -4px 0px 0 #192E58, -3px 0px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, 3px 0px 0 #192E58, 4px 0px 0 #192E58, -4px 1px 0 #192E58, -3px 1px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, 3px 1px 0 #192E58, 4px 1px 0 #192E58, -4px 2px 0 #192E58, -3px 2px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, 3px 2px 0 #192E58, 4px 2px 0 #192E58, -4px 3px 0 #192E58, -3px 3px 0 #192E58, -2px 3px 0 #192E58, -1px 3px 0 #192E58, 0px 3px 0 #192E58, 1px 3px 0 #192E58, 2px 3px 0 #192E58, 3px 3px 0 #192E58, 4px 3px 0 #192E58, -4px 4px 0 #192E58, -3px 4px 0 #192E58, -2px 4px 0 #192E58, -1px 4px 0 #192E58, 0px 4px 0 #192E58, 1px 4px 0 #192E58, 2px 4px 0 #192E58, 3px 4px 0 #192E58, 4px 4px 0 #192E58;
+}
+.btn.btn-primary.btn-primary, .btn.btn-secondary.btn-primary {
+  color: #b1ed58;
+}
+.btn.btn-primary.btn-primary:hover, .btn.btn-primary.btn-primary:active, .btn.btn-secondary.btn-primary:hover, .btn.btn-secondary.btn-primary:active {
+  color: #dcf7b4;
+}
+.btn.btn-primary.btn-secondary, .btn.btn-secondary.btn-secondary {
+  color: #95a5a6;
+}
+.btn.btn-primary.btn-secondary:hover, .btn.btn-primary.btn-secondary:active, .btn.btn-secondary.btn-secondary:hover, .btn.btn-secondary.btn-secondary:active {
+  color: #ccd4d5;
+}
+.btn.btn-icon {
+  background: #FFF !important;
+  border: #192E58 8px solid !important;
+  box-shadow: 0px 8px 0 rgba(25, 46, 88, 0.8) !important;
+  border-radius: 50%;
+  font-size: 3em;
+  line-height: 1em;
+  padding: 8px;
+  width: 1.75em;
+  height: 1.75em;
+  text-align: center;
+}
+.btn.btn-icon.btn-config {
+  color: #5656d3;
+}
+.btn.btn-icon.btn-stats {
+  color: #b8b867;
+}
+.btn.btn-icon.btn-help {
+  color: grey;
+}
+.btn.btn-icon:hover, .btn.btn-icon:active {
+  color: #3058a7 !important;
+  border-color: #3058a7 !important;
+  box-shadow: 0px 8px 0 rgba(48, 88, 167, 0.8) !important;
+}
+
+.modal-header .modal-title, .modal-header .close {
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, -2px -2px 0 #000, -1px -2px 0 #000, 0px -2px 0 #000, 1px -2px 0 #000, 2px -2px 0 #000, -2px -1px 0 #000, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, 2px -1px 0 #000, -2px 0px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, 2px 0px 0 #000, -2px 1px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, 2px 1px 0 #000, -2px 2px 0 #000, -1px 2px 0 #000, 0px 2px 0 #000, 1px 2px 0 #000, 2px 2px 0 #000;
+  color: #FFF;
+  font-size: 2rem;
+}
+
+.modal-content {
+  background: transparent;
+  border: none;
+}
+
+.modal-header {
+  border: none;
+}
+
+.modal-body {
+  background: #3fa6dd;
+  border: 8px solid #192E58;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 50% 32px;
+  border-bottom-right-radius: 50% 32px;
+  padding-bottom: 32px;
+}
+
+.modal-footer {
+  border: none;
+  margin-top: -32px;
+  padding: 0;
+  z-index: 1;
 }
