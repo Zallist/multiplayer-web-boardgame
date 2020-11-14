@@ -7,29 +7,67 @@ button, h1, h2, h3, h4, h5, h6, label, .input-group-text {
   font-weight: normal;
 }
 
-* {
-  backface-visibility: hidden;
-  perspective: 1000;
-}
-
 body {
   background-color: #192E58;
+  overflow: hidden;
 }
 
+/*
 #app {
-  background-image: url("images/standard/background.svg");
-  background-repeat: no-repeat;
-  background-size: 98% 98%;
-  background-position: center center;
-  position: relative;
+    background-image: url('images/standard/background.svg');
+    background-repeat: no-repeat;
+    background-size: 98% 98%;
+    background-position: center center;
+
+    @include padChild(4%,4%,4%,4%);
 }
-#app > *:nth-child(1) {
+*/
+#app {
+  border-radius: 32px;
+  border: 16px solid #237fbe;
+  margin: 8px 16px;
+  height: calc(100% - 16px) !important;
+  background: linear-gradient(180deg, transparent 0, transparent 48px, #2798cc 48px, #2798cc 58px, transparent 58px), linear-gradient(90deg, transparent 0, transparent 48px, #2798cc 48px, #2798cc 58px, transparent 58px), linear-gradient(180deg, transparent 0, transparent 46px, #3daddd 46px, #3daddd 48px, transparent 48px), linear-gradient(90deg, transparent 0, transparent 46px, #3daddd 46px, #3daddd 48px, transparent 48px), linear-gradient(180deg, transparent 0, transparent 58px, #3daddd 58px, #3daddd 60px, transparent 60px), linear-gradient(90deg, transparent 0, transparent 58px, #3daddd 58px, #3daddd 60px, transparent 60px), #3fa6dd;
+  background-size: 60px 60px;
+  background-position: center center;
+  padding: 8px;
+}
+
+#app-content {
+  position: relative;
+  overflow: hidden !important;
+}
+#app-content:before {
+  backface-visibility: hidden;
+  perspective: 1000;
+  content: "";
   position: absolute;
-  top: 4%;
-  bottom: 4%;
-  left: 4%;
-  right: 4%;
-  height: auto !important;
+  height: 300%;
+  width: 300%;
+  background: linear-gradient(transparent 45%, rgba(255, 255, 255, 0.05) 45%, rgba(255, 255, 255, 0.05) 50%, transparent 50%, transparent 52%, rgba(255, 255, 255, 0.05) 52%, rgba(255, 255, 255, 0.05) 53%, transparent 53%);
+  transform: rotate(-45deg);
+  transition: left, top linear 2s;
+  top: -140%;
+  left: -120%;
+  animation: shine 5s 1 ease-out;
+}
+@keyframes shine {
+  0% {
+    left: -200%;
+    top: -200%;
+  }
+  50% {
+    left: -30%;
+    top: -30%;
+  }
+  51% {
+    left: -200%;
+    top: -200%;
+  }
+  100% {
+    left: -120%;
+    top: -140%;
+  }
 }
 
 .game__wrap {
