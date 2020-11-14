@@ -301,13 +301,25 @@ body {
         text-align: center;
 
         &.btn-config {
-            color: rgb(86, 86, 211);
+            & > i { 
+                background-image: url('images/standard/icons/cog.svg');
+                @include fillBackgroundImage(true);
+                @include removeIconContent;
+            }
         }
         &.btn-stats {
-            color: rgb(184, 184, 103);
+            & > i { 
+                background-image: url('images/standard/icons/trophy.svg');
+                @include fillBackgroundImage(true);
+                @include removeIconContent;
+            }
         }
         &.btn-help {
-            color: grey;
+            & > i { 
+                background-image: url('images/standard/icons/questionmark.svg');
+                @include fillBackgroundImage(true);
+                @include removeIconContent;
+            }
         }
 
         &:not(:disabled) {

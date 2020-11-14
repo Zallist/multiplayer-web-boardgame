@@ -267,14 +267,38 @@ body {
   height: 1.75em;
   text-align: center;
 }
-.btn.btn-icon.btn-config {
-  color: #5656d3;
+.btn.btn-icon.btn-config > i {
+  background-image: url("images/standard/icons/cog.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
 }
-.btn.btn-icon.btn-stats {
-  color: #b8b867;
+.btn.btn-icon.btn-config > i:before {
+  content: "";
 }
-.btn.btn-icon.btn-help {
-  color: grey;
+.btn.btn-icon.btn-stats > i {
+  background-image: url("images/standard/icons/trophy.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-stats > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-help > i {
+  background-image: url("images/standard/icons/questionmark.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-help > i:before {
+  content: "";
 }
 .btn.btn-icon:not(:disabled):hover, .btn.btn-icon:not(:disabled):active {
   color: #3058a7 !important;

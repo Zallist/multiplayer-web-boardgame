@@ -10,6 +10,20 @@
     }
 }
 
+@mixin fillBackgroundImage($size: false) {
+    @if $size {
+        width: 100%;
+        height: 100%;
+    }
+
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+}
+
+@mixin removeIconContent() {
+    &:before { content: ''; }
+}
 
 
 @mixin pseudo($display: block, $pos: absolute, $content: ''){
