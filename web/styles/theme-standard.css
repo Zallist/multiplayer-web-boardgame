@@ -135,6 +135,28 @@ body {
   border: none;
   background-image: url("images/standard/avatar_box_me_turn.svg");
 }
+.player__avatar .player__avatar__stats .fa-cross {
+  background-image: url("images/standard/icons/SkullLose.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.player__avatar .player__avatar__stats .fa-cross:before {
+  content: "";
+}
+.player__avatar .player__avatar__stats .fa-trophy {
+  background-image: url("images/standard/icons/Trophy.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.player__avatar .player__avatar__stats .fa-trophy:before {
+  content: "";
+}
 
 .chat__box {
   background-image: url("images/standard/chat_box.svg");

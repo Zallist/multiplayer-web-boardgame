@@ -264,6 +264,7 @@ app.main = (function () {
                 case 'player-joined':
                     viewModel.players[fromPlayerId] = viewModel.makers.makePlayer(data.player);
                     fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
+                    fromPlayer.metadata.gameStats.lastGameResult = '';
                     fromPlayer.metadata.gameStats.wins = 0;
                     fromPlayer.metadata.gameStats.losses = 0;
                     viewModel.helpers.addMessage(null, fromPlayer.name + ' joined', fromPlayer.metadata.color);
@@ -380,10 +381,12 @@ app.main = (function () {
                             if (player.id === fromPlayerId) {
                                 player.metadata.gameStats.wins += 1;
                                 player.metadata.totalStats.wins += 1;
+                                player.metadata.gameStats.lastGameResult = 'win';
                             }
                             else {
                                 player.metadata.gameStats.losses += 1;
                                 player.metadata.totalStats.losses += 1;
+                                player.metadata.gameStats.lastGameResult = 'loss';
                             }
                         });
                         viewModel.helpers.addMessage(null, fromPlayer.name + ' won', fromPlayer.metadata.color);
@@ -638,7 +641,8 @@ app.main = (function () {
                         },
                         gameStats: {
                             wins: 0,
-                            losses: 0
+                            losses: 0,
+                            lastGameResult: ''
                         },
                         totalStats: {
                             wins: 0,
@@ -723,18 +727,22 @@ app.main = (function () {
                 });
             };
             events.viewStats = function (playerId) {
-                var player;
-                if (!playerId) {
+                var player, you = false;
+                if (!playerId || playerId === viewModel.player.id) {
                     playerId = viewModel.player.id;
+                    player = viewModel.player;
+                    you = true;
                 }
-                player = viewModel.helpers.getPlayer(playerId, true);
+                else {
+                    player = viewModel.helpers.getPlayer(playerId, true);
+                }
                 if (!player) {
                     return;
                 }
                 app.helpers.makeDialog({
                     player: player,
-                    title: 'Player Stats',
-                    contentHtml: "\n<div>\n    <strong>{{ $root.options.player.metadata.totalStats.wins }}</strong>\n    {{ ' win' + ($root.options.player.metadata.totalStats.wins === 1 ? '' : 's') }}\n    and\n    <strong>{{ $root.options.player.metadata.totalStats.losses }}</strong>\n    {{ ' loss' + ($root.options.player.metadata.totalStats.losses === 1 ? '' : 'es') }}\n    <br />\n    <strong>{{ $root.options.player.metadata.totalStats.piecesPlaced }}</strong>\n    {{ ' piece' + ($root.options.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}\n    placed\n    <br />\n    <strong>{{ (($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>\n    {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}\n    in game,\n    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> your turn\n    <div v-if=\"$root.options.player.metadata.totalStats.timesHacked > 0\">\n        <strong>{{ $root.options.player.metadata.totalStats.timesHacked }}</strong>\n        {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}\n        detected hacking\n    </div>\n</div>\n                    ",
+                    title: (you ? 'Your' : (player.name + (_.endsWith(player.name, 's') ? '\'' : '\'s'))) + ' Stats',
+                    contentHtml: "\n<div>\n    <strong>{{ $root.options.player.metadata.totalStats.wins }}</strong>\n    {{ ' win' + ($root.options.player.metadata.totalStats.wins === 1 ? '' : 's') }}\n    and\n    <strong>{{ $root.options.player.metadata.totalStats.losses }}</strong>\n    {{ ' loss' + ($root.options.player.metadata.totalStats.losses === 1 ? '' : 'es') }}\n    <br />\n    <strong>{{ $root.options.player.metadata.totalStats.piecesPlaced }}</strong>\n    {{ ' piece' + ($root.options.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}\n    placed\n    <br />\n    <strong>{{ (($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>\n    {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}\n    in game,\n    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> " + (you ? 'your' : 'their') + " turn\n    <div v-if=\"$root.options.player.metadata.totalStats.timesHacked > 0\">\n        <strong>{{ $root.options.player.metadata.totalStats.timesHacked }}</strong>\n        {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}\n        detected hacking\n    </div>\n</div>\n                    ",
                     buttons: []
                 });
             };

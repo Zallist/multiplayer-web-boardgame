@@ -146,6 +146,19 @@ body {
     &.player--me { border: none; background-image: url('images/standard/avatar_box_me.svg'); }
     &.player--ready { border: none; background-image: url('images/standard/avatar_box_ready.svg'); }
     &.player--me.player--turn { border: none; background-image: url('images/standard/avatar_box_me_turn.svg'); }
+
+    .player__avatar__stats {
+        .fa-cross {
+            background-image: url('images/standard/icons/SkullLose.svg');
+            @include fillBackgroundImage(true);
+            @include removeIconContent;
+        }
+        .fa-trophy {
+            background-image: url('images/standard/icons/Trophy.svg');
+            @include fillBackgroundImage(true);
+            @include removeIconContent;
+        }
+    }
 }
 
 .chat__box {

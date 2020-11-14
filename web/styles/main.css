@@ -99,6 +99,9 @@ html {
   white-space: nowrap;
   text-overflow: clip;
 }
+.player__avatar .player__avatar__stats {
+  cursor: pointer;
+}
 
 .logo__main {
   width: 100%;

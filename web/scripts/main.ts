@@ -341,6 +341,7 @@ app.main = (function () {
                     viewModel.players[fromPlayerId] = viewModel.makers.makePlayer(data.player);
                     fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
+                    fromPlayer.metadata.gameStats.lastGameResult = '';
                     fromPlayer.metadata.gameStats.wins = 0;
                     fromPlayer.metadata.gameStats.losses = 0;
 
@@ -474,10 +475,12 @@ app.main = (function () {
                             if (player.id === fromPlayerId) {
                                 player.metadata.gameStats.wins += 1;
                                 player.metadata.totalStats.wins += 1;
+                                player.metadata.gameStats.lastGameResult = 'win';
                             }
                             else {
                                 player.metadata.gameStats.losses += 1;
                                 player.metadata.totalStats.losses += 1;
+                                player.metadata.gameStats.lastGameResult = 'loss';
                             }
                         });
 
@@ -813,7 +816,8 @@ app.main = (function () {
                         },
                         gameStats: {
                             wins: 0,
-                            losses: 0
+                            losses: 0,
+                            lastGameResult: ''
                         },
                         totalStats: {
                             wins: 0,
@@ -933,13 +937,16 @@ app.main = (function () {
                 });
             };
             events.viewStats = function (playerId) {
-                var player;
+                var player, you = false;
 
-                if (!playerId) {
+                if (!playerId || playerId === viewModel.player.id) {
                     playerId = viewModel.player.id;
+                    player = viewModel.player;
+                    you = true;
                 }
-
-                player = viewModel.helpers.getPlayer(playerId, true);
+                else {
+                    player = viewModel.helpers.getPlayer(playerId, true);
+                }
 
                 if (!player) {
                     return;
@@ -947,7 +954,7 @@ app.main = (function () {
 
                 app.helpers.makeDialog({
                     player: player,
-                    title: 'Player Stats',
+                    title: (you ? 'Your' : (player.name + (_.endsWith(player.name, 's') ? '\'' : '\'s'))) + ' Stats',
                     contentHtml: `
 <div>
     <strong>{{ $root.options.player.metadata.totalStats.wins }}</strong>
@@ -963,7 +970,7 @@ app.main = (function () {
     <strong>{{ (($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>
     {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}
     in game,
-    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> your turn
+    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> ` + (you ? 'your' : 'their') + ` turn
     <div v-if="$root.options.player.metadata.totalStats.timesHacked > 0">
         <strong>{{ $root.options.player.metadata.totalStats.timesHacked }}</strong>
         {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}
