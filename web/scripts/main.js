@@ -566,6 +566,20 @@ app.main = (function () {
                 }
                 helpers.trackTurnTime();
             };
+            helpers.showGameOver = function (reason) {
+                app.helpers.makeDialog({
+                    gameOverReason: reason,
+                    notEscapable: true,
+                    contentHtml: "\n<div :class=\"{\n    'game__over__reason': true,\n    'game__over__reason--my-win': $root.options.gameOverReason=='my-win',\n    'game__over__reason--my-loss': $root.options.gameOverReason=='my-loss',\n    'game__over__reason--tie': $root.options.gameOverReason=='tie'\n}\">\n    <div class=\"game__over__content\">\n        <span v-if=\"$root.options.gameOverReason=='my-win'\">You won!</span>\n        <span v-else-if=\"$root.options.gameOverReason=='my-loss'\">You lost!</span>\n        <span v-else-if=\"$root.options.gameOverReason=='tie'\">You tied!</span>\n        <span v-else>The game ended for some reason that hasn't been checked for.</span>\n    </div>\n</div>\n                    ",
+                    buttons: [{
+                            text: 'Play Again',
+                            action: function () { return viewModel.events.toggleReady(); }
+                        }, {
+                            text: 'Spectate'
+                        }],
+                    dialogClass: 'modal-lg modal-dialog--game-over'
+                });
+            };
             helpers.endGame = function (options) {
                 if (viewModel.gameStarted) {
                     viewModel.player.metadata.totalStats.timeInGame += Date.now() - viewModel.gameStarted;
@@ -586,7 +600,7 @@ app.main = (function () {
                     case 'my-win':
                     case 'my-loss':
                     case 'tie':
-                        viewModel.gameOverReason = _.trim(options.reason).toLowerCase();
+                        viewModel.helpers.showGameOver(_.trim(options.reason).toLowerCase());
                         break;
                 }
             };
@@ -798,7 +812,6 @@ app.main = (function () {
         };
         // == /game state
         viewModel.gameStarted = null;
-        viewModel.gameOverReason = null;
         // Window state stuff
         viewModel.gamePanelHeight = window.innerHeight;
         viewModel.gamePanelWidth = window.innerWidth;

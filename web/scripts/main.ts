@@ -712,6 +712,35 @@ app.main = (function () {
                 helpers.trackTurnTime();
             };
 
+            helpers.showGameOver = function (reason) {                
+                app.helpers.makeDialog({
+                    gameOverReason: reason,
+                    notEscapable: true,
+                    contentHtml: `
+<div :class="{
+    'game__over__reason': true,
+    'game__over__reason--my-win': $root.options.gameOverReason=='my-win',
+    'game__over__reason--my-loss': $root.options.gameOverReason=='my-loss',
+    'game__over__reason--tie': $root.options.gameOverReason=='tie'
+}">
+    <div class="game__over__content">
+        <span v-if="$root.options.gameOverReason=='my-win'">You won!</span>
+        <span v-else-if="$root.options.gameOverReason=='my-loss'">You lost!</span>
+        <span v-else-if="$root.options.gameOverReason=='tie'">You tied!</span>
+        <span v-else>The game ended for some reason that hasn't been checked for.</span>
+    </div>
+</div>
+                    `,
+                    buttons: [{
+                        text: 'Play Again',
+                        action: () => viewModel.events.toggleReady()
+                    }, {
+                        text: 'Spectate'
+                    }],
+                    dialogClass: 'modal-lg modal-dialog--game-over'
+                });
+            };
+
             helpers.endGame = function (options) {
                 if (viewModel.gameStarted) {
                     viewModel.player.metadata.totalStats.timeInGame += Date.now() - viewModel.gameStarted;
@@ -738,7 +767,7 @@ app.main = (function () {
                     case 'my-win':
                     case 'my-loss':
                     case 'tie':
-                        viewModel.gameOverReason = _.trim(options.reason).toLowerCase();
+                        viewModel.helpers.showGameOver(_.trim(options.reason).toLowerCase());
                         break;
                 }
             };
@@ -1043,7 +1072,6 @@ app.main = (function () {
         // == /game state
 
         viewModel.gameStarted = null;
-        viewModel.gameOverReason = null;
 
         // Window state stuff
         viewModel.gamePanelHeight = window.innerHeight;

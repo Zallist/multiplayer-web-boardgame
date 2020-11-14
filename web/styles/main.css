@@ -100,32 +100,6 @@ html {
   text-overflow: clip;
 }
 
-.modal__dialog-wrap {
-  background-color: rgba(0, 0, 0, 0.4);
-  position: fixed;
-  z-index: 110;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-.modal__dialog-wrap .modal__dialog {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  height: 80%;
-  width: 80%;
-  background-color: white;
-  max-width: 100% !important;
-}
-.modal__dialog-wrap .modal__dialog__content {
-  max-height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
-  padding: 1em;
-}
-
 .logo__main {
   width: 100%;
   min-height: 100px;
