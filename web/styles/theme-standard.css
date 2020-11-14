@@ -54,6 +54,7 @@ body {
   background-size: 100% 100%;
   border: none;
   background-color: transparent;
+  box-shadow: none !important;
 }
 .btn[class*=btn-outline-]:hover:not(:disabled) {
   background-color: transparent;
@@ -216,13 +217,13 @@ body {
 .btn.btn-primary.btn-primary, .btn.btn-secondary.btn-primary {
   color: #b1ed58;
 }
-.btn.btn-primary.btn-primary:hover, .btn.btn-primary.btn-primary:active, .btn.btn-secondary.btn-primary:hover, .btn.btn-secondary.btn-primary:active {
+.btn.btn-primary.btn-primary:not(:disabled):hover, .btn.btn-primary.btn-primary:not(:disabled):active, .btn.btn-secondary.btn-primary:not(:disabled):hover, .btn.btn-secondary.btn-primary:not(:disabled):active {
   color: #dcf7b4;
 }
 .btn.btn-primary.btn-secondary, .btn.btn-secondary.btn-secondary {
   color: #95a5a6;
 }
-.btn.btn-primary.btn-secondary:hover, .btn.btn-primary.btn-secondary:active, .btn.btn-secondary.btn-secondary:hover, .btn.btn-secondary.btn-secondary:active {
+.btn.btn-primary.btn-secondary:not(:disabled):hover, .btn.btn-primary.btn-secondary:not(:disabled):active, .btn.btn-secondary.btn-secondary:not(:disabled):hover, .btn.btn-secondary.btn-secondary:not(:disabled):active {
   color: #ccd4d5;
 }
 .btn.btn-icon {
@@ -246,16 +247,10 @@ body {
 .btn.btn-icon.btn-help {
   color: grey;
 }
-.btn.btn-icon:hover, .btn.btn-icon:active {
+.btn.btn-icon:not(:disabled):hover, .btn.btn-icon:not(:disabled):active {
   color: #3058a7 !important;
   border-color: #3058a7 !important;
   box-shadow: 0px 8px 0 rgba(48, 88, 167, 0.8) !important;
-}
-
-.modal-header .modal-title, .modal-header .close {
-  text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, -2px -2px 0 #000, -1px -2px 0 #000, 0px -2px 0 #000, 1px -2px 0 #000, 2px -2px 0 #000, -2px -1px 0 #000, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, 2px -1px 0 #000, -2px 0px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, 2px 0px 0 #000, -2px 1px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, 2px 1px 0 #000, -2px 2px 0 #000, -1px 2px 0 #000, 0px 2px 0 #000, 1px 2px 0 #000, 2px 2px 0 #000;
-  color: #FFF;
-  font-size: 2rem;
 }
 
 .modal-content {
@@ -265,6 +260,11 @@ body {
 
 .modal-header {
   border: none;
+}
+.modal-header .modal-title, .modal-header .close {
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, -2px -2px 0 #000, -1px -2px 0 #000, 0px -2px 0 #000, 1px -2px 0 #000, 2px -2px 0 #000, -2px -1px 0 #000, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, 2px -1px 0 #000, -2px 0px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, 2px 0px 0 #000, -2px 1px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, 2px 1px 0 #000, -2px 2px 0 #000, -1px 2px 0 #000, 0px 2px 0 #000, 1px 2px 0 #000, 2px 2px 0 #000;
+  color: #FFF;
+  font-size: 2rem;
 }
 
 .modal-body {
@@ -282,4 +282,15 @@ body {
   margin-top: -32px;
   padding: 0;
   z-index: 1;
+}
+
+.modal-dialog.modal-dialog--config .modal-header {
+  background-image: url("images/standard/game_config_panel_stripped.svg");
+  background-size: 100% 243%;
+  height: 160px;
+}
+.modal-dialog.modal-dialog--config .modal-body {
+  border-top: none;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }

@@ -51,8 +51,8 @@ app.makeGameObject = function (connection, app, viewModel) {
     <div class="mb-3" v-show="!$data.$vm.isConnected">
         <label>Use a preset</label>
         <div>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'simple-chess\')">Simple Chess</button>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'chess\')">Chess</button>
+            <button type="button" class="btn btn-primary mr-1" @click="$data.$game.events.setPreset(\'simple-chess\')">Simple Chess</button>
+            <button type="button" class="btn btn-primary mr-1" @click="$data.$game.events.setPreset(\'chess\')">Chess</button>
         </div>
     </div>
     <div>

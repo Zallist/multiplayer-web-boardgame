@@ -45,12 +45,7 @@ app.makeGameObject = function (connection, app, viewModel) {
     </div>
     <div class="yut__sidebar">
         <div style="position: absolute; left: 0; right: 0; bottom: 1em;">
-            <button type="button" class="btn btn-outline-primary btn-block d-none d-lg-block btn-lg"
-                    :disabled="$data.$vm.gameState.currentTurn !== $data.$vm.player.id || !$data.$game.availablePlacements.finish"
-                    @click.prevent="$data.$game.events.finishClicked()">
-                Finish
-            </button>
-            <button type="button" class="btn btn-outline-primary btn-block d-block d-lg-none"
+            <button type="button" class="btn btn-primary btn-block" style="font-size: 150%;"
                     :disabled="$data.$vm.gameState.currentTurn !== $data.$vm.player.id || !$data.$game.availablePlacements.finish"
                     @click.prevent="$data.$game.events.finishClicked()">
                 Finish
@@ -80,12 +75,7 @@ app.makeGameObject = function (connection, app, viewModel) {
         </div>
     </div>
     <div class="yut__corner">
-        <button type="button" class="roll__button btn btn-outline-primary btn-block d-none d-lg-block btn-lg"
-                :disabled="$data.$vm.gameState.currentTurn !== $data.$vm.player.id || $data.$vm.gameState.game.currentRoll !== null"
-                @click.prevent="$data.$game.events.rollClicked()">
-            Roll
-        </button>
-        <button type="button" class="roll__button btn btn-outline-primary btn-block d-block d-lg-none"
+        <button type="button" class="roll__button btn btn-primary btn-block" style="font-size: 150%;"
                 :disabled="$data.$vm.gameState.currentTurn !== $data.$vm.player.id || $data.$vm.gameState.game.currentRoll !== null"
                 @click.prevent="$data.$game.events.rollClicked()">
             Roll

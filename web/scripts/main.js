@@ -472,7 +472,6 @@ app.main = (function () {
                 }
                 else if (app.game.hooks.setup()) {
                     viewModel.helpers.recordPlayer();
-                    viewModel.viewGameConfig = false;
                     viewModel.isConnecting = true;
                     viewModel.isConnected = false;
                     connection.connect();
@@ -694,7 +693,12 @@ app.main = (function () {
                 });
             };
             events.viewConfig = function () {
-                viewModel.viewGameConfig = !viewModel.viewGameConfig;
+                app.helpers.makeDialog({
+                    vueComponents: app.game.vueComponents,
+                    contentHtml: '<config-panel></config-panel>',
+                    buttons: [],
+                    dialogClass: 'modal-dialog--config'
+                });
             };
             events.viewHelp = function () {
                 app.helpers.makeDialog({
@@ -794,7 +798,6 @@ app.main = (function () {
         };
         // == /game state
         viewModel.gameStarted = null;
-        viewModel.viewGameConfig = false;
         viewModel.gameOverReason = null;
         // Window state stuff
         viewModel.gamePanelHeight = window.innerHeight;

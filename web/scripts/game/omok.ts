@@ -49,9 +49,9 @@ app.makeGameObject = function (connection, app, viewModel) {
     <div class="mb-3" v-show="!$data.$vm.isConnected">
         <label>Use a preset</label>
         <div>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'omok\')">Omok</button>
-            <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'gomoku\')">Gomoku</button>
-            <button type="button" class="btn btn-outline-primary" @click="$data.$game.events.setPreset(\'tic-tac-toe\')">Tic-Tac-Toe</button>
+            <button type="button" class="btn btn-primary mr-1" @click="$data.$game.events.setPreset(\'omok\')">Omok</button>
+            <button type="button" class="btn btn-primary mr-1" @click="$data.$game.events.setPreset(\'gomoku\')">Gomoku</button>
+            <button type="button" class="btn btn-primary" @click="$data.$game.events.setPreset(\'tic-tac-toe\')">Tic-Tac-Toe</button>
         </div>
     </div>
     <div>

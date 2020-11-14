@@ -219,7 +219,7 @@
                                         </button>
                                     </div>
                                     <div class="col">
-                                        <button type="button" class="btn btn-block btn-outline-secondary" @click="$root.viewGameConfig = !$root.viewGameConfig;">Config</button>
+                                        <button type="button" class="btn btn-block btn-outline-secondary" @click="$root.events.viewConfig()">Config</button>
                                     </div>
                                 </div>
                             </div>
@@ -247,24 +247,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div v-if="$root.viewGameConfig"
-             style="display: none;" v-show="true"
-             class="modal__dialog-wrap dialog--config"
-             @click="$root.viewGameConfig = false;"
-             @keydown.esc="$root.viewGameConfig = false;"
-             tabindex="0"
-             v-focus>
-
-            <div style="position: fixed; top: 24px; right: 24px; font-size: 5em; color: white; cursor: pointer; line-height: 1em; z-index: 1;">
-                <i class="fas fa-window-close"></i>
-            </div>
-            <div class="modal__dialog" @click.stop="">
-                <div class="modal__dialog__content">
-                    <config-panel></config-panel>
                 </div>
             </div>
         </div>
