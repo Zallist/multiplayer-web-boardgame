@@ -1108,9 +1108,9 @@ app.main = (function () {
         viewModel.customization = {
             picker: 'piece',
             allPieces: [
-                makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceBottom: '0%', faceLeft: '20%', faceRight: '20%' }),
-                makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceBottom: '50%', faceLeft: '30%', faceRight: '30%' }),
-                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '30%', faceBottom: '30%', faceLeft: '25%', faceRight: '25%' }),
+                makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceLeft: '20%', faceHeight: '70%', faceWidth: '60%' }),
+                makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceLeft: '30%', faceHeight: '60%', faceWidth: '40%' }),
+                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '35%', faceLeft: '25%', faceHeight: '40%', faceWidth: '50%' }),
             ],
             allFaces: [
                 makeFace('assets/avatar/faces/Happy.svg', { })
@@ -1262,10 +1262,10 @@ app.main = (function () {
          v-if="player.metadata.avatar.value.face"
          :style="{ 
              'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',
+             'top': player.metadata.avatar.value.piece.options.faceTop,
              'left': player.metadata.avatar.value.piece.options.faceLeft,
-             'right': player.metadata.avatar.value.piece.options.faceRight,
-             'bottom': player.metadata.avatar.value.piece.options.faceBottom,
-             'top': player.metadata.avatar.value.piece.options.faceTop
+             'width': player.metadata.avatar.value.piece.options.faceWidth,
+             'height': player.metadata.avatar.value.piece.options.faceHeight
          }"></div>
 </div>
 

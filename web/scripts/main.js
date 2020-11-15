@@ -843,9 +843,9 @@ app.main = (function () {
         viewModel.customization = {
             picker: 'piece',
             allPieces: [
-                makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceBottom: '0%', faceLeft: '20%', faceRight: '20%' }),
-                makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceBottom: '50%', faceLeft: '30%', faceRight: '30%' }),
-                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '30%', faceBottom: '30%', faceLeft: '25%', faceRight: '25%' }),
+                makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceLeft: '20%', faceHeight: '70%', faceWidth: '60%' }),
+                makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceLeft: '30%', faceHeight: '60%', faceWidth: '40%' }),
+                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '35%', faceLeft: '25%', faceHeight: '40%', faceWidth: '50%' }),
             ],
             allFaces: [
                 makeFace('assets/avatar/faces/Happy.svg', {})
@@ -953,7 +953,7 @@ app.main = (function () {
         });
         page.pageVue.component('player-avatar', {
             props: ['player'],
-            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'left': player.metadata.avatar.value.piece.options.faceLeft,\n             'right': player.metadata.avatar.value.piece.options.faceRight,\n             'bottom': player.metadata.avatar.value.piece.options.faceBottom,\n             'top': player.metadata.avatar.value.piece.options.faceTop\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
+            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.options.faceTop,\n             'left': player.metadata.avatar.value.piece.options.faceLeft,\n             'width': player.metadata.avatar.value.piece.options.faceWidth,\n             'height': player.metadata.avatar.value.piece.options.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
         });
         // Borrowed from https://codepen.io/square0225/pen/QdvLQg
         page.pageVue.component('fill-circle', {
