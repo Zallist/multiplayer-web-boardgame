@@ -60,7 +60,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <div class="row">
                     <div v-for="piece in group.pieces"
                          class="col">
-                        <div class="piece"
+                        <div class="piece ratio-square"
                              :class="{ 
                                 'piece--placable': $data.$vm.gameState.currentTurn === $data.$vm.player.id && $data.$vm.gameState.game.currentRoll !== null && piece.x === null && piece.y === null && !piece.finished && piece.playerId === $data.$vm.player.id,
                                 'piece--selected': $data.$game.selectedPiece === piece || ($data.$game.selectedCell !== null && $data.$game.selectedCell.x === piece.x && $data.$game.selectedCell.y === piece.y),
