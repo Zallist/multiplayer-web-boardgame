@@ -843,12 +843,78 @@ app.main = (function () {
         viewModel.customization = {
             picker: 'piece',
             allPieces: [
-                makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceLeft: '20%', faceHeight: '70%', faceWidth: '60%' }),
-                makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceLeft: '30%', faceHeight: '60%', faceWidth: '40%' }),
-                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '35%', faceLeft: '25%', faceHeight: '40%', faceWidth: '50%' }),
+                /*
+powershell: Get-ChildItem  -File -Name
+
+regex find: (.+)
+regex replace: makePiece('assets/avatar/pieces/$1', { faceTop: '10%', faceLeft: '10%', faceWidth: '80%', faceHeight: '80%' }),
+
+apple.svg
+balloon.svg
+barrel.svg
+baseball.svg
+box.svg
+bunny.svg
+carton.svg
+cloud.svg
+Controller.svg
+crown.svg
+cup.svg
+cupcake.svg
+eyeball.svg
+Flower.svg
+flower2.svg
+ghost.svg
+heart.svg
+icecream2.svg
+kitty.svg
+lemon.svg
+mug.svg
+nose.svg
+poop.svg
+skull2.svg
+taco.svg
+teddy.svg
+tooth.svg
+tophat.svg
+tree.svg
+witch.svg
+*/
+                makePiece('assets/avatar/pieces/apple.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '70%' }),
+                makePiece('assets/avatar/pieces/balloon.svg', { faceTop: '15%', faceLeft: '15%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/barrel.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/baseball.svg', { faceTop: '20%', faceLeft: '30%', faceWidth: '40%', faceHeight: '60%' }),
+                makePiece('assets/avatar/pieces/box.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/bunny.svg', { faceTop: '50%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/carton.svg', { faceTop: '40%', faceLeft: '30%', faceWidth: '25%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/cloud.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/Controller.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
+                makePiece('assets/avatar/pieces/crown.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/cup.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/cupcake.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/eyeball.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/flower2.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/ghost.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/heart.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/icecream2.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/kitty.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/lemon.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/mug.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/nose.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/poop.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/skull2.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/taco.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
             ],
             allFaces: [
-                makeFace('assets/avatar/faces/Happy.svg', {})
+                makeFace('assets/avatar/faces/Happy.svg', {}),
+                makeFace('assets/avatar/faces/Laugh.svg', {}),
+                makeFace('assets/avatar/faces/Laughalt.svg', {}),
             ],
             availableColors: [],
             availablePieces: [],
@@ -860,9 +926,11 @@ app.main = (function () {
                         break;
                     case 'face':
                         viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), 3);
+                        viewModel.customization.availableFaces = viewModel.customization.allFaces;
                         break;
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), 6);
+                        viewModel.customization.availablePieces = viewModel.customization.allPieces;
                         break;
                 }
             },

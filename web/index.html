@@ -107,7 +107,7 @@
                         <div class="d-flex flex-columns align-content-center flex-wrap justify-content-around">
                             <div v-if="$root.customization.picker === 'piece'"
                                  v-for="(item, index) in $root.customization.availablePieces" 
-                                 :class="'mt-3 order-' + index">
+                                 :class="'mt-3 order-' + Math.min(index,12)">
 
                                 <button type="button" class="btn btn-icon btn-icon--populated"
                                         @click="$root.customization.selectPiece(item)">
@@ -117,7 +117,7 @@
                             </div>
                             <div v-else-if="$root.customization.picker === 'face'"
                                  v-for="(item, index) in $root.customization.availableFaces"
-                                 :class="'mt-3 order-' + (index + 3)">
+                                 :class="'mt-3 order-' + Math.min(index + 3,12)">
 
                                 <button type="button" class="btn btn-icon btn-icon--populated"
                                         @click="$root.customization.selectFace(item)">
@@ -126,7 +126,7 @@
                             </div>
                             <div v-else
                                  v-for="(item, index) in $root.customization.availableColors"
-                                 :class="'mt-3 order-' + index">
+                                 :class="'mt-3 order-' + Math.min(index,12)">
 
                                  <button type="button" class="btn btn-icon"
                                          @click="$root.player.metadata.color = item;"
