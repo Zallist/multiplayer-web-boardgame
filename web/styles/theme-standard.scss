@@ -304,6 +304,7 @@ h1 {
         }
         @include addButton('btn-color-wheel', 'images/standard/icons/ColorPicker.svg');
         @include addButton('btn-refresh', 'images/standard/icons/Refresh.svg');
+        @include addButton('btn-cancel', 'images/standard/icons/Cancel.svg');
 
         @include addButton('btn-icon--populated', null);
 
@@ -427,5 +428,26 @@ h1 {
         &.game__over__reason--tie {
             background-image: url('images/standard/game_over_tie.svg');
         }
+    }
+}
+
+.picker-arrow {
+    .picker-arrow-content {
+        display: none;
+    }
+
+    &.picker-arrow--left:after,
+    &.picker-arrow--right:after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 60px;
+        background-image: url('images/standard/RightArrowWBorder.svg') !important;
+        background-repeat: no-repeat;
+        background-size: contain !important;
+        background-position: center center !important;
+    }
+    &.picker-arrow--left:after {
+        transform: scaleX(-1);
     }
 }

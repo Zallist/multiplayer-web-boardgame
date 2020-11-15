@@ -1109,6 +1109,7 @@ app.main = (function () {
             picker: 'piece',
             allPieces: [
                 makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceBottom: '0%', faceLeft: '20%', faceRight: '20%' }),
+                makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceBottom: '50%', faceLeft: '30%', faceRight: '30%' }),
             ],
             allFaces: [
                 makeFace('assets/avatar/faces/Happy.svg', { })
@@ -1124,7 +1125,7 @@ app.main = (function () {
                         viewModel.customization.availableColors = randomColor({ luminosity: 'bright', count: 6 });
                         break;
                     case 'face':
-                        viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), 6);
+                        viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), 3);
                         break;
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), 6);
@@ -1137,24 +1138,24 @@ app.main = (function () {
 
                 if (!_.isObject(viewModel.player.metadata.avatar.value)) {
                     viewModel.player.metadata.avatar.value = {
-                        piece: viewModel.customization.availablePieces[0],
-                        face: viewModel.customization.availableFaces[0]
+                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
+                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
                     };
                 }
 
-                viewModel.player.metadata.avatar.value.piece = piece;
+                viewModel.player.metadata.avatar.value.piece = _.cloneDeep(piece);
             },
             selectFace: function (face) {
                 viewModel.player.metadata.avatar.type = 'piece';
 
                 if (!_.isObject(viewModel.player.metadata.avatar.value)) {
                     viewModel.player.metadata.avatar.value = {
-                        piece: viewModel.customization.availablePieces[0],
-                        face: viewModel.customization.availableFaces[0]
+                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
+                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
                     };
                 }
 
-                viewModel.player.metadata.avatar.value.face = face;
+                viewModel.player.metadata.avatar.value.face = _.cloneDeep(face);
             }
         };
         viewModel.customization.refreshPicker('color');
@@ -1257,6 +1258,7 @@ app.main = (function () {
          }"></div>
          
     <div class="avatar__piece-face"
+         v-if="player.metadata.avatar.value.face"
          :style="{ 
              'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',
              'left': player.metadata.avatar.value.piece.options.faceLeft,

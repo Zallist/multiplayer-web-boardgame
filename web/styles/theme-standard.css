@@ -348,6 +348,18 @@ h1 {
 .btn.btn-icon.btn-refresh > i:before {
   content: "";
 }
+.btn.btn-icon.btn-cancel > i {
+  display: block;
+  background-image: url("images/standard/icons/Cancel.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-cancel > i:before {
+  content: "";
+}
 .btn.btn-icon.btn-icon--populated > i {
   display: block;
   width: 100%;
@@ -466,4 +478,21 @@ h1 {
 }
 .modal-dialog.modal-dialog--game-over .game__over__reason.game__over__reason--tie {
   background-image: url("images/standard/game_over_tie.svg");
+}
+
+.picker-arrow .picker-arrow-content {
+  display: none;
+}
+.picker-arrow.picker-arrow--left:after, .picker-arrow.picker-arrow--right:after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 60px;
+  background-image: url("images/standard/RightArrowWBorder.svg") !important;
+  background-repeat: no-repeat;
+  background-size: contain !important;
+  background-position: center center !important;
+}
+.picker-arrow.picker-arrow--left:after {
+  transform: scaleX(-1);
 }
