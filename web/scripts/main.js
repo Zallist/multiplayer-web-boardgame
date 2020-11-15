@@ -885,6 +885,21 @@ app.main = (function () {
                     };
                 }
                 viewModel.player.metadata.avatar.value.face = _.cloneDeep(face);
+            },
+            pieceClick: function (player, x, y, element) {
+                var face, piece, xPercent, yPercent;
+                if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
+                    piece = player.metadata.avatar.value.piece;
+                    face = player.metadata.avatar.value.face;
+                    if (face && piece) {
+                        xPercent = x / element.offsetWidth;
+                        yPercent = y / element.offsetHeight;
+                        xPercent = xPercent - (Number(piece.options.faceWidth.replace(/\%/g, '')) / 200);
+                        yPercent = yPercent - (Number(piece.options.faceHeight.replace(/\%/g, '')) / 200);
+                        piece.options.faceLeft = (xPercent * 100) + '%';
+                        piece.options.faceTop = (yPercent * 100) + '%';
+                    }
+                }
             }
         };
         viewModel.customization.refreshPicker('color');
@@ -952,8 +967,8 @@ app.main = (function () {
             }
         });
         page.pageVue.component('player-avatar', {
-            props: ['player'],
-            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.options.faceTop,\n             'left': player.metadata.avatar.value.piece.options.faceLeft,\n             'width': player.metadata.avatar.value.piece.options.faceWidth,\n             'height': player.metadata.avatar.value.piece.options.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
+            props: ['player', 'faceDrag'],
+            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     @click=\"$root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget);\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.options.faceTop,\n             'left': player.metadata.avatar.value.piece.options.faceLeft,\n             'width': player.metadata.avatar.value.piece.options.faceWidth,\n             'height': player.metadata.avatar.value.piece.options.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
         });
         // Borrowed from https://codepen.io/square0225/pen/QdvLQg
         page.pageVue.component('fill-circle', {

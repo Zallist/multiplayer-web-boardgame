@@ -1157,6 +1157,27 @@ app.main = (function () {
                 }
 
                 viewModel.player.metadata.avatar.value.face = _.cloneDeep(face);
+            },
+
+            pieceClick: function (player, x, y, element) {
+                let face, piece,
+                    xPercent, yPercent;
+
+                if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
+                    piece = player.metadata.avatar.value.piece;
+                    face = player.metadata.avatar.value.face;
+
+                    if (face && piece) {
+                        xPercent = x / element.offsetWidth;
+                        yPercent = y / element.offsetHeight;
+
+                        xPercent = xPercent - (Number(piece.options.faceWidth.replace(/\%/g, '')) / 200);
+                        yPercent = yPercent - (Number(piece.options.faceHeight.replace(/\%/g, '')) / 200);
+
+                        piece.options.faceLeft = (xPercent * 100) + '%';
+                        piece.options.faceTop = (yPercent * 100) + '%';
+                    }
+                }
             }
         };
         viewModel.customization.refreshPicker('color');
@@ -1236,14 +1257,15 @@ app.main = (function () {
         });
 
         page.pageVue.component('player-avatar', {
-            props: ['player'],
+            props: ['player', 'faceDrag'],
             template: `
 <i v-if="player.metadata.avatar.type=='css-class'"
     :class="player.metadata.avatar.value"
     :style="{ 'color': player.metadata.color }"></i>
     
 <div v-else-if="player.metadata.avatar.type=='piece'"
-     class="avatar__piece-wrap">
+     class="avatar__piece-wrap"
+     @click="$root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget);">
      
     <div class="avatar__piece-piece"
          :style="{ 
