@@ -919,18 +919,21 @@ witch.svg
             availableColors: [],
             availablePieces: [],
             availableFaces: [],
+            colorAmount: 6,
+            faceAmount: 3,
+            pieceAmount: 6,
             refreshPicker: function (picker) {
                 switch (picker || viewModel.customization.picker) {
                     case 'color':
-                        viewModel.customization.availableColors = randomColor({ luminosity: 'bright', count: 6 });
+                        viewModel.customization.availableColors = randomColor({ luminosity: 'bright', count: viewModel.customization.colorAmount });
                         break;
                     case 'face':
-                        viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), 3);
+                        viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);
                         viewModel.customization.availableFaces = viewModel.customization.allFaces;
                         break;
                     case 'piece':
-                        viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), 6);
-                        viewModel.customization.availablePieces = viewModel.customization.allPieces;
+                        viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
+                        //viewModel.customization.availablePieces = viewModel.customization.allPieces;
                         break;
                 }
             },
