@@ -1155,27 +1155,27 @@ witch.svg
                 makePiece('assets/avatar/pieces/carton.svg', { faceTop: '40%', faceLeft: '30%', faceWidth: '25%', faceHeight: '40%' }),
                 makePiece('assets/avatar/pieces/cloud.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/Controller.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
-                makePiece('assets/avatar/pieces/crown.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/cup.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/cupcake.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/eyeball.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/flower2.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/crown.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
+                makePiece('assets/avatar/pieces/cup.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/cupcake.svg', { faceTop: '50%', faceLeft: '25%', faceWidth: '50%', faceHeight: '20%' }),
+                makePiece('assets/avatar/pieces/eyeball.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
+                makePiece('assets/avatar/pieces/flower2.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
                 makePiece('assets/avatar/pieces/ghost.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/heart.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/icecream2.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/kitty.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/icecream2.svg', { faceTop: '10%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/kitty.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/lemon.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/mug.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/nose.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/poop.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/skull2.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/taco.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/mug.svg', { faceTop: '42%', faceLeft: '15%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/nose.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/poop.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/skull2.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/taco.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
+                makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '45%' }),
                 makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
+                makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '33%', faceWidth: '37%', faceHeight: '38%' }),
             ],
             allFaces: [
                 makeFace('assets/avatar/faces/Happy.svg', { }),
@@ -1232,6 +1232,9 @@ witch.svg
                 let face, piece,
                     xPercent, yPercent;
 
+                function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
+                function makePercent(num: number) : string { return num + '%'; }
+
                 if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
                     piece = player.metadata.avatar.value.piece;
                     face = player.metadata.avatar.value.face;
@@ -1240,11 +1243,49 @@ witch.svg
                         xPercent = x / element.offsetWidth;
                         yPercent = y / element.offsetHeight;
 
-                        xPercent = xPercent - (Number(piece.options.faceWidth.replace(/\%/g, '')) / 200);
-                        yPercent = yPercent - (Number(piece.options.faceHeight.replace(/\%/g, '')) / 200);
+                        xPercent = xPercent - (makeNumber(piece.options.faceWidth) / 200);
+                        yPercent = yPercent - (makeNumber(piece.options.faceHeight) / 200);
 
-                        piece.options.faceLeft = (xPercent * 100) + '%';
-                        piece.options.faceTop = (yPercent * 100) + '%';
+                        piece.options.faceLeft = makePercent(xPercent * 100);
+                        piece.options.faceTop = makePercent(yPercent * 100);
+                    }
+                }
+            },
+
+            pieceZoomed: function (player, delta, element) {
+                let face, piece;
+
+                function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
+                function makePercent(num: number) : string { return num + '%'; }
+
+                if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
+                    piece = player.metadata.avatar.value.piece;
+                    face = player.metadata.avatar.value.face;
+                
+                    if (face && piece) {
+                        // negative = get bigger = zoom
+                        // positive = get smaller = zoom out
+
+                        if (delta < 0) {
+                            if (makeNumber(piece.options.faceWidth) > 100 || makeNumber(piece.options.faceHeight) > 100) {
+                                return;
+                            }
+                            
+                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) - 1);
+                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) - 1);
+                            piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) + 1);
+                            piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) + 1);
+                        }
+                        else {                            
+                            if (makeNumber(piece.options.faceWidth) < 5 || makeNumber(piece.options.faceHeight) < 5) {
+                                return;
+                            }
+
+                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) + 1);
+                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) + 1);
+                            piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) - 1);
+                            piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) - 1);
+                        }
                     }
                 }
             }
@@ -1334,7 +1375,10 @@ witch.svg
     
 <div v-else-if="player.metadata.avatar.type=='piece'"
      class="avatar__piece-wrap"
-     v-on="customize ? { click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); } } : {}">
+     v-on="customize ? { 
+        click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); },
+        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoomed(player, $event.deltaY, $event.currentTarget); }
+    } : {}">
      
     <div class="avatar__piece-piece"
          :style="{ 
