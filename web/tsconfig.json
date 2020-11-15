@@ -5,7 +5,10 @@
     "removeComments": false,
     "sourceMap": true,
     "target": "es5",
-    "outDir": "./"
+    "outDir": "./",
+    "typeRoots": [
+      "./scripts/types/*.d.ts"
+    ]
   },
   "compileOnSave": true,
   "include": [ "./**/*.ts", "./*.ts" ]

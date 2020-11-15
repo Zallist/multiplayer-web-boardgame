@@ -1,8 +1,11 @@
-declare var Vue: any;
-declare var _: any;
-declare var chance: any;
-declare var axios: any;
-declare var signalR: any;
+/// <reference path="types/anyObj.d.ts" />
+/// <reference path="types/player.d.ts" />
+
+declare var Vue: anyObj;
+declare var _: anyObj;
+declare var chance: anyObj;
+declare var axios: anyObj;
+declare var signalR: anyObj;
 declare var randomColor: any;
 
 var app = app || {};
@@ -10,7 +13,7 @@ var app = app || {};
 app.main = (function () {
     let viewModel;
 
-    const page: any = {
+    const page: anyObj = {
         helpers: {
             getUrlParameter: function (key, useHash) {
                 let urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
@@ -241,7 +244,7 @@ app.main = (function () {
         connect: function () {
             function onConnected() {
                 setInterval(function () {
-                    let hostPlayer, currentPlayer;
+                    let hostPlayer: Player, currentPlayer: Player;
 
                     if (viewModel.gameState.started) {
                         if (viewModel.isHost) {
@@ -327,7 +330,7 @@ app.main = (function () {
         },
 
         handleData: function (fromPlayerId, data) {
-            let fromPlayer, playerIndex;
+            let fromPlayer: Player, playerIndex;
 
             fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
@@ -513,7 +516,7 @@ app.main = (function () {
 
     const viewModelFunctions = {
         getHelpers: function (viewModel) {
-            const helpers: any = {};
+            const helpers: anyObj = {};
 
             helpers.addMessage = function (playerId, message, color) {
                 let doScroll = false,
@@ -595,11 +598,11 @@ app.main = (function () {
                 }
             };
 
-            let unknownPlayer = null,
-                systemPlayer = null;
+            let unknownPlayer: Player = null,
+                systemPlayer: Player = null;
 
-            helpers.getPlayer = function (playerId, returnNullIfNotFound) {
-                let player = null;
+            helpers.getPlayer = function (playerId, returnNullIfNotFound): Player {
+                let player: Player = null;
 
                 if (!playerId) {
                     if (!systemPlayer) {
@@ -706,7 +709,7 @@ app.main = (function () {
             };
 
             helpers.doStartTurn = function () {
-                let currentPlayer = helpers.getPlayer(viewModel.gameState.currentTurn);
+                let currentPlayer: Player = helpers.getPlayer(viewModel.gameState.currentTurn);
 
                 if (currentPlayer.id) {
                     helpers.addMessage(null, "It's " + currentPlayer.name + "'" + (_.endsWith(currentPlayer.name, 's') ? "" : "s") + " turn", currentPlayer.metadata.color);
@@ -798,10 +801,10 @@ app.main = (function () {
         },
 
         getMakers: function (viewModel) {
-            const makers: any = {};
+            const makers: anyObj = {};
 
-            makers.makePlayer = function (player) {
-                player = _.merge({
+            makers.makePlayer = function (defaults: anyObj): Player {
+                const player: Player = _.merge({
                     id: null,
                     name: null,
                     isHost: false,
@@ -828,7 +831,7 @@ app.main = (function () {
                             timesHacked: 0
                         }
                     }
-                }, player);
+                }, defaults);
 
                 if (viewModel.player && player.id === viewModel.player.id) {
                     // Make sure we don't screw with stats if we're talking about the current player
@@ -842,7 +845,7 @@ app.main = (function () {
         },
 
         getEvents: function (viewModel) {
-            const events: any = {};
+            const events: anyObj = {};
 
             events.toggleReady = function () {
                 viewModel.player.isReady = !viewModel.player.isReady;
@@ -937,7 +940,7 @@ app.main = (function () {
                 });
             };
             events.viewStats = function (playerId) {
-                var player, you = false;
+                let player: Player, you = false;
 
                 if (!playerId || playerId === viewModel.player.id) {
                     playerId = viewModel.player.id;
@@ -986,7 +989,7 @@ app.main = (function () {
         },
 
         getComputed: function (viewModel) {
-            const computed: any = {};
+            const computed: anyObj = {};
 
             computed.anyReady = Vue.computed(function () {
                 let players;
@@ -1036,7 +1039,7 @@ app.main = (function () {
     };
 
     function makeVM() {
-        const viewModel = Vue.reactive({
+        const viewModel: { player: Player } & anyObj = Vue.reactive({
             computed: {},
             events: {},
             helpers: {},
@@ -1057,7 +1060,7 @@ app.main = (function () {
         viewModel.player = viewModel.makers.makePlayer({
             id: null,
             name: null
-        });
+        }) as Player;
 
         viewModel.messages = [];
 
@@ -1085,7 +1088,79 @@ app.main = (function () {
         viewModel.gamePanelWidth = window.innerWidth;
 
         // Config stuff
-        viewModel.availableColors = randomColor({ luminosity: 'bright', count: 12 });
+        function makePiece(svgUrl, options) {
+            const item = {
+                url: svgUrl,
+                options: options || {}
+            };
+
+            return item;
+        }
+        function makeFace(svgUrl, options) {
+            const item = {
+                url: svgUrl,
+                options: options || {}
+            };
+
+            return item;
+        }
+
+        viewModel.customization = {
+            picker: 'piece',
+            allPieces: [
+                makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceBottom: '0%', faceLeft: '20%', faceRight: '20%' }),
+            ],
+            allFaces: [
+                makeFace('assets/avatar/faces/Happy.svg', { })
+            ],
+
+            availableColors: [],
+            availablePieces: [],
+            availableFaces: [],
+
+            refreshPicker: function (picker) {
+                switch (picker || viewModel.customization.picker) {
+                    case 'color':
+                        viewModel.customization.availableColors = randomColor({ luminosity: 'bright', count: 6 });
+                        break;
+                    case 'face':
+                        viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), 6);
+                        break;
+                    case 'piece':
+                        viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), 6);
+                        break;
+                }
+            },
+
+            selectPiece: function (piece) {
+                viewModel.player.metadata.avatar.type = 'piece';
+
+                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
+                    viewModel.player.metadata.avatar.value = {
+                        piece: viewModel.customization.availablePieces[0],
+                        face: viewModel.customization.availableFaces[0]
+                    };
+                }
+
+                viewModel.player.metadata.avatar.value.piece = piece;
+            },
+            selectFace: function (face) {
+                viewModel.player.metadata.avatar.type = 'piece';
+
+                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
+                    viewModel.player.metadata.avatar.value = {
+                        piece: viewModel.customization.availablePieces[0],
+                        face: viewModel.customization.availableFaces[0]
+                    };
+                }
+
+                viewModel.player.metadata.avatar.value.face = face;
+            }
+        };
+        viewModel.customization.refreshPicker('color');
+        viewModel.customization.refreshPicker('face');
+        viewModel.customization.refreshPicker('piece');
+
         viewModel.availableAvatarCssClasses = [
             { cssClass: 'fas fa-apple-alt', id: 'apple-alt' },
             { cssClass: 'fas fa-bread-slice', id: 'bread-slice' },
@@ -1118,8 +1193,7 @@ app.main = (function () {
         }
 
         if (viewModel.player.metadata.avatar.value === null) {
-            viewModel.player.metadata.avatar.type = 'css-class';
-            viewModel.player.metadata.avatar.value = _.sample(viewModel.availableAvatarCssClasses).cssClass;
+            viewModel.customization.selectPiece(viewModel.customization.availablePieces[0]);
         }
 
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
@@ -1165,6 +1239,32 @@ app.main = (function () {
 <i v-if="player.metadata.avatar.type=='css-class'"
     :class="player.metadata.avatar.value"
     :style="{ 'color': player.metadata.color }"></i>
+    
+<div v-else-if="player.metadata.avatar.type=='piece'"
+     class="avatar__piece-wrap">
+     
+    <div class="avatar__piece-piece"
+         :style="{ 
+            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' 
+         }"></div>
+         
+    <div class="avatar__piece-piece-mask"
+         :style="{ 
+            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',
+            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',
+            'background-color': player.metadata.color,
+            'opacity': 0.5
+         }"></div>
+         
+    <div class="avatar__piece-face"
+         :style="{ 
+             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',
+             'left': player.metadata.avatar.value.piece.options.faceLeft,
+             'right': player.metadata.avatar.value.piece.options.faceRight,
+             'bottom': player.metadata.avatar.value.piece.options.faceBottom,
+             'top': player.metadata.avatar.value.piece.options.faceTop
+         }"></div>
+</div>
 
 <i v-else class="fas fa-question"
     :style="{ 'color': player.metadata.color }"></i>`

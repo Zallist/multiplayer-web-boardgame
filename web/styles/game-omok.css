@@ -32,16 +32,16 @@
 }
 .game__cell .omok__piece {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-flow: row;
-  align-items: center;
-  text-align: center;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
-.game__cell .omok__piece > i {
-  flex: 1;
+.game__cell .omok__piece > i.fas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 @keyframes wiggle {
   0% {
@@ -54,6 +54,6 @@
     transform: rotate(8deg);
   }
 }
-.game__cell .omok__piece.omok__piece--last-placed > i {
+.game__cell .omok__piece.omok__piece--last-placed {
   animation: wiggle 0.5s infinite;
 }

@@ -119,6 +119,30 @@ html {
   padding-top: 33%;
 }
 
+.avatar__piece-wrap {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.avatar__piece-wrap .avatar__piece-piece,
+.avatar__piece-wrap .avatar__piece-piece-mask,
+.avatar__piece-wrap .avatar__piece-face {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+}
+
 @media (max-width: 768px) {
   #time-tracker {
     border-radius: 0.5em 0 0 0;
@@ -172,4 +196,11 @@ html {
     display: table;
     clear: both;
   }
+}
+.ratio-square:before {
+  content: "";
+  display: block;
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
 }

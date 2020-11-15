@@ -205,6 +205,11 @@ body {
   border: none;
 }
 
+h1 {
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, -3px -3px 0 #192E58, -2px -3px 0 #192E58, -1px -3px 0 #192E58, 0px -3px 0 #192E58, 1px -3px 0 #192E58, 2px -3px 0 #192E58, 3px -3px 0 #192E58, -3px -2px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, 3px -2px 0 #192E58, -3px -1px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, 3px -1px 0 #192E58, -3px 0px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, 3px 0px 0 #192E58, -3px 1px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, 3px 1px 0 #192E58, -3px 2px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, 3px 2px 0 #192E58, -3px 3px 0 #192E58, -2px 3px 0 #192E58, -1px 3px 0 #192E58, 0px 3px 0 #192E58, 1px 3px 0 #192E58, 2px 3px 0 #192E58, 3px 3px 0 #192E58, -4px -4px 0 #192E58, -3px -4px 0 #192E58, -2px -4px 0 #192E58, -1px -4px 0 #192E58, 0px -4px 0 #192E58, 1px -4px 0 #192E58, 2px -4px 0 #192E58, 3px -4px 0 #192E58, 4px -4px 0 #192E58, -4px -3px 0 #192E58, -3px -3px 0 #192E58, -2px -3px 0 #192E58, -1px -3px 0 #192E58, 0px -3px 0 #192E58, 1px -3px 0 #192E58, 2px -3px 0 #192E58, 3px -3px 0 #192E58, 4px -3px 0 #192E58, -4px -2px 0 #192E58, -3px -2px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, 3px -2px 0 #192E58, 4px -2px 0 #192E58, -4px -1px 0 #192E58, -3px -1px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, 3px -1px 0 #192E58, 4px -1px 0 #192E58, -4px 0px 0 #192E58, -3px 0px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, 3px 0px 0 #192E58, 4px 0px 0 #192E58, -4px 1px 0 #192E58, -3px 1px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, 3px 1px 0 #192E58, 4px 1px 0 #192E58, -4px 2px 0 #192E58, -3px 2px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, 3px 2px 0 #192E58, 4px 2px 0 #192E58, -4px 3px 0 #192E58, -3px 3px 0 #192E58, -2px 3px 0 #192E58, -1px 3px 0 #192E58, 0px 3px 0 #192E58, 1px 3px 0 #192E58, 2px 3px 0 #192E58, 3px 3px 0 #192E58, 4px 3px 0 #192E58, -4px 4px 0 #192E58, -3px 4px 0 #192E58, -2px 4px 0 #192E58, -1px 4px 0 #192E58, 0px 4px 0 #192E58, 1px 4px 0 #192E58, 2px 4px 0 #192E58, 3px 4px 0 #192E58, 4px 4px 0 #192E58;
+  color: #FFF;
+}
+
 .input-group {
   border: 4px solid #192E58;
   border-radius: 4px;
@@ -257,6 +262,7 @@ body {
   text-align: center;
 }
 .btn.btn-icon.btn-config > i {
+  display: block;
   background-image: url("images/standard/icons/cog.svg");
   width: 100%;
   height: 100%;
@@ -268,6 +274,7 @@ body {
   content: "";
 }
 .btn.btn-icon.btn-stats > i {
+  display: block;
   background-image: url("images/standard/icons/trophy.svg");
   width: 100%;
   height: 100%;
@@ -279,6 +286,7 @@ body {
   content: "";
 }
 .btn.btn-icon.btn-help > i {
+  display: block;
   background-image: url("images/standard/icons/questionmark.svg");
   width: 100%;
   height: 100%;
@@ -289,10 +297,103 @@ body {
 .btn.btn-icon.btn-help > i:before {
   content: "";
 }
+.btn.btn-icon.btn-puzzle-piece > i {
+  display: block;
+  background-image: url("images/standard/icons/PiecePicker.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-puzzle-piece > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-face {
+  background-color: #b1ed58 !important;
+}
+.btn.btn-icon.btn-face > i {
+  display: block;
+  background-image: url("images/standard/icons/Face.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-face > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-color-wheel > i {
+  display: block;
+  background-image: url("images/standard/icons/ColorPicker.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-color-wheel > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-refresh > i {
+  display: block;
+  background-image: url("images/standard/icons/Refresh.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-refresh > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-icon--populated > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+.btn.btn-icon.btn-icon--populated > i:before {
+  content: "";
+}
 .btn.btn-icon:not(:disabled):hover, .btn.btn-icon:not(:disabled):active {
   color: #3058a7 !important;
   border-color: #3058a7 !important;
   box-shadow: 0px 8px 0 rgba(48, 88, 167, 0.8) !important;
+}
+
+.avatar__box {
+  background-color: #ebf9fe;
+  border: 8px solid #192E58;
+  border-top-left-radius: 15% 50%;
+  border-top-right-radius: 15% 50%;
+  border-bottom-left-radius: 15% 50%;
+  border-bottom-right-radius: 15% 50%;
+  position: relative;
+  overflow: hidden;
+}
+.avatar__box:after {
+  position: absolute;
+  top: 0;
+  bottom: 40%;
+  left: 0;
+  right: 0;
+  background-color: #FFF;
+  border-bottom-left-radius: 50% 20px;
+  border-bottom-right-radius: 50% 20px;
+  content: "";
+  z-index: 0;
+}
+.avatar__box .avatar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
 }
 
 .modal-content {
