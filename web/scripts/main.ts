@@ -1257,7 +1257,7 @@ app.main = (function () {
         });
 
         page.pageVue.component('player-avatar', {
-            props: ['player', 'faceDrag'],
+            props: ['player', 'customize'],
             template: `
 <i v-if="player.metadata.avatar.type=='css-class'"
     :class="player.metadata.avatar.value"
@@ -1265,7 +1265,7 @@ app.main = (function () {
     
 <div v-else-if="player.metadata.avatar.type=='piece'"
      class="avatar__piece-wrap"
-     @click="$root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget);">
+     v-on="customize ? { click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); } } : {}">
      
     <div class="avatar__piece-piece"
          :style="{ 
