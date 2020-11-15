@@ -111,6 +111,7 @@
 
                                 <button type="button" class="btn btn-icon btn-icon--populated"
                                         @click="$root.customization.selectPiece(item)">
+                                    <i style="float: left;" :style="{ 'mask-image': 'url(' + item.url + ')', '-webkit-mask-image': 'url(' + item.url + ')', 'background-color': $root.player.metadata.color, 'opacity': 0.5 }"></i>
                                     <i :style="{ 'background-image': 'url(' + item.url + ')' }"></i>
                                 </button>
                             </div>

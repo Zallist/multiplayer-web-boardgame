@@ -141,6 +141,8 @@ body {
     background-image: url('images/standard/avatar_box.svg');
     background-repeat: no-repeat;
     background-size: 100% 100%;
+
+    @include padChild(20%,20%,0%,0%);
     
     &.player--turn { border: none; background-image: url('images/standard/avatar_box_turn.svg'); }
     &.player--spectating { border: none; background-image: url('images/standard/avatar_box_spectating.svg'); }

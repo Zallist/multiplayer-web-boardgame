@@ -845,6 +845,7 @@ app.main = (function () {
             allPieces: [
                 makePiece('assets/avatar/pieces/Skull.svg', { faceTop: '30%', faceBottom: '0%', faceLeft: '20%', faceRight: '20%' }),
                 makePiece('assets/avatar/pieces/IceCream.svg', { faceTop: '10%', faceBottom: '50%', faceLeft: '30%', faceRight: '30%' }),
+                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '30%', faceBottom: '30%', faceLeft: '25%', faceRight: '25%' }),
             ],
             allFaces: [
                 makeFace('assets/avatar/faces/Happy.svg', {})

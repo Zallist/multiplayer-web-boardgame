@@ -114,6 +114,15 @@ body {
   background-image: url("images/standard/avatar_box.svg");
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  position: relative;
+}
+.player__avatar > *:nth-child(1) {
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  left: 0%;
+  right: 0%;
+  height: auto !important;
 }
 .player__avatar.player--turn {
   border: none;
@@ -142,6 +151,12 @@ body {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .player__avatar .player__avatar__stats .fa-cross:before {
   content: "";
@@ -153,6 +168,12 @@ body {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .player__avatar .player__avatar__stats .fa-trophy:before {
   content: "";
@@ -269,6 +290,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-config > i:before {
   content: "";
@@ -281,6 +308,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-stats > i:before {
   content: "";
@@ -293,6 +326,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-help > i:before {
   content: "";
@@ -305,6 +344,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-puzzle-piece > i:before {
   content: "";
@@ -320,6 +365,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-face > i:before {
   content: "";
@@ -332,6 +383,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-color-wheel > i:before {
   content: "";
@@ -344,6 +401,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-refresh > i:before {
   content: "";
@@ -356,6 +419,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-cancel > i:before {
   content: "";
@@ -367,6 +436,12 @@ h1 {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-icon--populated > i:before {
   content: "";
