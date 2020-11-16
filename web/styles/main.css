@@ -136,6 +136,16 @@ html {
   -webkit-mask-position: center center;
 }
 
+.game__landing {
+  backface-visibility: hidden;
+  perspective: 1000;
+  opacity: 0.7;
+  transition: opacity ease-in-out 0.25s;
+}
+.game__landing:hover {
+  opacity: 1;
+}
+
 @media (max-width: 768px) {
   #time-tracker {
     border-radius: 0.5em 0 0 0;

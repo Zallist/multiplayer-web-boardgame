@@ -274,8 +274,7 @@
                             <game-panel></game-panel>
 
                             <div v-if="!$root.gameState.started"
-                                 class="d-flex flex-column justify-content-center overflow-auto"
-                                 style="padding: 2em; background-color: rgba(0,0,0,0.15); box-shadow: 0 0 2em inset rgba(255,255,255,0.7)">
+                                 class="d-flex flex-column justify-content-center overflow-auto game__landing">
                                 
                                 <div class="align-self-center logo__main"></div>
                                 
@@ -345,7 +344,7 @@
                                 </button>
                             </div>
 
-                            <div class="mt-3">
+                            <div class="">
                                 <div class="player__avatars__box overflow-auto pb-2"
                                      style="position: relative;"
                                      @wheel.stop.prevent="$event.currentTarget.scrollLeft += $event.deltaY + $event.deltaX;">
