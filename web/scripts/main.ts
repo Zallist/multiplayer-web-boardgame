@@ -1361,7 +1361,7 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
         ];
 
         if (viewModel.player.name === null) {
-            viewModel.player.name = viewModel.customization.generateName;
+            viewModel.player.name = viewModel.customization.generateName();
         }
         if (viewModel.player.metadata.color === '#000') {
             viewModel.player.metadata.color = viewModel.customization.availableColors[0];
