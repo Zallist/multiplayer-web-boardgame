@@ -1201,6 +1201,8 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                 makeFace('assets/avatar/faces/ugh.svg', { }),
                 makeFace('assets/avatar/faces/uwu.svg', { }),
                 makeFace('assets/avatar/faces/wheat.svg', { }),
+                makeFace('assets/avatar/faces/pika.svg', { }),
+                makeFace('assets/avatar/faces/thonk.svg', { }),
             ],
 
             availableColors: [],
