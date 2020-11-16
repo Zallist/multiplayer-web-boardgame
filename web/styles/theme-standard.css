@@ -236,7 +236,7 @@ h1 {
 }
 .btn.btn-icon.btn-puzzle-piece > i {
   display: block;
-  background-image: url("images/standard/icons/PiecePicker.svg");
+  background-image: url("images/standard/icons/piecepicker.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -257,7 +257,7 @@ h1 {
 }
 .btn.btn-icon.btn-face > i {
   display: block;
-  background-image: url("images/standard/icons/Face.svg");
+  background-image: url("images/standard/icons/face.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -275,7 +275,7 @@ h1 {
 }
 .btn.btn-icon.btn-color-wheel > i {
   display: block;
-  background-image: url("images/standard/icons/ColorPicker.svg");
+  background-image: url("images/standard/icons/colorpicker.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -293,7 +293,7 @@ h1 {
 }
 .btn.btn-icon.btn-refresh > i {
   display: block;
-  background-image: url("images/standard/icons/Refresh.svg");
+  background-image: url("images/standard/icons/refresh.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -311,7 +311,7 @@ h1 {
 }
 .btn.btn-icon.btn-cancel > i {
   display: block;
-  background-image: url("images/standard/icons/Cancel.svg");
+  background-image: url("images/standard/icons/cancel.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -419,7 +419,7 @@ h1 {
   text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, -2px -2px 0 #000, -1px -2px 0 #000, 0px -2px 0 #000, 1px -2px 0 #000, 2px -2px 0 #000, -2px -1px 0 #000, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, 2px -1px 0 #000, -2px 0px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, 2px 0px 0 #000, -2px 1px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, 2px 1px 0 #000, -2px 2px 0 #000, -1px 2px 0 #000, 0px 2px 0 #000, 1px 2px 0 #000, 2px 2px 0 #000;
 }
 .avatar__box .player__avatar__stats .fa-cross {
-  background-image: url("images/standard/icons/SkullLose.svg");
+  background-image: url("images/standard/icons/skulllose.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -436,7 +436,7 @@ h1 {
   content: "";
 }
 .avatar__box .player__avatar__stats .fa-trophy {
-  background-image: url("images/standard/icons/Trophy.svg");
+  background-image: url("images/standard/icons/trophy.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
@@ -556,7 +556,7 @@ h1 {
   display: block;
   width: 60px;
   height: 60px;
-  background-image: url("images/standard/RightArrowWBorder.svg") !important;
+  background-image: url("images/standard/right_arrow_border.svg") !important;
   background-repeat: no-repeat;
   background-size: contain !important;
   background-position: center center !important;

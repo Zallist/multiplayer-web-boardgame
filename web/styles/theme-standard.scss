@@ -248,13 +248,13 @@ h1 {
         @include addButton('btn-config', 'images/standard/icons/cog.svg');
         @include addButton('btn-stats', 'images/standard/icons/trophy.svg');
         @include addButton('btn-help', 'images/standard/icons/questionmark.svg');
-        @include addButton('btn-puzzle-piece', 'images/standard/icons/PiecePicker.svg');
-        @include addButton('btn-face', 'images/standard/icons/Face.svg') {
+        @include addButton('btn-puzzle-piece', 'images/standard/icons/piecepicker.svg');
+        @include addButton('btn-face', 'images/standard/icons/face.svg') {
             background-color: $btnPrimaryColor !important;
         }
-        @include addButton('btn-color-wheel', 'images/standard/icons/ColorPicker.svg');
-        @include addButton('btn-refresh', 'images/standard/icons/Refresh.svg');
-        @include addButton('btn-cancel', 'images/standard/icons/Cancel.svg');
+        @include addButton('btn-color-wheel', 'images/standard/icons/colorpicker.svg');
+        @include addButton('btn-refresh', 'images/standard/icons/refresh.svg');
+        @include addButton('btn-cancel', 'images/standard/icons/cancel.svg');
 
         @include addButton('btn-icon--populated', null);
 
@@ -343,12 +343,12 @@ h1 {
 
     .player__avatar__stats {
         .fa-cross {
-            background-image: url('images/standard/icons/SkullLose.svg');
+            background-image: url('images/standard/icons/skulllose.svg');
             @include fillBackgroundImage(true);
             @include removeIconContent;
         }
         .fa-trophy {
-            background-image: url('images/standard/icons/Trophy.svg');
+            background-image: url('images/standard/icons/trophy.svg');
             @include fillBackgroundImage(true);
             @include removeIconContent;
         }
@@ -472,7 +472,7 @@ h1 {
         display: block;
         width: 60px;
         height: 60px;
-        background-image: url('images/standard/RightArrowWBorder.svg') !important;
+        background-image: url('images/standard/right_arrow_border.svg') !important;
         background-repeat: no-repeat;
         background-size: contain !important;
         background-position: center center !important;
