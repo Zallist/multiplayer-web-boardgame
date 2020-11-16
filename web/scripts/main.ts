@@ -1173,7 +1173,7 @@ witch.svg
                 makePiece('assets/avatar/pieces/taco.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
                 makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '45%' }),
-                makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                //makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
                 makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '33%', faceWidth: '37%', faceHeight: '38%' }),
             ],
