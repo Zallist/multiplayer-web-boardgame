@@ -1114,36 +1114,7 @@ powershell: Get-ChildItem  -File -Name
 regex find: (.+)
 regex replace: makePiece('assets/avatar/pieces/$1', { faceTop: '10%', faceLeft: '10%', faceWidth: '80%', faceHeight: '80%' }),
 
-apple.svg
-balloon.svg
-barrel.svg
-baseball.svg
-box.svg
-bunny.svg
-carton.svg
-cloud.svg
-Controller.svg
-crown.svg
-cup.svg
-cupcake.svg
-eyeball.svg
-Flower.svg
-flower2.svg
-ghost.svg
-heart.svg
-icecream2.svg
-kitty.svg
-lemon.svg
-mug.svg
-nose.svg
-poop.svg
-skull2.svg
-taco.svg
-teddy.svg
-tooth.svg
-tophat.svg
-tree.svg
-witch.svg
+
 */
 
                 makePiece('assets/avatar/pieces/apple.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '70%' }),
@@ -1166,6 +1137,7 @@ witch.svg
                 makePiece('assets/avatar/pieces/icecream2.svg', { faceTop: '10%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
                 makePiece('assets/avatar/pieces/kitty.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/lemon.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/moch.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/mug.svg', { faceTop: '42%', faceLeft: '15%', faceWidth: '50%', faceHeight: '40%' }),
                 makePiece('assets/avatar/pieces/nose.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
                 makePiece('assets/avatar/pieces/poop.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
@@ -1173,7 +1145,7 @@ witch.svg
                 makePiece('assets/avatar/pieces/taco.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
                 makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
                 makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '45%' }),
-                //makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
                 makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
                 makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '33%', faceWidth: '37%', faceHeight: '38%' }),
             ],
@@ -1184,35 +1156,51 @@ powershell: Get-ChildItem  -File -Name
 regex find: (.+)
 regex replace: makeFace('assets/avatar/faces/$1', { }),
 
-angry.svg
-eyes.svg
-eyes2.svg
-hap.svg
-Hap2.svg
-Hap3.svg
-Laughalt.svg
-nyheh.svg
-owo.svg
-spook.svg
-spook2.svg
-spookihap.svg
-spookihap2.svg
-uwu.svg
 */
                 makeFace('assets/avatar/faces/angry.svg', { }),
+                makeFace('assets/avatar/faces/cray.svg', { }),
+                makeFace('assets/avatar/faces/crayeyes.svg', { }),
                 makeFace('assets/avatar/faces/eyes.svg', { }),
                 makeFace('assets/avatar/faces/eyes2.svg', { }),
+                makeFace('assets/avatar/faces/eyes3.svg', { }),
+                makeFace('assets/avatar/faces/eyes4.svg', { }),
                 makeFace('assets/avatar/faces/hap.svg', { }),
                 makeFace('assets/avatar/faces/Hap2.svg', { }),
                 makeFace('assets/avatar/faces/Hap3.svg', { }),
+                makeFace('assets/avatar/faces/hap4.svg', { }),
+                makeFace('assets/avatar/faces/hap5.svg', { }),
+                makeFace('assets/avatar/faces/hap6.svg', { }),
+                makeFace('assets/avatar/faces/happi.svg', { }),
+                makeFace('assets/avatar/faces/hearthap.svg', { }),
+                makeFace('assets/avatar/faces/hee.svg', { }),
+                makeFace('assets/avatar/faces/hmm.svg', { }),
+                makeFace('assets/avatar/faces/hmm2.svg', { }),
+                makeFace('assets/avatar/faces/hmm3.svg', { }),
+                makeFace('assets/avatar/faces/hmph.svg', { }),
+                makeFace('assets/avatar/faces/hnrgh.svg', { }),
+                makeFace('assets/avatar/faces/kitti.svg', { }),
                 makeFace('assets/avatar/faces/Laughalt.svg', { }),
+                makeFace('assets/avatar/faces/moch.svg', { }),
+                makeFace('assets/avatar/faces/nyah.svg', { }),
                 makeFace('assets/avatar/faces/nyheh.svg', { }),
+                makeFace('assets/avatar/faces/nyheh2.svg', { }),
+                makeFace('assets/avatar/faces/nyheh3.svg', { }),
                 makeFace('assets/avatar/faces/owo.svg', { }),
+                makeFace('assets/avatar/faces/owo2.svg', { }),
+                makeFace('assets/avatar/faces/pumkin.svg', { }),
+                makeFace('assets/avatar/faces/scared.svg', { }),
+                makeFace('assets/avatar/faces/scaredhap.svg', { }),
+                makeFace('assets/avatar/faces/scurry.svg', { }),
                 makeFace('assets/avatar/faces/spook.svg', { }),
                 makeFace('assets/avatar/faces/spook2.svg', { }),
                 makeFace('assets/avatar/faces/spookihap.svg', { }),
                 makeFace('assets/avatar/faces/spookihap2.svg', { }),
+                makeFace('assets/avatar/faces/spookihap3.svg', { }),
+                makeFace('assets/avatar/faces/spookihap4.svg', { }),
+                makeFace('assets/avatar/faces/stars.svg', { }),
+                makeFace('assets/avatar/faces/ugh.svg', { }),
                 makeFace('assets/avatar/faces/uwu.svg', { }),
+                makeFace('assets/avatar/faces/wheat.svg', { }),
             ],
 
             availableColors: [],
@@ -1220,7 +1208,7 @@ uwu.svg
             availableFaces: [],
 
             colorAmount: 6,
-            faceAmount: 3,
+            faceAmount: 5,
             pieceAmount: 6,
 
             refreshPicker: function (picker) {
