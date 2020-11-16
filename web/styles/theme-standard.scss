@@ -312,7 +312,8 @@ h1 {
     }
     
     @mixin insetBoxShadow($color) {
-        box-shadow: 0px 0px 0px 4px inset $color;
+        box-shadow: 0px 0px 0px 4px inset $color,
+            0px 8px 0 transparentize($color: $backgroundColor, $amount: 0.2);
     }
 
     @include insetBoxShadow($panelBorderColor);
@@ -372,14 +373,25 @@ h1 {
     position: relative;
     overflow: hidden;
 
-    box-shadow: 0px 0px 0px 4px inset $panelBorderColor;
+    box-shadow: 0px 0px 0px 4px inset $panelBorderColor,
+        0px 8px 0 transparentize($color: $backgroundColor, $amount: 0.2);
 
     .chat__messages {
         position: absolute;
-        top: 4px; bottom: 4px;
+        top: 4px; bottom: 24px;
         left: calc(5% + 4px); right: calc(5% + 4px);
         height: auto;
     }
+}
+.chat__entry {    
+    position: absolute;
+    bottom: 0;
+    left: 24px;
+    right: 24px;
+    background: $backgroundColor;
+    overflow: hidden;
+    width: auto;
+    margin: 0 !important;
 }
 
 .modal-content {

@@ -379,7 +379,7 @@ h1 {
   border-bottom-right-radius: 15% 50%;
   position: relative;
   overflow: hidden;
-  box-shadow: 0px 0px 0px 4px inset #1b75ba;
+  box-shadow: 0px 0px 0px 4px inset #1b75ba, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box .avatar {
   position: absolute;
@@ -389,19 +389,19 @@ h1 {
   right: 8px;
 }
 .avatar__box.avatar__box--spectating {
-  box-shadow: 0px 0px 0px 4px inset #7f8c8d;
+  box-shadow: 0px 0px 0px 4px inset #7f8c8d, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box.avatar__box--turn {
-  box-shadow: 0px 0px 0px 4px inset #e74c3c;
+  box-shadow: 0px 0px 0px 4px inset #e74c3c, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box.avatar__box--ready {
-  box-shadow: 0px 0px 0px 4px inset #e67e22;
+  box-shadow: 0px 0px 0px 4px inset #e67e22, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box.avatar__box--me {
-  box-shadow: 0px 0px 0px 4px inset #8e44ad;
+  box-shadow: 0px 0px 0px 4px inset #8e44ad, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box.avatar__box--me.avatar__box--turn {
-  box-shadow: 0px 0px 0px 4px inset #27ae60;
+  box-shadow: 0px 0px 0px 4px inset #27ae60, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box .player__avatar__name {
   position: absolute;
@@ -465,15 +465,26 @@ h1 {
   border-bottom-right-radius: 10% 50%;
   position: relative;
   overflow: hidden;
-  box-shadow: 0px 0px 0px 4px inset #1b75ba;
+  box-shadow: 0px 0px 0px 4px inset #1b75ba, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .chat__box .chat__messages {
   position: absolute;
   top: 4px;
-  bottom: 4px;
+  bottom: 24px;
   left: calc(5% + 4px);
   right: calc(5% + 4px);
   height: auto;
+}
+
+.chat__entry {
+  position: absolute;
+  bottom: 0;
+  left: 24px;
+  right: 24px;
+  background: #192E58;
+  overflow: hidden;
+  width: auto;
+  margin: 0 !important;
 }
 
 .modal-content {
