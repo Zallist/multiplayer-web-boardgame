@@ -68,10 +68,10 @@ body {
 }
 .game__wrap > *:nth-child(1) {
   position: absolute;
-  top: 7%;
-  bottom: 7%;
-  left: 7%;
-  right: 7%;
+  top: 6.8%;
+  bottom: 6.8%;
+  left: 10%;
+  right: 9.6%;
   height: auto !important;
 }
 
