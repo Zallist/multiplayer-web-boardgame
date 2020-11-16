@@ -1306,8 +1306,8 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                                 return;
                             }
                             
-                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) - 1);
-                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) - 1);
+                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) - 0.5);
+                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) - 0.5);
                             piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) + 1);
                             piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) + 1);
                         }
@@ -1316,13 +1316,17 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                                 return;
                             }
 
-                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) + 1);
-                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) + 1);
+                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) + 0.5);
+                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) + 0.5);
                             piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) - 1);
                             piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) - 1);
                         }
                     }
                 }
+            },
+
+            generateName: function () {
+                return chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
             }
         };
         viewModel.customization.refreshPicker('color');
@@ -1357,7 +1361,7 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
         ];
 
         if (viewModel.player.name === null) {
-            viewModel.player.name = chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
+            viewModel.player.name = viewModel.customization.generateName;
         }
         if (viewModel.player.metadata.color === '#000') {
             viewModel.player.metadata.color = viewModel.customization.availableColors[0];
