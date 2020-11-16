@@ -2,7 +2,7 @@
 
 @mixin padChild($top,$bottom,$left,$right) {
     position: relative;
-    & > *:nth-child(1) {
+    & > * {
         position: absolute;
         top: $top; bottom: $bottom;
         left: $left; right: $right;

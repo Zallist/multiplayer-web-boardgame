@@ -104,7 +104,7 @@ body {
 .logo__main {
     width: 100%;
 
-    min-height: 100px;
+    min-height: 40px;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
@@ -146,9 +146,11 @@ body {
         border-radius: .5em 0 0 0;
         margin: 0;
         padding: 0 0.5em;
-        position: fixed;
-        bottom: 0;
-        right: 0;
+        position: fixed !important;
+        left: auto !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        top: auto !important;
         z-index: 999;
         background-color: rgba(44, 62, 80,0.85);
         color: rgba(236, 240, 241,1.0);
@@ -159,9 +161,11 @@ body {
         border-radius: 0 .5em 0 0;
         margin: 0;
         padding: 0 0.5em;
-        position: fixed;
-        left: 0;
-        bottom: 0;
+        position: fixed !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        right: auto !important;
+        top: auto !important;
         z-index: 999;
         background-color: rgba(44, 62, 80,0.85);
         color: rgba(236, 240, 241,1.0);

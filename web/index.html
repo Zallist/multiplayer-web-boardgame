@@ -272,61 +272,105 @@
                     <div id="game-panel" class="col-12 col-sm-12 col-md-8 col-lg-9 h-100">
                         <div class="game__wrap">
                             <game-panel></game-panel>
+
+                            <div v-if="!$root.gameState.started"
+                                 class="d-flex flex-column justify-content-center overflow-auto"
+                                 style="padding: 2em; background-color: rgba(0,0,0,0.15); box-shadow: 0 0 2em inset rgba(255,255,255,0.7)">
+                                
+                                <div class="align-self-center logo__main"></div>
+                                
+                                <div class="mt-3" style="white-space:nowrap;">
+                                    <template v-if="$root.isHost">
+                                        <button type="button" class="btn btn-primary btn-block btn-lg" @click="$root.events.startGame" v-bind:disabled="!$root.computed.anyReady">Start Game</button>
+                                    </template>
+                                    <template v-else>
+                                        <button type="button" class="btn btn-primary btn-block btn-lg" v-if="!$root.player.isReady" @click="$root.events.toggleReady">Ready Up</button>
+                                        <button type="button" class="btn btn-secondary btn-block btn-lg" v-else @click="$root.events.toggleReady">Un-Ready</button>
+                                    </template>
+                                </div>
+                                
+                                <div class="mt-3 align-self-center">
+                                    <h1>
+                                        Ready: 
+                                        {{ _.filter($root.players, { 'isReady': true, 'isHost': false, 'isDisconnected': false }).length + 1 }} / {{ _.filter($root.players, { 'isDisconnected': false }).length }}
+                                    </h1>
+                                </div>
+
+                                <div class="mt-3 align-self-center">
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" id="inputGroup-sizing-sm">Room</span>
+                                        </div>
+                                        <input type="text" class="form-control" :value="$root.copyGameLinkText === 'Copied!' ? 'Copied!' : $root.roomId" disabled />
+                                        <div class="input-group-append">
+                                            <a class="btn btn-outline-dark" @click.prevent="$root.helpers.copyGameLink"
+                                            :href="$root.helpers.getGameLink()" :title="$root.copyGameLinkText">
+
+                                                <i class="fas fa-copy"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div id="setup-panel" class="col-12 col-sm-12 col-md-4 col-lg-3 h-100 overflow-auto">
                         <div v-if="$root.isConnected" class="d-flex flex-column h-100">
-                            <div>
-                                <div class="input-group input-group-sm mt-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm">Room</span>
-                                    </div>
-                                    <input type="text" class="form-control" :value="$root.copyGameLinkText === 'Copied!' ? 'Copied!' : $root.roomId" disabled />
-                                    <div class="input-group-append">
-                                        <a class="btn btn-outline-dark" @click.prevent="$root.helpers.copyGameLink"
-                                           :href="$root.helpers.getGameLink()" :title="$root.copyGameLinkText">
-
-                                            <i class="fas fa-copy"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3" v-if="!$root.gameState.started">
-                                <template v-if="$root.isHost">
-                                    <button type="button" class="btn btn-outline-primary btn-block" @click="$root.events.startGame" v-bind:disabled="!$root.computed.anyReady">Start</button>
-                                </template>
-                                <template v-else>
-                                    <button type="button" class="btn btn-outline-primary btn-block" v-if="!$root.player.isReady" @click="$root.events.toggleReady">Ready</button>
-                                    <button type="button" class="btn btn-outline-danger btn-block" v-else @click="$root.events.toggleReady">Un-Ready</button>
-                                </template>
-                            </div>
-                            <div id="time-tracker" v-if="$root.gameState.turnTimeRemaining !== null" class="mt-3 game-information">
-                                <div style="float: left; position: relative; width: 16px; height: 16px;">
-                                    <div style="position: absolute; top: 0; left: 0;">
-                                        <fill-circle :percent="($root.gameState.turnTimeRemaining / $root.gameState.turnTime) * 100"
-                                                     :color="($root.gameState.turnTimeRemaining / $root.gameState.turnTime) > 0.33 ? '#f39c12' : '#c0392b'"></fill-circle>
-                                    </div>
-                                    <div style="position: absolute; top: 0; left: 0;">
-                                        <!-- https://www.flaticon.com/free-icon/clock_2088617?term=clock&page=1&position=2 -->
-                                        <svg height="1em" viewBox="0 0 443.294 443.294" style="height: 1em;">
-                                            <path d="m221.647 0c-122.214 0-221.647 99.433-221.647 221.647s99.433 221.647 221.647 221.647 221.647-99.433 221.647-221.647-99.433-221.647-221.647-221.647zm0 415.588c-106.941 0-193.941-87-193.941-193.941s87-193.941 193.941-193.941 193.941 87 193.941 193.941-87 193.941-193.941 193.941z" />
-                                            <path d="m235.5 83.118h-27.706v144.265l87.176 87.176 19.589-19.589-79.059-79.059z" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div style="display: inline-block; vertical-align: middle; margin-left: 0.5em;">
-                                    {{$root.gameState.turnTimeRemaining}}s remaining
-                                </div>
-                            </div>
-                            <div id="current-turn" v-if="$root.computed.currentTurnPlayer" class="mt-3 d-md-none d-lg-none d-xl-none game-information"
+                            <div id="current-turn" v-if="$root.computed.currentTurnPlayer" class="d-md-none d-lg-none d-xl-none game-information"
                                  :style="{ 'background-color': $root.gameState.currentTurn === $root.player.id ? '#27ae60' : null }">
 
                                 <i class="fas fa-user"></i>
                                 {{$root.computed.currentTurnPlayer.name}}
                             </div>
+
+                            <div class="d-flex flex-row flex-nowrap mb-3 justify-content-end">
+                                <button type="button" class="btn btn-outline-danger align-self-center ml-2"
+                                        v-if="$root.gameState.started && $root.gameState.turnOrder.indexOf($root.player.id) > -1"
+                                        :disabled="$root.gameState.turnOrder.length <= 1"
+                                        @click="$root.events.startForfeit">
+                                    Forfeit
+                                </button>
+
+                                <a class="btn btn-icon btn-copy btn-primary align-self-center ml-2"
+                                        @click.prevent="$root.helpers.copyGameLink"
+                                        style="height: 48px; width: 48px; font-size: 16px;"
+                                        :href="$root.helpers.getGameLink()"
+                                        :title="$root.copyGameLinkText">
+                                    <i class="fas fa-copy"></i>
+                                </a>
+                                <button type="button" class="btn btn-icon btn-config btn-primary align-self-center ml-2" @click="$root.events.viewConfig()"
+                                        style="height: 48px; width: 48px; font-size: 16px;"
+                                        title="Config">
+                                    <i class="fas fa-cog"></i>
+                                </button>
+                            </div>
+
                             <div class="mt-3">
                                 <div class="player__avatars__box overflow-auto pb-2"
+                                     style="position: relative;"
                                      @wheel.stop.prevent="$event.currentTarget.scrollLeft += $event.deltaY + $event.deltaX;">
+                                     
+                                    <div id="time-tracker" v-if="$root.gameState.turnTimeRemaining !== null" 
+                                         class="game-information"
+                                         style="position: absolute; top: 12px; right: 0;">
+                                        <div style="float: left; position: relative; width: 16px; height: 16px;">
+                                            <div style="position: absolute; top: 0; left: 0;">
+                                                <fill-circle :percent="($root.gameState.turnTimeRemaining / $root.gameState.turnTime) * 100"
+                                                            :color="($root.gameState.turnTimeRemaining / $root.gameState.turnTime) > 0.33 ? '#f39c12' : '#c0392b'"></fill-circle>
+                                            </div>
+                                            <div style="position: absolute; top: 0; left: 0;">
+                                                <!-- https://www.flaticon.com/free-icon/clock_2088617?term=clock&page=1&position=2 -->
+                                                <svg height="1em" viewBox="0 0 443.294 443.294" style="height: 1em;">
+                                                    <path d="m221.647 0c-122.214 0-221.647 99.433-221.647 221.647s99.433 221.647 221.647 221.647 221.647-99.433 221.647-221.647-99.433-221.647-221.647-221.647zm0 415.588c-106.941 0-193.941-87-193.941-193.941s87-193.941 193.941-193.941 193.941 87 193.941 193.941-87 193.941-193.941 193.941z" />
+                                                    <path d="m235.5 83.118h-27.706v144.265l87.176 87.176 19.589-19.589-79.059-79.059z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div style="display: inline-block; vertical-align: middle; margin-left: 0.5em;">
+                                            {{$root.gameState.turnTimeRemaining}}s left
+                                        </div>
+                                    </div>
+
                                     <div class="turn__tracker__header">
                                         <h1>Turn</h1>
                                     </div>
@@ -361,20 +405,6 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3">
-                                <div class="row">
-                                    <div class="col" v-if="$root.gameState.started && $root.gameState.turnOrder.indexOf($root.player.id) > -1">
-                                        <button type="button" class="btn btn-block btn-outline-danger"
-                                                :disabled="$root.gameState.turnOrder.length <= 1"
-                                                @click="$root.events.startForfeit">
-                                            Forfeit
-                                        </button>
-                                    </div>
-                                    <div class="col">
-                                        <button type="button" class="btn btn-block btn-outline-secondary" @click="$root.events.viewConfig()">Config</button>
                                     </div>
                                 </div>
                             </div>
