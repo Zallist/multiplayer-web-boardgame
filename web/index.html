@@ -325,10 +325,13 @@
                                 {{$root.computed.currentTurnPlayer.name}}
                             </div>
                             <div class="mt-3">
-                                <h6 style="margin: 0; text-align: center;">Players</h6>
-                                <div class="player__avatars__box">
-                                    <div class="player__avatars d-flex flex-row justify-content-start flex-nowrap overflow-auto"
-                                         @wheel.stop.prevent="$event.currentTarget.scrollLeft += $event.deltaY + $event.deltaX;">
+                                <div class="player__avatars__box overflow-auto pb-2"
+                                     @wheel.stop.prevent="$event.currentTarget.scrollLeft += $event.deltaY + $event.deltaX;">
+                                    <div class="turn__tracker__header">
+                                        <h1>Turn</h1>
+                                    </div>
+
+                                    <div class="player__avatars d-flex flex-row justify-content-start flex-nowrap">
                                         <div v-for="(player, playerIndex) in $root.computed.playersSortedByImportance"
                                              :title="player.name"
                                              class="avatar__box ratio-square flex-grow-0 flex-shrink-0 align-self-end"
@@ -338,10 +341,10 @@
                                                 'avatar__box--turn': $root.gameState.currentTurn === player.id,
                                                 'avatar__box--me': player.id === $root.player.id
                                              }"
-                                             :style="{ width: (80 - (Math.min(playerIndex,2) * 5)) + 'px' }">
+                                             :style="{ width: (80 - (Math.min(playerIndex,2) * 8)) + 'px' }">
 
                                             <div class="avatar" 
-                                                :style="{ 'font-size': (60 - (Math.min(playerIndex,2) * 5)) + 'px', 'font-size': (80 - (Math.min(playerIndex,2) * 5)) + 'px',  }">
+                                                :style="{ 'font-size': (60 - (Math.min(playerIndex,2) * 8)) + 'px', 'font-size': (80 - (Math.min(playerIndex,2) * 8)) + 'px',  }">
 
                                                 <player-avatar :player="player"></player-avatar>
 
