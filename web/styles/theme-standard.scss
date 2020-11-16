@@ -131,39 +131,20 @@ body {
     }
 }
 
-.player__avatars__box {
-    background-image: url('images/standard/avatar_panel.svg');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    padding: 0.5em 1.5em;
-}
-.player__avatar {
-    background-image: url('images/standard/avatar_box.svg');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-
-    @include padChild(20%,20%,0%,0%);
-    
-    &.player--turn { border: none; background-image: url('images/standard/avatar_box_turn.svg'); }
-    &.player--spectating { border: none; background-image: url('images/standard/avatar_box_spectating.svg'); }
-    &.player--me { border: none; background-image: url('images/standard/avatar_box_me.svg'); }
-    &.player--ready { border: none; background-image: url('images/standard/avatar_box_ready.svg'); }
-    &.player--me.player--turn { border: none; background-image: url('images/standard/avatar_box_me_turn.svg'); }
-
-    .player__avatar__stats {
-        .fa-cross {
-            background-image: url('images/standard/icons/SkullLose.svg');
-            @include fillBackgroundImage(true);
-            @include removeIconContent;
-        }
-        .fa-trophy {
-            background-image: url('images/standard/icons/Trophy.svg');
-            @include fillBackgroundImage(true);
-            @include removeIconContent;
-        }
+.player__avatar__stats {
+    .fa-cross {
+        background-image: url('images/standard/icons/SkullLose.svg');
+        @include fillBackgroundImage(true);
+        @include removeIconContent;
+    }
+    .fa-trophy {
+        background-image: url('images/standard/icons/Trophy.svg');
+        @include fillBackgroundImage(true);
+        @include removeIconContent;
     }
 }
 
+/*
 .chat__box {
     background-image: url('images/standard/chat_box.svg');
     background-repeat: no-repeat;
@@ -171,6 +152,7 @@ body {
     border: none;
     @include padChild(8%,12%,7%,9%);
 }
+*/
 
 .config__help-text {
     color: #222 !important;
@@ -323,7 +305,13 @@ h1 {
 }
 
 .avatar__box {
-    background-color: $lightBackgroundColor;
+    background:
+        radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, $lightBackgroundColor 25%),
+        $lightBackgroundColor;
+    background-size: 500% 200%;
+    background-position: center top;
+    background-repeat: no-repeat;
+
     border: 8px solid $backgroundColor;
     border-top-left-radius: 15% 50%;
     border-top-right-radius: 15% 50%;
@@ -333,23 +321,65 @@ h1 {
     position: relative;
     overflow: hidden;
 
-    &:after {
-        position: absolute;
-        top: 0; bottom: 40%;
-        left: 0; right: 0;
-        
-        background-color: #FFF;
-        border-bottom-left-radius: 50% 20px;
-        border-bottom-right-radius: 50% 20px;
-
-        content: '';
-        z-index: 0;
-    }
-
     .avatar {
         position: absolute;
-        top: 0; bottom: 0;
-        left: 0; right: 0;
+        top: 8px; bottom: 8px;
+        left: 8px; right: 8px;
+    }
+    
+    @mixin insetBoxShadow($color) {
+        box-shadow: 0px 0px 0px 4px inset $color;
+    }
+
+    @include insetBoxShadow($panelBackgroundColor);
+
+    &.avatar__box--spectating { @include insetBoxShadow(#7f8c8d); }
+    &.avatar__box--turn { @include insetBoxShadow(#e74c3c); }
+    &.avatar__box--ready { @include insetBoxShadow(#e67e22); }
+    &.avatar__box--me { @include insetBoxShadow(#8e44ad); }
+    &.avatar__box--me.avatar__box--turn { @include insetBoxShadow(#27ae60); }
+    
+    .player__avatar__name {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        max-width: 100%;
+        transform: translateX(-50%);
+        font-size: 8px;
+        font-weight: bold;
+        white-space: nowrap;
+        text-overflow: clip;
+        background: transparent;
+
+        opacity: 0.65;
+        color: #FFF;
+        @include stroke(2, #000);
+    }
+}
+
+.chat__box {
+    background:
+        radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, $lightBackgroundColor 25%),
+        $lightBackgroundColor;
+    background-size: 500% 200%;
+    background-position: center top;
+    background-repeat: no-repeat;
+
+    border: 8px solid $backgroundColor;
+    border-top-left-radius: 10% 50%;
+    border-top-right-radius: 10% 50%;
+    border-bottom-left-radius: 10% 50%;
+    border-bottom-right-radius: 10% 50%;
+
+    position: relative;
+    overflow: hidden;
+
+    box-shadow: 0px 0px 0px 8px inset $panelBackgroundColor;
+
+    .chat__messages {
+        position: absolute;
+        top: 8px; bottom: 8px;
+        left: calc(5% + 8px); right: calc(5% + 8px);
         z-index: 1;
     }
 }

@@ -327,29 +327,35 @@
                             <div class="mt-3">
                                 <h6 style="margin: 0; text-align: center;">Players</h6>
                                 <div class="player__avatars__box">
-                                    <div class="player__avatars">
-                                        <div v-for="player in $root.computed.playersSortedByImportance"
+                                    <div class="player__avatars d-flex flex-row justify-content-start flex-nowrap overflow-auto"
+                                         @wheel.stop.prevent="$event.currentTarget.scrollLeft += $event.deltaY + $event.deltaX;">
+                                        <div v-for="(player, playerIndex) in $root.computed.playersSortedByImportance"
                                              :title="player.name"
+                                             class="avatar__box ratio-square flex-grow-0 flex-shrink-0 align-self-end"
                                              :class="{
-                                                'player__avatar': true,
-                                                'player--spectating': $root.gameState.started && !player.isPlaying,
-                                                'player--ready': !$root.gameState.started && player.isReady,
-                                                'player--turn': $root.gameState.currentTurn === player.id,
-                                                'player--me': player.id === $root.player.id
-                                             }">
+                                                'avatar__box--spectating': $root.gameState.started && !player.isPlaying,
+                                                'avatar__box--ready': !$root.gameState.started && player.isReady,
+                                                'avatar__box--turn': $root.gameState.currentTurn === player.id,
+                                                'avatar__box--me': player.id === $root.player.id
+                                             }"
+                                             :style="{ width: (80 - (Math.min(playerIndex,2) * 5)) + 'px' }">
 
-                                            <player-avatar :player="player"></player-avatar>
+                                            <div class="avatar" 
+                                                :style="{ 'font-size': (60 - (Math.min(playerIndex,2) * 5)) + 'px', 'font-size': (80 - (Math.min(playerIndex,2) * 5)) + 'px',  }">
 
-                                            <span class="player__avatar__name">{{player.name}}</span>
+                                                <player-avatar :player="player"></player-avatar>
 
-                                            <div class="player__avatar__stats"
-                                                 style="position: absolute; top: 0; left: 50%; font-size: 12px; width: 12px; height: 12px; text-align: center; line-height: 12px; transform: translateX(-50%);"
-                                                 :title="'Wins: ' + player.metadata.gameStats.wins + ' (' + player.metadata.totalStats.wins + ' total)' + '\nLosses: ' + player.metadata.gameStats.losses + ' (' + player.metadata.totalStats.losses + ' total)'"
-                                                 @click="$root.events.viewStats(player.id);">
-                                                
-                                                <i v-if="player.metadata.gameStats.lastGameResult === 'win'" class="fas fa-crown" style="color: #f1c40f;"></i>
-                                                <i v-else-if="player.metadata.gameStats.lastGameResult === 'loss'" class="fas fa-cross" style="color: #c0392b;"></i>
-                                                <i v-else class="fas fa-trophy" style="color: #f1c40f;"></i>
+                                                <span class="player__avatar__name">{{player.name}}</span>
+
+                                                <div class="player__avatar__stats"
+                                                    style="position: absolute; top: 0; left: 50%; font-size: 12px; width: 12px; height: 12px; text-align: center; line-height: 12px; transform: translateX(-50%);"
+                                                    :title="'Wins: ' + player.metadata.gameStats.wins + ' (' + player.metadata.totalStats.wins + ' total)' + '\nLosses: ' + player.metadata.gameStats.losses + ' (' + player.metadata.totalStats.losses + ' total)'"
+                                                    @click="$root.events.viewStats(player.id);">
+                                                    
+                                                    <i v-if="player.metadata.gameStats.lastGameResult === 'win'" class="fas fa-crown" style="color: #f1c40f;"></i>
+                                                    <i v-else-if="player.metadata.gameStats.lastGameResult === 'loss'" class="fas fa-cross" style="color: #c0392b;"></i>
+                                                    <i v-else class="fas fa-trophy" style="color: #f1c40f;"></i>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -812,7 +812,7 @@ app.main = (function () {
                     isReady: false,
                     isPlaying: false,
                     metadata: {
-                        color: app.helpers.generateColor(),
+                        color: '#000',
                         avatar: {
                             type: 'css-class',
                             value: null
@@ -1194,7 +1194,7 @@ witch.svg
             refreshPicker: function (picker) {
                 switch (picker || viewModel.customization.picker) {
                     case 'color':
-                        viewModel.customization.availableColors = randomColor({ luminosity: 'bright', count: viewModel.customization.colorAmount });
+                        viewModel.customization.availableColors = randomColor({ luminosity: 'dark', count: viewModel.customization.colorAmount });
                         break;
                     case 'face':
                         viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);
@@ -1327,6 +1327,9 @@ witch.svg
 
         if (viewModel.player.name === null) {
             viewModel.player.name = chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
+        }
+        if (viewModel.player.metadata.color === '#000') {
+            viewModel.player.metadata.color = viewModel.customization.availableColors[0];
         }
 
         if (viewModel.player.metadata.avatar.value === null) {
