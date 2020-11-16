@@ -27,12 +27,13 @@ Currently implemented:
 * Chess
   * Use *?game=chess* on the URL to access it
   * Currently missing various configuration options, rooking, promotions, randomisation
+* Yut
+ * Use *?game=yut* on the URL to access it
+ * Badly styled
 
 # TODO
-* More avatar/piece selection
-  * Generating svg with colours on demand
 * Chess config (allow rooking, allow pawn promotion, place random)
-* New games
+* Yut config & cleanup
 * Game mode selector
 
 # Configuration
