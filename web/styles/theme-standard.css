@@ -12,19 +12,9 @@ body {
   overflow: hidden;
 }
 
-/*
-#app {
-    background-image: url('images/standard/background.svg');
-    background-repeat: no-repeat;
-    background-size: 98% 98%;
-    background-position: center center;
-
-    @include padChild(4%,4%,4%,4%);
-}
-*/
 #app {
   border-radius: 32px;
-  border: 16px solid #237fbe;
+  border: 16px solid #1b75ba;
   margin: 8px 16px;
   height: calc(100% - 16px) !important;
   background: linear-gradient(180deg, transparent 0, transparent 48px, #2798cc 48px, #2798cc 58px, transparent 58px), linear-gradient(90deg, transparent 0, transparent 48px, #2798cc 48px, #2798cc 58px, transparent 58px), linear-gradient(180deg, transparent 0, transparent 46px, #3daddd 46px, #3daddd 48px, transparent 48px), linear-gradient(90deg, transparent 0, transparent 46px, #3daddd 46px, #3daddd 48px, transparent 48px), linear-gradient(180deg, transparent 0, transparent 58px, #3daddd 58px, #3daddd 60px, transparent 60px), linear-gradient(90deg, transparent 0, transparent 58px, #3daddd 58px, #3daddd 60px, transparent 60px), #3fa6dd;
@@ -103,77 +93,6 @@ body {
   background-image: url("images/standard/button_full_active.svg");
 }
 
-.player__avatars__box {
-  background-image: url("images/standard/avatar_panel.svg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  padding: 0.5em 1.5em;
-}
-
-.player__avatar {
-  background-image: url("images/standard/avatar_box.svg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-}
-.player__avatar.player--turn {
-  border: none;
-  background-image: url("images/standard/avatar_box_turn.svg");
-}
-.player__avatar.player--spectating {
-  border: none;
-  background-image: url("images/standard/avatar_box_spectating.svg");
-}
-.player__avatar.player--me {
-  border: none;
-  background-image: url("images/standard/avatar_box_me.svg");
-}
-.player__avatar.player--ready {
-  border: none;
-  background-image: url("images/standard/avatar_box_ready.svg");
-}
-.player__avatar.player--me.player--turn {
-  border: none;
-  background-image: url("images/standard/avatar_box_me_turn.svg");
-}
-.player__avatar .player__avatar__stats .fa-cross {
-  background-image: url("images/standard/icons/SkullLose.svg");
-  width: 100%;
-  height: 100%;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-}
-.player__avatar .player__avatar__stats .fa-cross:before {
-  content: "";
-}
-.player__avatar .player__avatar__stats .fa-trophy {
-  background-image: url("images/standard/icons/Trophy.svg");
-  width: 100%;
-  height: 100%;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-}
-.player__avatar .player__avatar__stats .fa-trophy:before {
-  content: "";
-}
-
-.chat__box {
-  background-image: url("images/standard/chat_box.svg");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  border: none;
-  position: relative;
-}
-.chat__box > *:nth-child(1) {
-  position: absolute;
-  top: 8%;
-  bottom: 12%;
-  left: 7%;
-  right: 9%;
-  height: auto !important;
-}
-
 .config__help-text {
   color: #222 !important;
 }
@@ -203,6 +122,11 @@ body {
 *::-webkit-scrollbar-thumb:active {
   background-color: #005c82;
   border: none;
+}
+
+h1 {
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, -3px -3px 0 #192E58, -2px -3px 0 #192E58, -1px -3px 0 #192E58, 0px -3px 0 #192E58, 1px -3px 0 #192E58, 2px -3px 0 #192E58, 3px -3px 0 #192E58, -3px -2px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, 3px -2px 0 #192E58, -3px -1px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, 3px -1px 0 #192E58, -3px 0px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, 3px 0px 0 #192E58, -3px 1px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, 3px 1px 0 #192E58, -3px 2px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, 3px 2px 0 #192E58, -3px 3px 0 #192E58, -2px 3px 0 #192E58, -1px 3px 0 #192E58, 0px 3px 0 #192E58, 1px 3px 0 #192E58, 2px 3px 0 #192E58, 3px 3px 0 #192E58, -4px -4px 0 #192E58, -3px -4px 0 #192E58, -2px -4px 0 #192E58, -1px -4px 0 #192E58, 0px -4px 0 #192E58, 1px -4px 0 #192E58, 2px -4px 0 #192E58, 3px -4px 0 #192E58, 4px -4px 0 #192E58, -4px -3px 0 #192E58, -3px -3px 0 #192E58, -2px -3px 0 #192E58, -1px -3px 0 #192E58, 0px -3px 0 #192E58, 1px -3px 0 #192E58, 2px -3px 0 #192E58, 3px -3px 0 #192E58, 4px -3px 0 #192E58, -4px -2px 0 #192E58, -3px -2px 0 #192E58, -2px -2px 0 #192E58, -1px -2px 0 #192E58, 0px -2px 0 #192E58, 1px -2px 0 #192E58, 2px -2px 0 #192E58, 3px -2px 0 #192E58, 4px -2px 0 #192E58, -4px -1px 0 #192E58, -3px -1px 0 #192E58, -2px -1px 0 #192E58, -1px -1px 0 #192E58, 0px -1px 0 #192E58, 1px -1px 0 #192E58, 2px -1px 0 #192E58, 3px -1px 0 #192E58, 4px -1px 0 #192E58, -4px 0px 0 #192E58, -3px 0px 0 #192E58, -2px 0px 0 #192E58, -1px 0px 0 #192E58, 0px 0px 0 #192E58, 1px 0px 0 #192E58, 2px 0px 0 #192E58, 3px 0px 0 #192E58, 4px 0px 0 #192E58, -4px 1px 0 #192E58, -3px 1px 0 #192E58, -2px 1px 0 #192E58, -1px 1px 0 #192E58, 0px 1px 0 #192E58, 1px 1px 0 #192E58, 2px 1px 0 #192E58, 3px 1px 0 #192E58, 4px 1px 0 #192E58, -4px 2px 0 #192E58, -3px 2px 0 #192E58, -2px 2px 0 #192E58, -1px 2px 0 #192E58, 0px 2px 0 #192E58, 1px 2px 0 #192E58, 2px 2px 0 #192E58, 3px 2px 0 #192E58, 4px 2px 0 #192E58, -4px 3px 0 #192E58, -3px 3px 0 #192E58, -2px 3px 0 #192E58, -1px 3px 0 #192E58, 0px 3px 0 #192E58, 1px 3px 0 #192E58, 2px 3px 0 #192E58, 3px 3px 0 #192E58, 4px 3px 0 #192E58, -4px 4px 0 #192E58, -3px 4px 0 #192E58, -2px 4px 0 #192E58, -1px 4px 0 #192E58, 0px 4px 0 #192E58, 1px 4px 0 #192E58, 2px 4px 0 #192E58, 3px 4px 0 #192E58, 4px 4px 0 #192E58;
+  color: #FFF;
 }
 
 .input-group {
@@ -257,42 +181,299 @@ body {
   text-align: center;
 }
 .btn.btn-icon.btn-config > i {
+  display: block;
   background-image: url("images/standard/icons/cog.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-config > i:before {
   content: "";
 }
 .btn.btn-icon.btn-stats > i {
+  display: block;
   background-image: url("images/standard/icons/trophy.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-stats > i:before {
   content: "";
 }
 .btn.btn-icon.btn-help > i {
+  display: block;
   background-image: url("images/standard/icons/questionmark.svg");
   width: 100%;
   height: 100%;
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
 }
 .btn.btn-icon.btn-help > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-puzzle-piece > i {
+  display: block;
+  background-image: url("images/standard/icons/PiecePicker.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.btn.btn-icon.btn-puzzle-piece > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-face {
+  background-color: #b1ed58 !important;
+}
+.btn.btn-icon.btn-face > i {
+  display: block;
+  background-image: url("images/standard/icons/Face.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.btn.btn-icon.btn-face > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-color-wheel > i {
+  display: block;
+  background-image: url("images/standard/icons/ColorPicker.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.btn.btn-icon.btn-color-wheel > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-refresh > i {
+  display: block;
+  background-image: url("images/standard/icons/Refresh.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.btn.btn-icon.btn-refresh > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-cancel > i {
+  display: block;
+  background-image: url("images/standard/icons/Cancel.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.btn.btn-icon.btn-cancel > i:before {
+  content: "";
+}
+.btn.btn-icon.btn-icon--populated > i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.btn.btn-icon.btn-icon--populated > i:before {
   content: "";
 }
 .btn.btn-icon:not(:disabled):hover, .btn.btn-icon:not(:disabled):active {
   color: #3058a7 !important;
   border-color: #3058a7 !important;
   box-shadow: 0px 8px 0 rgba(48, 88, 167, 0.8) !important;
+}
+
+.turn__tracker__header {
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-image: url("images/standard/turn_tracker_background.svg");
+  height: 80px;
+  margin-bottom: -30px;
+  position: relative;
+}
+.turn__tracker__header h1 {
+  font-size: 24px;
+  position: absolute;
+  top: 20px;
+  left: 26px;
+  transform: rotate(-3deg);
+}
+
+.avatar__box {
+  background: radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, #ebf9fe 25%), #ebf9fe;
+  background-size: 500% 200%;
+  background-position: center top;
+  background-repeat: no-repeat;
+  border: 8px solid #192E58;
+  border-top-left-radius: 15% 50%;
+  border-top-right-radius: 15% 50%;
+  border-bottom-left-radius: 15% 50%;
+  border-bottom-right-radius: 15% 50%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 0px 0px 4px inset #1b75ba;
+}
+.avatar__box .avatar {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+}
+.avatar__box.avatar__box--spectating {
+  box-shadow: 0px 0px 0px 4px inset #7f8c8d;
+}
+.avatar__box.avatar__box--turn {
+  box-shadow: 0px 0px 0px 4px inset #e74c3c;
+}
+.avatar__box.avatar__box--ready {
+  box-shadow: 0px 0px 0px 4px inset #e67e22;
+}
+.avatar__box.avatar__box--me {
+  box-shadow: 0px 0px 0px 4px inset #8e44ad;
+}
+.avatar__box.avatar__box--me.avatar__box--turn {
+  box-shadow: 0px 0px 0px 4px inset #27ae60;
+}
+.avatar__box .player__avatar__name {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  max-width: 100%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-weight: bold;
+  white-space: nowrap;
+  text-overflow: clip;
+  background: transparent;
+  opacity: 0.65;
+  color: #FFF;
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, -2px -2px 0 #000, -1px -2px 0 #000, 0px -2px 0 #000, 1px -2px 0 #000, 2px -2px 0 #000, -2px -1px 0 #000, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, 2px -1px 0 #000, -2px 0px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, 2px 0px 0 #000, -2px 1px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000, 2px 1px 0 #000, -2px 2px 0 #000, -1px 2px 0 #000, 0px 2px 0 #000, 1px 2px 0 #000, 2px 2px 0 #000;
+}
+.avatar__box .player__avatar__stats .fa-cross {
+  background-image: url("images/standard/icons/SkullLose.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.avatar__box .player__avatar__stats .fa-cross:before {
+  content: "";
+}
+.avatar__box .player__avatar__stats .fa-trophy {
+  background-image: url("images/standard/icons/Trophy.svg");
+  width: 100%;
+  height: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
+  -webkit-mask-size: contain;
+}
+.avatar__box .player__avatar__stats .fa-trophy:before {
+  content: "";
+}
+
+.chat__box {
+  background: radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, #ebf9fe 25%), #ebf9fe;
+  background-size: 500% 200%;
+  background-position: center top;
+  background-repeat: no-repeat;
+  border: 8px solid #192E58;
+  border-top-left-radius: 10% 50%;
+  border-top-right-radius: 10% 50%;
+  border-bottom-left-radius: 10% 50%;
+  border-bottom-right-radius: 10% 50%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0px 0px 0px 4px inset #1b75ba;
+}
+.chat__box .chat__messages {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: calc(5% + 4px);
+  right: calc(5% + 4px);
+  height: auto;
 }
 
 .modal-content {
@@ -365,4 +546,21 @@ body {
 }
 .modal-dialog.modal-dialog--game-over .game__over__reason.game__over__reason--tie {
   background-image: url("images/standard/game_over_tie.svg");
+}
+
+.picker-arrow .picker-arrow-content {
+  display: none;
+}
+.picker-arrow.picker-arrow--left:after, .picker-arrow.picker-arrow--right:after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 60px;
+  background-image: url("images/standard/RightArrowWBorder.svg") !important;
+  background-repeat: no-repeat;
+  background-size: contain !important;
+  background-position: center center !important;
+}
+.picker-arrow.picker-arrow--left:after {
+  transform: scaleX(-1);
 }

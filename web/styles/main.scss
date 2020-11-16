@@ -53,44 +53,31 @@ body {
     }
 }
 
-.player__avatars {
-    display: flex;
-    flex-flow: row wrap;
-    max-height: 7em;
-    min-height: 3em;
-    overflow-y: auto;
-    overflow-x: hidden;
-    justify-content: space-around;
-    margin-top: -0.5em;
-}
-.player__avatar {
+.avatar__box {
+    background: #FFFFFF;
+
+    border: 1px solid #E0E0E0;
+
     position: relative;
-    display: flex;
-    flex-flow: row nowrap;
-    flex: 1;
-    height: 3em;
-    min-width: 3em;
-    margin: 0.5em 0.25em 0 0.25em;
-    align-items: center;
-    border-radius: 4px;
+    overflow: hidden;
 
-    & > i {
-        font-size: 1.5em;
-        text-align: center;
-        display: block;
-        flex: 1;
+    .avatar {
+        position: absolute;
+        top: 0; bottom: 0;
+        left: 0; right: 0;
+    }
+    
+    @mixin insetBoxShadow($color) {
+        box-shadow: 0px 0px 0px 2px inset $color;
     }
 
-    &.player--spectating {
-        & > i {
-            font-size: 1em;
-        }
-    }
+    @include insetBoxShadow(#E0E0E0);
 
-    &.player--turn { border: 1px solid red; }
-    &.player--ready { border: 1px solid orange; }
-    &.player--me { border: 1px solid blue; }
-    &.player--me.player--turn { border-color: green; }
+    &.avatar__box--spectating { @include insetBoxShadow(#7f8c8d); }
+    &.avatar__box--turn { @include insetBoxShadow(#e74c3c); }
+    &.avatar__box--ready { @include insetBoxShadow(#e67e22); }
+    &.avatar__box--me { @include insetBoxShadow(#8e44ad); }
+    &.avatar__box--me.avatar__box--turn { @include insetBoxShadow(#27ae60); }
 
     .player__avatar__name {
         flex: 0;
@@ -102,12 +89,14 @@ body {
         padding: 0 2px;
         font-size: 8px;
         font-weight: bold;
-        background-color: rgba(127,127,127,0.4);
+        opacity: 0.65;
+        background-color: rgba(127,127,127);
         white-space: nowrap;
         text-overflow: clip;
     }
 
     .player__avatar__stats {
+        opacity: 0.8;
         cursor: pointer;
     }
 }
@@ -122,6 +111,34 @@ body {
     background-image: url('images/logo.svg');
 
     @include responsive-ratio(1,0.33);
+}
+
+.avatar { 
+    text-align: center; 
+}
+.avatar__piece-wrap {
+    position: relative;
+    height: 100%; width: 100%;
+
+    .avatar__piece-piece,
+    .avatar__piece-piece-mask,
+    .avatar__piece-face {
+        position: absolute;
+        top: 0; bottom: 0;
+        left: 0; right: 0;
+
+        pointer-events: none !important;
+
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center center;
+        mask-size: contain;
+        mask-repeat: no-repeat;
+        mask-position: center center;
+        -webkit-mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        -webkit-mask-position: center center;
+    }
 }
 
 @media (max-width: 768px) { // md- breakpoint
@@ -177,4 +194,8 @@ body {
             clear: both;
         }
     }
+}
+
+.ratio-square {
+    @include responsive-ratio(1,1, $pseudo: true);
 }

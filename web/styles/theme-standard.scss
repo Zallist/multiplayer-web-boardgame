@@ -2,8 +2,9 @@
 
 // Variables
 $backgroundColor: #192E58;
+$lightBackgroundColor: rgb(235,249,254);
 $panelBackgroundColor: rgb(63,166,221);
-$panelBorderColor: rgb(35,127,190);
+$panelBorderColor: rgb(27,117,186);
 $btnPrimaryColor: #b1ed58;
 $btnSecondaryColor: #95a5a6;
 
@@ -21,17 +22,6 @@ body {
     background-color: $backgroundColor;
     overflow: hidden;
 }
-
-/*
-#app {
-    background-image: url('images/standard/background.svg');
-    background-repeat: no-repeat;
-    background-size: 98% 98%;
-    background-position: center center;
-
-    @include padChild(4%,4%,4%,4%);
-}
-*/
 
 #app {
     border-radius: 32px;
@@ -130,45 +120,6 @@ body {
     }
 }
 
-.player__avatars__box {
-    background-image: url('images/standard/avatar_panel.svg');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    padding: 0.5em 1.5em;
-}
-.player__avatar {
-    background-image: url('images/standard/avatar_box.svg');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    
-    &.player--turn { border: none; background-image: url('images/standard/avatar_box_turn.svg'); }
-    &.player--spectating { border: none; background-image: url('images/standard/avatar_box_spectating.svg'); }
-    &.player--me { border: none; background-image: url('images/standard/avatar_box_me.svg'); }
-    &.player--ready { border: none; background-image: url('images/standard/avatar_box_ready.svg'); }
-    &.player--me.player--turn { border: none; background-image: url('images/standard/avatar_box_me_turn.svg'); }
-
-    .player__avatar__stats {
-        .fa-cross {
-            background-image: url('images/standard/icons/SkullLose.svg');
-            @include fillBackgroundImage(true);
-            @include removeIconContent;
-        }
-        .fa-trophy {
-            background-image: url('images/standard/icons/Trophy.svg');
-            @include fillBackgroundImage(true);
-            @include removeIconContent;
-        }
-    }
-}
-
-.chat__box {
-    background-image: url('images/standard/chat_box.svg');
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    border: none;
-    @include padChild(8%,12%,7%,9%);
-}
-
 .config__help-text {
     color: #222 !important;
 }
@@ -208,6 +159,11 @@ body {
 }
 
 // Secondary styling
+h1 {
+    @include stroke(4,$backgroundColor);
+    color: #FFF;
+}
+
 .input-group {
     border: 4px solid $backgroundColor;
     border-radius: 4px;
@@ -273,27 +229,34 @@ body {
         width: 1.75em; height: 1.75em;
         text-align: center;
 
-        &.btn-config {
-            & > i { 
-                background-image: url('images/standard/icons/cog.svg');
-                @include fillBackgroundImage(true);
-                @include removeIconContent;
+        @mixin addButton($className, $url) {
+            &.#{$className} {
+                & > i {
+                    display: block;
+
+                    @if ($url) {
+                        background-image: url($url);
+                    }
+                    @include fillBackgroundImage(true);
+                    @include removeIconContent;
+                }
+
+                @content;
             }
         }
-        &.btn-stats {
-            & > i { 
-                background-image: url('images/standard/icons/trophy.svg');
-                @include fillBackgroundImage(true);
-                @include removeIconContent;
-            }
+
+        @include addButton('btn-config', 'images/standard/icons/cog.svg');
+        @include addButton('btn-stats', 'images/standard/icons/trophy.svg');
+        @include addButton('btn-help', 'images/standard/icons/questionmark.svg');
+        @include addButton('btn-puzzle-piece', 'images/standard/icons/PiecePicker.svg');
+        @include addButton('btn-face', 'images/standard/icons/Face.svg') {
+            background-color: $btnPrimaryColor !important;
         }
-        &.btn-help {
-            & > i { 
-                background-image: url('images/standard/icons/questionmark.svg');
-                @include fillBackgroundImage(true);
-                @include removeIconContent;
-            }
-        }
+        @include addButton('btn-color-wheel', 'images/standard/icons/ColorPicker.svg');
+        @include addButton('btn-refresh', 'images/standard/icons/Refresh.svg');
+        @include addButton('btn-cancel', 'images/standard/icons/Cancel.svg');
+
+        @include addButton('btn-icon--populated', null);
 
         &:not(:disabled) {
             &:hover, &:active {
@@ -304,6 +267,118 @@ body {
                 box-shadow: 0px 8px 0 transparentize($color: $color, $amount: 0.2) !important;
             }
         }
+    }
+}
+
+.turn__tracker__header {
+    background-position: left top;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url('images/standard/turn_tracker_background.svg');
+    height: 80px;
+    margin-bottom: -30px;
+    position: relative;
+
+    h1 {
+        font-size: 24px;
+        position: absolute;
+        top: 20px;
+        left: 26px;
+        transform: rotate(-3deg);
+    }
+}
+
+.avatar__box {
+    background:
+        radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, $lightBackgroundColor 25%),
+        $lightBackgroundColor;
+    background-size: 500% 200%;
+    background-position: center top;
+    background-repeat: no-repeat;
+
+    border: 8px solid $backgroundColor;
+    border-top-left-radius: 15% 50%;
+    border-top-right-radius: 15% 50%;
+    border-bottom-left-radius: 15% 50%;
+    border-bottom-right-radius: 15% 50%;
+
+    position: relative;
+    overflow: hidden;
+
+    .avatar {
+        position: absolute;
+        top: 8px; bottom: 8px;
+        left: 8px; right: 8px;
+    }
+    
+    @mixin insetBoxShadow($color) {
+        box-shadow: 0px 0px 0px 4px inset $color;
+    }
+
+    @include insetBoxShadow($panelBorderColor);
+
+    &.avatar__box--spectating { @include insetBoxShadow(#7f8c8d); }
+    &.avatar__box--turn { @include insetBoxShadow(#e74c3c); }
+    &.avatar__box--ready { @include insetBoxShadow(#e67e22); }
+    &.avatar__box--me { @include insetBoxShadow(#8e44ad); }
+    &.avatar__box--me.avatar__box--turn { @include insetBoxShadow(#27ae60); }
+    
+    .player__avatar__name {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        max-width: 100%;
+        transform: translateX(-50%);
+        font-size: 8px;
+        font-weight: bold;
+        white-space: nowrap;
+        text-overflow: clip;
+        background: transparent;
+
+        opacity: 0.65;
+        color: #FFF;
+        @include stroke(2, #000);
+    }
+    
+
+    .player__avatar__stats {
+        .fa-cross {
+            background-image: url('images/standard/icons/SkullLose.svg');
+            @include fillBackgroundImage(true);
+            @include removeIconContent;
+        }
+        .fa-trophy {
+            background-image: url('images/standard/icons/Trophy.svg');
+            @include fillBackgroundImage(true);
+            @include removeIconContent;
+        }
+    }
+}
+
+.chat__box {
+    background:
+        radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, $lightBackgroundColor 25%),
+        $lightBackgroundColor;
+    background-size: 500% 200%;
+    background-position: center top;
+    background-repeat: no-repeat;
+
+    border: 8px solid $backgroundColor;
+    border-top-left-radius: 10% 50%;
+    border-top-right-radius: 10% 50%;
+    border-bottom-left-radius: 10% 50%;
+    border-bottom-right-radius: 10% 50%;
+
+    position: relative;
+    overflow: hidden;
+
+    box-shadow: 0px 0px 0px 4px inset $panelBorderColor;
+
+    .chat__messages {
+        position: absolute;
+        top: 4px; bottom: 4px;
+        left: calc(5% + 4px); right: calc(5% + 4px);
+        height: auto;
     }
 }
 
@@ -383,5 +458,26 @@ body {
         &.game__over__reason--tie {
             background-image: url('images/standard/game_over_tie.svg');
         }
+    }
+}
+
+.picker-arrow {
+    .picker-arrow-content {
+        display: none;
+    }
+
+    &.picker-arrow--left:after,
+    &.picker-arrow--right:after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 60px;
+        background-image: url('images/standard/RightArrowWBorder.svg') !important;
+        background-repeat: no-repeat;
+        background-size: contain !important;
+        background-position: center center !important;
+    }
+    &.picker-arrow--left:after {
+        transform: scaleX(-1);
     }
 }

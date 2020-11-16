@@ -40,16 +40,14 @@
 
     .omok__piece {
         position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%,-50%);
-        display: flex;
-        flex-flow: row;
-        align-items: center;
-        text-align: center;
+        left: 0; right: 0;
+        top: 0; bottom: 0;
 
-        & > i {
-            flex: 1;
+        & > i.fas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
         }
 
         @keyframes wiggle {
@@ -67,9 +65,7 @@
         }
 
         &.omok__piece--last-placed {
-            & > i {
-                animation: wiggle 0.5s infinite;
-            }
+            animation: wiggle 0.5s infinite;
         }
     }
 }

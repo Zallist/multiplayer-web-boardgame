@@ -42,50 +42,36 @@ html {
   word-break: break-word;
 }
 
-.player__avatars {
-  display: flex;
-  flex-flow: row wrap;
-  max-height: 7em;
-  min-height: 3em;
-  overflow-y: auto;
-  overflow-x: hidden;
-  justify-content: space-around;
-  margin-top: -0.5em;
-}
-
-.player__avatar {
+.avatar__box {
+  background: #FFFFFF;
+  border: 1px solid #E0E0E0;
   position: relative;
-  display: flex;
-  flex-flow: row nowrap;
-  flex: 1;
-  height: 3em;
-  min-width: 3em;
-  margin: 0.5em 0.25em 0 0.25em;
-  align-items: center;
-  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0px 0px 0px 2px inset #E0E0E0;
 }
-.player__avatar > i {
-  font-size: 1.5em;
-  text-align: center;
-  display: block;
-  flex: 1;
+.avatar__box .avatar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
-.player__avatar.player--spectating > i {
-  font-size: 1em;
+.avatar__box.avatar__box--spectating {
+  box-shadow: 0px 0px 0px 2px inset #7f8c8d;
 }
-.player__avatar.player--turn {
-  border: 1px solid red;
+.avatar__box.avatar__box--turn {
+  box-shadow: 0px 0px 0px 2px inset #e74c3c;
 }
-.player__avatar.player--ready {
-  border: 1px solid orange;
+.avatar__box.avatar__box--ready {
+  box-shadow: 0px 0px 0px 2px inset #e67e22;
 }
-.player__avatar.player--me {
-  border: 1px solid blue;
+.avatar__box.avatar__box--me {
+  box-shadow: 0px 0px 0px 2px inset #8e44ad;
 }
-.player__avatar.player--me.player--turn {
-  border-color: green;
+.avatar__box.avatar__box--me.avatar__box--turn {
+  box-shadow: 0px 0px 0px 2px inset #27ae60;
 }
-.player__avatar .player__avatar__name {
+.avatar__box .player__avatar__name {
   flex: 0;
   position: absolute;
   bottom: 0;
@@ -95,11 +81,13 @@ html {
   padding: 0 2px;
   font-size: 8px;
   font-weight: bold;
-  background-color: rgba(127, 127, 127, 0.4);
+  opacity: 0.65;
+  background-color: #7f7f7f;
   white-space: nowrap;
   text-overflow: clip;
 }
-.player__avatar .player__avatar__stats {
+.avatar__box .player__avatar__stats {
+  opacity: 0.8;
   cursor: pointer;
 }
 
@@ -117,6 +105,35 @@ html {
   position: relative;
   width: 100%;
   padding-top: 33%;
+}
+
+.avatar {
+  text-align: center;
+}
+
+.avatar__piece-wrap {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+.avatar__piece-wrap .avatar__piece-piece,
+.avatar__piece-wrap .avatar__piece-piece-mask,
+.avatar__piece-wrap .avatar__piece-face {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center center;
 }
 
 @media (max-width: 768px) {
@@ -172,4 +189,11 @@ html {
     display: table;
     clear: both;
   }
+}
+.ratio-square:before {
+  content: "";
+  display: block;
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
 }

@@ -1,3 +1,4 @@
+/// <reference path="types/anyObj.d.ts" />
 var app = app || {};
 app.helpers = (function () {
     var helpers = {};
@@ -8,6 +9,22 @@ app.helpers = (function () {
             array.splice(index, 1);
         }
         return array;
+    };
+    helpers.unwrap = function (obj) {
+        var unwrapped, key;
+        if (_.isArray(obj)) {
+            unwrapped = [];
+            for (key = 0; key < obj.length; key++) {
+                unwrapped.push(obj[key]);
+            }
+        }
+        else {
+            unwrapped = {};
+            for (key in obj) {
+                unwrapped[key] = obj[key];
+            }
+        }
+        return unwrapped;
     };
     helpers.generateColor = function (seed) {
         var color;

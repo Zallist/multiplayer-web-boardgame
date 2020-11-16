@@ -1,8 +1,11 @@
-declare var Vue: any;
-declare var _: any;
-declare var chance: any;
-declare var axios: any;
-declare var signalR: any;
+/// <reference path="types/anyObj.d.ts" />
+/// <reference path="types/player.d.ts" />
+
+declare var Vue: anyObj;
+declare var _: anyObj;
+declare var chance: anyObj;
+declare var axios: anyObj;
+declare var signalR: anyObj;
 declare var randomColor: any;
 
 var app = app || {};
@@ -10,7 +13,7 @@ var app = app || {};
 app.main = (function () {
     let viewModel;
 
-    const page: any = {
+    const page: anyObj = {
         helpers: {
             getUrlParameter: function (key, useHash) {
                 let urlParams = new URLSearchParams(useHash ? window.location.hash : window.location.search);
@@ -241,7 +244,7 @@ app.main = (function () {
         connect: function () {
             function onConnected() {
                 setInterval(function () {
-                    let hostPlayer, currentPlayer;
+                    let hostPlayer: Player, currentPlayer: Player;
 
                     if (viewModel.gameState.started) {
                         if (viewModel.isHost) {
@@ -327,7 +330,7 @@ app.main = (function () {
         },
 
         handleData: function (fromPlayerId, data) {
-            let fromPlayer, playerIndex;
+            let fromPlayer: Player, playerIndex;
 
             fromPlayer = viewModel.helpers.getPlayer(fromPlayerId);
 
@@ -513,7 +516,7 @@ app.main = (function () {
 
     const viewModelFunctions = {
         getHelpers: function (viewModel) {
-            const helpers: any = {};
+            const helpers: anyObj = {};
 
             helpers.addMessage = function (playerId, message, color) {
                 let doScroll = false,
@@ -595,11 +598,11 @@ app.main = (function () {
                 }
             };
 
-            let unknownPlayer = null,
-                systemPlayer = null;
+            let unknownPlayer: Player = null,
+                systemPlayer: Player = null;
 
-            helpers.getPlayer = function (playerId, returnNullIfNotFound) {
-                let player = null;
+            helpers.getPlayer = function (playerId, returnNullIfNotFound): Player {
+                let player: Player = null;
 
                 if (!playerId) {
                     if (!systemPlayer) {
@@ -706,7 +709,7 @@ app.main = (function () {
             };
 
             helpers.doStartTurn = function () {
-                let currentPlayer = helpers.getPlayer(viewModel.gameState.currentTurn);
+                let currentPlayer: Player = helpers.getPlayer(viewModel.gameState.currentTurn);
 
                 if (currentPlayer.id) {
                     helpers.addMessage(null, "It's " + currentPlayer.name + "'" + (_.endsWith(currentPlayer.name, 's') ? "" : "s") + " turn", currentPlayer.metadata.color);
@@ -798,10 +801,10 @@ app.main = (function () {
         },
 
         getMakers: function (viewModel) {
-            const makers: any = {};
+            const makers: anyObj = {};
 
-            makers.makePlayer = function (player) {
-                player = _.merge({
+            makers.makePlayer = function (defaults: anyObj): Player {
+                const player: Player = _.merge({
                     id: null,
                     name: null,
                     isHost: false,
@@ -809,7 +812,7 @@ app.main = (function () {
                     isReady: false,
                     isPlaying: false,
                     metadata: {
-                        color: app.helpers.generateColor(),
+                        color: '#000',
                         avatar: {
                             type: 'css-class',
                             value: null
@@ -828,7 +831,7 @@ app.main = (function () {
                             timesHacked: 0
                         }
                     }
-                }, player);
+                }, defaults);
 
                 if (viewModel.player && player.id === viewModel.player.id) {
                     // Make sure we don't screw with stats if we're talking about the current player
@@ -842,7 +845,7 @@ app.main = (function () {
         },
 
         getEvents: function (viewModel) {
-            const events: any = {};
+            const events: anyObj = {};
 
             events.toggleReady = function () {
                 viewModel.player.isReady = !viewModel.player.isReady;
@@ -937,7 +940,7 @@ app.main = (function () {
                 });
             };
             events.viewStats = function (playerId) {
-                var player, you = false;
+                let player: Player, you = false;
 
                 if (!playerId || playerId === viewModel.player.id) {
                     playerId = viewModel.player.id;
@@ -986,7 +989,7 @@ app.main = (function () {
         },
 
         getComputed: function (viewModel) {
-            const computed: any = {};
+            const computed: anyObj = {};
 
             computed.anyReady = Vue.computed(function () {
                 let players;
@@ -1036,7 +1039,7 @@ app.main = (function () {
     };
 
     function makeVM() {
-        const viewModel = Vue.reactive({
+        const viewModel: { player: Player } & anyObj = Vue.reactive({
             computed: {},
             events: {},
             helpers: {},
@@ -1057,7 +1060,7 @@ app.main = (function () {
         viewModel.player = viewModel.makers.makePlayer({
             id: null,
             name: null
-        });
+        }) as Player;
 
         viewModel.messages = [];
 
@@ -1085,7 +1088,248 @@ app.main = (function () {
         viewModel.gamePanelWidth = window.innerWidth;
 
         // Config stuff
-        viewModel.availableColors = randomColor({ luminosity: 'bright', count: 12 });
+        function makePiece(svgUrl, options) {
+            const item = {
+                url: svgUrl,
+                options: options || {}
+            };
+
+            return item;
+        }
+        function makeFace(svgUrl, options) {
+            const item = {
+                url: svgUrl,
+                options: options || {}
+            };
+
+            return item;
+        }
+
+        viewModel.customization = {
+            picker: 'piece',
+            allPieces: [
+                /*
+powershell: Get-ChildItem  -File -Name
+
+regex find: (.+)
+regex replace: makePiece('assets/avatar/pieces/$1', { faceTop: '10%', faceLeft: '10%', faceWidth: '80%', faceHeight: '80%' }),
+
+apple.svg
+balloon.svg
+barrel.svg
+baseball.svg
+box.svg
+bunny.svg
+carton.svg
+cloud.svg
+Controller.svg
+crown.svg
+cup.svg
+cupcake.svg
+eyeball.svg
+Flower.svg
+flower2.svg
+ghost.svg
+heart.svg
+icecream2.svg
+kitty.svg
+lemon.svg
+mug.svg
+nose.svg
+poop.svg
+skull2.svg
+taco.svg
+teddy.svg
+tooth.svg
+tophat.svg
+tree.svg
+witch.svg
+*/
+
+                makePiece('assets/avatar/pieces/apple.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '70%' }),
+                makePiece('assets/avatar/pieces/balloon.svg', { faceTop: '15%', faceLeft: '15%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/barrel.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/baseball.svg', { faceTop: '20%', faceLeft: '30%', faceWidth: '40%', faceHeight: '60%' }),
+                makePiece('assets/avatar/pieces/box.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/bunny.svg', { faceTop: '50%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/carton.svg', { faceTop: '40%', faceLeft: '30%', faceWidth: '25%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/cloud.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/Controller.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
+                makePiece('assets/avatar/pieces/crown.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
+                makePiece('assets/avatar/pieces/cup.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/cupcake.svg', { faceTop: '50%', faceLeft: '25%', faceWidth: '50%', faceHeight: '20%' }),
+                makePiece('assets/avatar/pieces/eyeball.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
+                makePiece('assets/avatar/pieces/flower2.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
+                makePiece('assets/avatar/pieces/ghost.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/heart.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/icecream2.svg', { faceTop: '10%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/kitty.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/lemon.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/mug.svg', { faceTop: '42%', faceLeft: '15%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/nose.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/poop.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
+                makePiece('assets/avatar/pieces/skull2.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/taco.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
+                makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '45%' }),
+                //makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
+                makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
+                makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '33%', faceWidth: '37%', faceHeight: '38%' }),
+            ],
+            allFaces: [
+                /*
+powershell: Get-ChildItem  -File -Name
+
+regex find: (.+)
+regex replace: makeFace('assets/avatar/faces/$1', { }),
+
+angry.svg
+eyes.svg
+eyes2.svg
+hap.svg
+Hap2.svg
+Hap3.svg
+Laughalt.svg
+nyheh.svg
+owo.svg
+spook.svg
+spook2.svg
+spookihap.svg
+spookihap2.svg
+uwu.svg
+*/
+                makeFace('assets/avatar/faces/angry.svg', { }),
+                makeFace('assets/avatar/faces/eyes.svg', { }),
+                makeFace('assets/avatar/faces/eyes2.svg', { }),
+                makeFace('assets/avatar/faces/hap.svg', { }),
+                makeFace('assets/avatar/faces/Hap2.svg', { }),
+                makeFace('assets/avatar/faces/Hap3.svg', { }),
+                makeFace('assets/avatar/faces/Laughalt.svg', { }),
+                makeFace('assets/avatar/faces/nyheh.svg', { }),
+                makeFace('assets/avatar/faces/owo.svg', { }),
+                makeFace('assets/avatar/faces/spook.svg', { }),
+                makeFace('assets/avatar/faces/spook2.svg', { }),
+                makeFace('assets/avatar/faces/spookihap.svg', { }),
+                makeFace('assets/avatar/faces/spookihap2.svg', { }),
+                makeFace('assets/avatar/faces/uwu.svg', { }),
+            ],
+
+            availableColors: [],
+            availablePieces: [],
+            availableFaces: [],
+
+            colorAmount: 6,
+            faceAmount: 3,
+            pieceAmount: 6,
+
+            refreshPicker: function (picker) {
+                switch (picker || viewModel.customization.picker) {
+                    case 'color':
+                        viewModel.customization.availableColors = randomColor({ luminosity: 'dark', count: viewModel.customization.colorAmount });
+                        break;
+                    case 'face':
+                        viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);
+                        //viewModel.customization.availableFaces = viewModel.customization.allFaces;
+                        break;
+                    case 'piece':
+                        viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
+                        //viewModel.customization.availablePieces = viewModel.customization.allPieces;
+                        break;
+                }
+            },
+
+            selectPiece: function (piece) {
+                viewModel.player.metadata.avatar.type = 'piece';
+
+                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
+                    viewModel.player.metadata.avatar.value = {
+                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
+                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
+                    };
+                }
+
+                viewModel.player.metadata.avatar.value.piece = _.cloneDeep(piece);
+            },
+            selectFace: function (face) {
+                viewModel.player.metadata.avatar.type = 'piece';
+
+                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
+                    viewModel.player.metadata.avatar.value = {
+                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
+                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
+                    };
+                }
+
+                viewModel.player.metadata.avatar.value.face = _.cloneDeep(face);
+            },
+
+            pieceClick: function (player, x, y, element) {
+                let face, piece,
+                    xPercent, yPercent;
+
+                function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
+                function makePercent(num: number) : string { return num + '%'; }
+
+                if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
+                    piece = player.metadata.avatar.value.piece;
+                    face = player.metadata.avatar.value.face;
+
+                    if (face && piece) {
+                        xPercent = x / element.offsetWidth;
+                        yPercent = y / element.offsetHeight;
+
+                        xPercent = xPercent - (makeNumber(piece.options.faceWidth) / 200);
+                        yPercent = yPercent - (makeNumber(piece.options.faceHeight) / 200);
+
+                        piece.options.faceLeft = makePercent(xPercent * 100);
+                        piece.options.faceTop = makePercent(yPercent * 100);
+                    }
+                }
+            },
+
+            pieceZoomed: function (player, delta, element) {
+                let face, piece;
+
+                function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
+                function makePercent(num: number) : string { return num + '%'; }
+
+                if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
+                    piece = player.metadata.avatar.value.piece;
+                    face = player.metadata.avatar.value.face;
+                
+                    if (face && piece) {
+                        // negative = get bigger = zoom
+                        // positive = get smaller = zoom out
+
+                        if (delta < 0) {
+                            if (makeNumber(piece.options.faceWidth) > 100 || makeNumber(piece.options.faceHeight) > 100) {
+                                return;
+                            }
+                            
+                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) - 1);
+                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) - 1);
+                            piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) + 1);
+                            piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) + 1);
+                        }
+                        else {                            
+                            if (makeNumber(piece.options.faceWidth) < 5 || makeNumber(piece.options.faceHeight) < 5) {
+                                return;
+                            }
+
+                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) + 1);
+                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) + 1);
+                            piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) - 1);
+                            piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) - 1);
+                        }
+                    }
+                }
+            }
+        };
+        viewModel.customization.refreshPicker('color');
+        viewModel.customization.refreshPicker('face');
+        viewModel.customization.refreshPicker('piece');
+
         viewModel.availableAvatarCssClasses = [
             { cssClass: 'fas fa-apple-alt', id: 'apple-alt' },
             { cssClass: 'fas fa-bread-slice', id: 'bread-slice' },
@@ -1116,10 +1360,12 @@ app.main = (function () {
         if (viewModel.player.name === null) {
             viewModel.player.name = chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
         }
+        if (viewModel.player.metadata.color === '#000') {
+            viewModel.player.metadata.color = viewModel.customization.availableColors[0];
+        }
 
         if (viewModel.player.metadata.avatar.value === null) {
-            viewModel.player.metadata.avatar.type = 'css-class';
-            viewModel.player.metadata.avatar.value = _.sample(viewModel.availableAvatarCssClasses).cssClass;
+            viewModel.customization.selectPiece(viewModel.customization.availablePieces[0]);
         }
 
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
@@ -1160,11 +1406,42 @@ app.main = (function () {
         });
 
         page.pageVue.component('player-avatar', {
-            props: ['player'],
+            props: ['player', 'customize'],
             template: `
 <i v-if="player.metadata.avatar.type=='css-class'"
     :class="player.metadata.avatar.value"
     :style="{ 'color': player.metadata.color }"></i>
+    
+<div v-else-if="player.metadata.avatar.type=='piece'"
+     class="avatar__piece-wrap"
+     v-on="customize ? { 
+        click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); },
+        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoomed(player, $event.deltaY, $event.currentTarget); }
+    } : {}">
+     
+    <div class="avatar__piece-piece"
+         :style="{ 
+            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' 
+         }"></div>
+         
+    <div class="avatar__piece-piece-mask"
+         :style="{ 
+            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',
+            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',
+            'background-color': player.metadata.color,
+            'opacity': 0.5
+         }"></div>
+         
+    <div class="avatar__piece-face"
+         v-if="player.metadata.avatar.value.face"
+         :style="{ 
+             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',
+             'top': player.metadata.avatar.value.piece.options.faceTop,
+             'left': player.metadata.avatar.value.piece.options.faceLeft,
+             'width': player.metadata.avatar.value.piece.options.faceWidth,
+             'height': player.metadata.avatar.value.piece.options.faceHeight
+         }"></div>
+</div>
 
 <i v-else class="fas fa-question"
     :style="{ 'color': player.metadata.color }"></i>`
