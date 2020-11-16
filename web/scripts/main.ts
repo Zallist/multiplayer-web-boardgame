@@ -1178,9 +1178,41 @@ witch.svg
                 makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '33%', faceWidth: '37%', faceHeight: '38%' }),
             ],
             allFaces: [
-                makeFace('assets/avatar/faces/Happy.svg', { }),
-                makeFace('assets/avatar/faces/Laugh.svg', { }),
+                /*
+powershell: Get-ChildItem  -File -Name
+
+regex find: (.+)
+regex replace: makeFace('assets/avatar/faces/$1', { }),
+
+angry.svg
+eyes.svg
+eyes2.svg
+hap.svg
+Hap2.svg
+Hap3.svg
+Laughalt.svg
+nyheh.svg
+owo.svg
+spook.svg
+spook2.svg
+spookihap.svg
+spookihap2.svg
+uwu.svg
+*/
+                makeFace('assets/avatar/faces/angry.svg', { }),
+                makeFace('assets/avatar/faces/eyes.svg', { }),
+                makeFace('assets/avatar/faces/eyes2.svg', { }),
+                makeFace('assets/avatar/faces/hap.svg', { }),
+                makeFace('assets/avatar/faces/Hap2.svg', { }),
+                makeFace('assets/avatar/faces/Hap3.svg', { }),
                 makeFace('assets/avatar/faces/Laughalt.svg', { }),
+                makeFace('assets/avatar/faces/nyheh.svg', { }),
+                makeFace('assets/avatar/faces/owo.svg', { }),
+                makeFace('assets/avatar/faces/spook.svg', { }),
+                makeFace('assets/avatar/faces/spook2.svg', { }),
+                makeFace('assets/avatar/faces/spookihap.svg', { }),
+                makeFace('assets/avatar/faces/spookihap2.svg', { }),
+                makeFace('assets/avatar/faces/uwu.svg', { }),
             ],
 
             availableColors: [],
@@ -1198,7 +1230,7 @@ witch.svg
                         break;
                     case 'face':
                         viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);
-                        viewModel.customization.availableFaces = viewModel.customization.allFaces;
+                        //viewModel.customization.availableFaces = viewModel.customization.allFaces;
                         break;
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
