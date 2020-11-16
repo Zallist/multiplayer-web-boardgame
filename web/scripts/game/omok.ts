@@ -19,8 +19,8 @@ app.makeGameObject = function (connection, app, viewModel) {
             },
             template: `
 <div class="game__board">
-    <div class="game__row" v-for="row in $data.$vm.gameState.game.boardCells">
-        <div v-for="cell in row"
+    <div class="game__row" v-for="(row, rowIndex) in $data.$vm.gameState.game.boardCells" :key="rowIndex">
+        <div v-for="(cell, cellIndex) in row" :key="cellIndex"
              @click.prevent="$data.$game.events.cellClicked(cell)"
              :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy }">
 
@@ -62,7 +62,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" :min="$data.$vm.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model="$data.$vm.gameState.game.configuration.turnTime" />
+                <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model.number="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
         </div>
 
@@ -78,7 +78,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="1" max="100" step="1" v-model="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model="$data.$vm.gameState.game.configuration.gridSize" />
+                <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model.number="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
         </div>
 
@@ -94,7 +94,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model="$data.$vm.gameState.game.configuration.numberInARowRequired" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model="$data.$vm.gameState.game.configuration.numberInARowRequired" />
+                <input type="number" class="form-control form-control-sm" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model.number="$data.$vm.gameState.game.configuration.numberInARowRequired" />
             </div>
         </div>
     </div>

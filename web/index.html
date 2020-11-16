@@ -30,7 +30,7 @@
                                      @click="$root.player.name = $root.customization.generateName();">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">Name</span>
                                 </div>
-                                <input type="text" class="form-control" v-model="$root.player.name" maxlength="24" required v-focus />
+                                <input type="text" class="form-control" v-model.trim="$root.player.name" maxlength="24" required v-focus />
                             </div>
                         </form>
 
@@ -74,19 +74,19 @@
                         <div class="d-flex flex-columns align-content-center">
                             <div v-if="$root.customization.picker === 'piece'">
                                 <button type="button" class="btn btn-icon btn-puzzle-piece"
-                                        @click="$root.customization.pieceAmount += 1; $root.customization.refreshPicker('piece');">
+                                        @dblclick="$root.customization.pieceAmount += 1; $root.customization.refreshPicker('piece');">
                                     <i class="fas fa-puzzle-piece"></i>
                                 </button>
                             </div>
                             <div v-else-if="$root.customization.picker === 'face'">
                                 <button type="button" class="btn btn-icon btn-face"
-                                        @click="$root.customization.faceAmount += 1; $root.customization.refreshPicker('face');">
+                                        @dblclick="$root.customization.faceAmount += 1; $root.customization.refreshPicker('face');">
                                     <i class="fas fa-smile-beam"></i>
                                 </button>
                             </div>
                             <div v-else>
                                 <button type="button" class="btn btn-icon btn-color-wheel"
-                                        @click="$root.customization.colorAmount += 1; $root.customization.refreshPicker('color');">
+                                        @dblclick="$root.customization.colorAmount += 1; $root.customization.refreshPicker('color');">
                                     <i class="fas fa-palette"></i>
                                 </button>
                             </div>
@@ -292,7 +292,7 @@
                                 <div class="mt-3 align-self-center">
                                     <h1>
                                         Ready: 
-                                        {{ _.filter($root.players, { 'isReady': true, 'isHost': false, 'isDisconnected': false }).length + 1 }} / {{ _.filter($root.players, { 'isDisconnected': false }).length }}
+                                        {{ _lodash.filter($root.players, { 'isReady': true, 'isHost': false, 'isDisconnected': false }).length + 1 }} / {{ _lodash.filter($root.players, { 'isDisconnected': false }).length }}
                                     </h1>
                                 </div>
 
@@ -421,7 +421,7 @@
                                 </div>
                                 <form @submit.prevent="$root.helpers.submitMyMessage" class="">
                                     <div class="input-group chat__entry mt-1">
-                                        <input type="text" class="form-control" v-model="$root.myMessage">
+                                        <input type="text" class="form-control" v-model.trim="$root.myMessage">
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-dark" type="submit" title="Send message">
                                                 <i class="fas fa-caret-right"></i>

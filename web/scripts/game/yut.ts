@@ -107,7 +107,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="5" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="5" max="180" :step="5" v-model="$data.$vm.gameState.game.configuration.turnTime" />
+                <input type="number" class="form-control form-control-sm" min="5" max="180" :step="5" v-model.number="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
         </div>
     </div>
@@ -119,7 +119,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="3" max="19" step="2" v-model="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="3" max="19" step="2" v-model="$data.$vm.gameState.game.configuration.gridSize" />
+                <input type="number" class="form-control form-control-sm" min="3" max="19" step="2" v-model.number="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
         </div>
     </div>
@@ -143,7 +143,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="1" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.numberOfPieces" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="1" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.numberOfPieces" />
+                <input type="number" class="form-control form-control-sm" min="1" max="24" step="1" v-model.number="$data.$vm.gameState.game.configuration.numberOfPieces" />
             </div>
         </div>
     </div>
@@ -155,7 +155,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="0" max="19" step="1" v-model="$data.$vm.gameState.game.configuration.minRoll" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="0" max="19" step="1" v-model="$data.$vm.gameState.game.configuration.minRoll" />
+                <input type="number" class="form-control form-control-sm" min="0" max="19" step="1" v-model.number="$data.$vm.gameState.game.configuration.minRoll" />
             </div>
         </div>
     </div>
@@ -167,7 +167,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <input type="range" class="form-control form-control-sm form-control-range" min="1" max="19" step="1" v-model="$data.$vm.gameState.game.configuration.maxRoll" />
             </div>
             <div class="col-4">
-                <input type="number" class="form-control form-control-sm" min="1" max="19" step="1" v-model="$data.$vm.gameState.game.configuration.maxRoll" />
+                <input type="number" class="form-control form-control-sm" min="1" max="19" step="1" v-model.number="$data.$vm.gameState.game.configuration.maxRoll" />
             </div>
         </div>
     </div>

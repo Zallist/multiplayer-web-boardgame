@@ -1398,7 +1398,7 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
             }
             catch (ex) { }
         }
-
+        
         page.pageVue = Vue.createApp({
             data: () => page.viewModel,
             directives: {
@@ -1407,6 +1407,9 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                 }
             }
         });
+
+        // Expose lodash to Vue
+        Object.defineProperty(window, '_lodash', { value: _ });
 
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
