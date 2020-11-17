@@ -174,6 +174,10 @@ app.makeGameObject = function (connection, app, viewModel) {
                                 gameObject.assets.sounds['other_piece_placed'].play();
                             }
                         }
+
+                        if (!data.isWin && data.nextPlayerId === viewModel.player.id) {
+                            gameObject.assets.sounds['your_turn'].play();
+                        }
                     }
                     break;
                 case 'player-joined':
@@ -614,6 +618,12 @@ app.makeGameObject = function (connection, app, viewModel) {
                 src: [
                     'assets/game/omok/sounds/107786__leviclaassen__beepbeep.mp3',
                     'assets/game/omok/sounds/107786__leviclaassen__beepbeep.wav'
+                ]
+            }),
+            'your_turn': new Howl({
+                src: [
+                    'assets/game/omok/sounds/274179__littlerobotsoundfactory__jingle-win-synth-01.mp3',
+                    'assets/game/omok/sounds/274179__littlerobotsoundfactory__jingle-win-synth-01.wav'
                 ]
             })
         };
