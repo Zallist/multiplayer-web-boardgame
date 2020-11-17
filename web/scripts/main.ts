@@ -907,7 +907,18 @@ app.main = (function () {
                     vueComponents: app.game.vueComponents,
                     contentHtml: '<config-panel></config-panel>',
                     buttons: [],
-                    dialogClass: 'modal-dialog--config'
+                    dialogClass: 'modal-dialog--config',
+                    onClose: function () {
+                        if (viewModel.isConnected && viewModel.isHost && !viewModel.gameState.started) {
+                            app.game.hooks.setup();
+
+                            connection.send({
+                                type: 'game-state',
+                                players: viewModel.players,
+                                gameState: viewModel.gameState
+                            }, true);
+                        }
+                    }
                 });
             };
             events.viewHelp = function () {

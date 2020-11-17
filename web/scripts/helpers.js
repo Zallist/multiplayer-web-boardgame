@@ -46,6 +46,7 @@ app.helpers = (function () {
         // Assumes we've got bootstrap and Vue
         var dialog, app, data;
         options = _.merge({
+            onClose: function () { },
             components: [],
             dialogClass: '',
             notEscapable: false,
@@ -72,6 +73,9 @@ app.helpers = (function () {
                 document.body.classList.remove('modal-open');
                 if (_.isFunction(doCall)) {
                     doCall();
+                }
+                if (_.isFunction(options.onClose)) {
+                    options.onClose();
                 }
             },
             escape: function () {

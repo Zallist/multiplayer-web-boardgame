@@ -64,14 +64,15 @@ app.helpers = (function () {
         var dialog, app, data;
 
         options = _.merge({
+            onClose: () => {},
             components: [],
             dialogClass: '',
             notEscapable: false,
             backdrop: true,
             title: null,
             content: 'Content...',
-            onOK: function () { },
-            onCancel: function () { },
+            onOK: () => {},
+            onCancel: () => {},
             buttons: null
         }, options);
 
@@ -93,6 +94,9 @@ app.helpers = (function () {
 
                 if (_.isFunction(doCall)) {
                     doCall();
+                }
+                if (_.isFunction(options.onClose)) {
+                    options.onClose();
                 }
             },
             escape: function () {
