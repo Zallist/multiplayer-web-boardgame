@@ -92,8 +92,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                 };
             },
             template: `
-<fieldset :disabled="$data.$vm.isConnecting || $data.$vm.isConnected">
-    <div class="mb-3" v-show="!$data.$vm.isConnected">
+<fieldset :disabled="$data.$vm.isConnecting || ($data.$vm.isConnected && !$data.$vm.isHost) || ($data.$vm.isConnected && $data.$vm.isHost && $data.$vm.gameState.started)">
+    <div class="mb-3">
         <label>Use a preset</label>
         <div>
             <button type="button" class="btn btn-outline-primary mr-1" @click="$data.$game.events.setPreset(\'yut\')">Yut Nori</button>
