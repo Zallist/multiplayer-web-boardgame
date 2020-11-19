@@ -356,6 +356,15 @@ h1 {
     }
 }
 
+.chat__message, .chat__message-name, .chat__message-message {
+    font-family: 'Luckiest Guy', sans-serif;
+    font-weight: normal !important; 
+    @include stroke(1,#000);
+
+    &.dark {
+        text-shadow: none !important;
+    }
+}
 .chat__box {
     background:
         radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, $lightBackgroundColor 25%),
@@ -379,8 +388,9 @@ h1 {
     .chat__messages {
         position: absolute;
         top: 4px; bottom: 24px;
-        left: calc(5% + 4px); right: calc(5% + 4px);
+        left: 5%; right: 5%;
         height: auto;
+        padding: 0 4px;
     }
 }
 .chat__entry {    

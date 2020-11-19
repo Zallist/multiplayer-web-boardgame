@@ -813,6 +813,49 @@ app.main = (function () {
                 }
             };
 
+            let brightnessCache = {};
+
+            /**
+             * Calculate brightness value by RGB or HEX color.
+             * @param color (String) The color value in RGB or HEX (for example: #000000 || #000 || rgb(0,0,0) || rgba(0,0,0,0))
+             * @returns (Number) The brightness value (dark) 0 ... 255 (light)
+             */
+            helpers.brightnessByColor = function (color: string) {
+                if (!color) return 0;
+
+                if (brightnessCache[color]) return brightnessCache[color];
+
+                let isHEX = color.indexOf("#") == 0, isRGB = color.indexOf("rgb") == 0, brightness = 0;
+                let r: number, g: number, b: number;
+
+                if (isHEX) {
+                    const hasFullSpec = color.length == 7;
+                    var m = color.substr(1).match(hasFullSpec ? /(\S{2})/g : /(\S{1})/g);
+                    if (m) {
+                        r = parseInt(m[0] + (hasFullSpec ? '' : m[0]), 16);
+                        g = parseInt(m[1] + (hasFullSpec ? '' : m[1]), 16);
+                        b = parseInt(m[2] + (hasFullSpec ? '' : m[2]), 16);
+                    }
+                }
+
+                if (isRGB) {
+                    var m = color.match(/(\d+){3}/g);
+                    if (m) { 
+                        r = Number(m[0]);
+                        g = Number(m[1]);
+                        b = Number(m[2]);
+                    }
+                }
+
+                if (typeof r != "undefined") {
+                    brightness = ((r*299)+(g*587)+(b*114))/1000;
+                }
+
+                brightnessCache[color] = brightness;
+                
+                return brightness;
+            };
+
             return helpers;
         },
 
@@ -1207,7 +1250,7 @@ app.main = (function () {
             refreshPicker: function (picker) {
                 switch (picker || viewModel.customization.picker) {
                     case 'color':
-                        viewModel.customization.availableColors = randomColor({ luminosity: 'dark', count: viewModel.customization.colorAmount });
+                        viewModel.customization.availableColors = randomColor({ count: viewModel.customization.colorAmount });
                         break;
                     case 'face':
                         viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);

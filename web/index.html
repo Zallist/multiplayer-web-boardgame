@@ -412,9 +412,15 @@
                                 <div class="chat__box" style="flex: 1; min-height: 150px;" id="chat-box">
                                     <div class="chat__messages" id="chat-messages">
                                         <div v-for="message in $root.messages" v-bind:title="message.created" class="chat__message">
-                                            <template v-for="player in [$root.helpers.getPlayer(message.playerId)]">
-                                                <span v-if="player.name" :style="{ 'color': player.metadata.color }" class="chat__message-name">{{ player.name }}</span>
-                                                <span class="chat__message-message" :style="{ 'color': message.color }">{{ message.message }}</span>
+                                            <template v-for="player in [$root.helpers.getPlayer(message.playerId)]" :key="message.created">
+                                                <span v-if="player.name" class="chat__message-name" :style="{ 'color': player.metadata.color }" 
+                                                      :class="{ 'light': $root.helpers.brightnessByColor(player.metadata.color) >= 127, 'dark': $root.helpers.brightnessByColor(player.metadata.color) < 127 }">
+                                                    {{ player.name }}
+                                                </span>
+                                                <span class="chat__message-message" :style="{ 'color': message.color }" 
+                                                      :class="{ 'light': $root.helpers.brightnessByColor(message.color) >= 127, 'dark': $root.helpers.brightnessByColor(message.color) < 127 }">
+                                                    {{ message.message }}
+                                                </span>
                                             </template>
                                         </div>
                                     </div>
