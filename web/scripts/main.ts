@@ -384,9 +384,17 @@ app.main = (function () {
                     break;
                 case 'reset-turn-to-player':
                     if (fromPlayer.isHost) {
-                        viewModel.helpers.addMessage(null, 'Turn skipped because of disconnection', 'red');
-                        viewModel.gameState.currentTurn = data.playerId;
-                        viewModel.helpers.doStartTurn();
+                        if (data.playerId) {
+                            viewModel.helpers.addMessage(null, 'Turn skipped because of disconnection', 'red');
+                            viewModel.gameState.currentTurn = data.playerId;
+                            viewModel.helpers.doStartTurn();
+                        }
+                        else {
+                            viewModel.helpers.addMessage(null, 'Game ended because there were no players left', 'red');
+                            viewModel.helpers.endGame({
+                                reason: 'error: no players'
+                            });
+                        }
                     }
                     else {
                         viewModel.helpers.addMessage(null, fromPlayer.name + " tried to skip a turn but wasn't host", 'red');
