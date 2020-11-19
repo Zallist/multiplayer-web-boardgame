@@ -79,6 +79,7 @@ var customizationConfig = {
         { url: "assets/avatar/faces/spookihap4.svg" },
         { url: "assets/avatar/faces/stars.svg" },
         { url: "assets/avatar/faces/ugh.svg" },
+	{ url: "assets/avatar/faces/ugh2.svg" },
         { url: "assets/avatar/faces/uwu.svg" },
         { url: "assets/avatar/faces/wheat.svg" },
         { url: "assets/avatar/faces/pika.svg" },
