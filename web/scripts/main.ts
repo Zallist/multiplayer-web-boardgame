@@ -393,27 +393,6 @@ app.main = (function () {
                         fromPlayer.metadata.totalStats.timesHacked += 1;
                     }
                     break;
-                case 'forfeit':
-                    if (fromPlayer) {
-                        fromPlayer.isPlaying = false;
-                        playerIndex = viewModel.gameState.turnOrder.indexOf(fromPlayerId);
-
-                        if (playerIndex > -1) {
-                            viewModel.gameState.turnOrder.splice(playerIndex, 1);
-
-                            if (viewModel.gameState.currentTurn === fromPlayerId) {
-                                if (playerIndex >= viewModel.gameState.turnOrder.length) {
-                                    playerIndex = 0;
-                                }
-
-                                viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[playerIndex];
-                            }
-
-                            viewModel.helpers.doStartTurn();
-                            viewModel.helpers.addMessage(null, fromPlayer.name + ' has forfeited the game!', 'red');
-                        }
-                    }
-                    break;
                 case 'players':
                     if (viewModel.isHost) break;
                     viewModel.players = _.mapValues(data.players, viewModel.makers.makePlayer);
@@ -477,6 +456,8 @@ app.main = (function () {
 
                     if (data.isWin) {
                         _.forEach(viewModel.players, function (player) {
+                            if (!player.isPlaying) return;
+
                             if (player.id === fromPlayerId) {
                                 player.metadata.gameStats.wins += 1;
                                 player.metadata.totalStats.wins += 1;
@@ -511,6 +492,31 @@ app.main = (function () {
                     viewModel.helpers.endGame({
                         reason: 'tie'
                     });
+                    break;
+                case 'forfeit':
+                    if (fromPlayer) {
+                        fromPlayer.metadata.gameStats.losses += 1;
+                        fromPlayer.metadata.totalStats.losses += 1;
+                        fromPlayer.metadata.gameStats.lastGameResult = 'loss';
+
+                        fromPlayer.isPlaying = false;
+                        playerIndex = viewModel.gameState.turnOrder.indexOf(fromPlayerId);
+
+                        if (playerIndex > -1) {
+                            viewModel.gameState.turnOrder.splice(playerIndex, 1);
+
+                            if (viewModel.gameState.currentTurn === fromPlayerId) {
+                                if (playerIndex >= viewModel.gameState.turnOrder.length) {
+                                    playerIndex = 0;
+                                }
+
+                                viewModel.gameState.currentTurn = viewModel.gameState.turnOrder[playerIndex];
+                            }
+
+                            viewModel.helpers.doStartTurn();
+                            viewModel.helpers.addMessage(null, fromPlayer.name + ' has forfeited the game!', 'red');
+                        }
+                    }
                     break;
             }
         }
