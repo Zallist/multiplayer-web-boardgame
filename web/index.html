@@ -314,7 +314,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="setup-panel" class="col-12 col-sm-12 col-md-4 col-lg-3 h-100 overflow-auto">
+                    <div id="setup-panel" class="col-12 col-sm-12 col-md-4 col-lg-3 h-100 overflow-auto" style="min-height: 400px;">
                         <div v-if="$root.isConnected" class="d-flex flex-column h-100">
                             <div id="current-turn" v-if="$root.computed.currentTurnPlayer" class="d-md-none d-lg-none d-xl-none game-information"
                                  :style="{ 'background-color': $root.gameState.currentTurn === $root.player.id ? '#27ae60' : null }">
