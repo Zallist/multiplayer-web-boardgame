@@ -1099,135 +1099,53 @@ app.main = (function () {
         viewModel.gamePanelWidth = window.innerWidth;
 
         // Config stuff
-        function makePiece(svgUrl, options) {
+        function makePiece(obj) {
+            function makePercentage(value, defaultValue) {
+                value = Number(value);
+
+                if (!_.isFinite(value)) {
+                    value = defaultValue;
+                }
+
+                return value + '%';
+            };
+
             const item = {
-                url: svgUrl,
-                options: options || {}
+                url: obj.url,
+                faceLeft: makePercentage(obj.faceLeft, 25),
+                faceTop: makePercentage(obj.faceTop, 25),
+                faceHeight: makePercentage(obj.faceHeight, 50),
+                faceWidth: makePercentage(obj.faceWidth, 50),
             };
 
             return item;
         }
-        function makeFace(svgUrl, options) {
+        function makeFace(obj) {
             const item = {
-                url: svgUrl,
-                options: options || {}
+                url: obj.url
             };
 
             return item;
+        }
+
+        if (!window.customizationConfig) {
+            window.customizationConfig = {
+                avatarPieces: [
+                    { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70 },
+                    { url: "assets/avatar/pieces/balloon.svg", faceTop: 15, faceLeft: 15, faceWidth: 50, faceHeight: 50 },
+                    { url: "assets/avatar/pieces/barrel.svg", faceTop: 35, faceLeft: 25, faceWidth: 50, faceHeight: 50 },
+                ],
+                avatarFaces: [
+                    { url: "assets/avatar/faces/angry.svg" },
+                    { url: "assets/avatar/faces/cray.svg" },
+                ]
+            };
         }
 
         viewModel.customization = {
             picker: 'piece',
-            allPieces: [
-                /*
-powershell: Get-ChildItem  -File -Name
-
-regex find: (.+)
-regex replace: makePiece('assets/avatar/pieces/$1', { faceTop: '10%', faceLeft: '10%', faceWidth: '80%', faceHeight: '80%' }),
-
-
-*/
-
-                makePiece('assets/avatar/pieces/apple.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '70%' }),
-                makePiece('assets/avatar/pieces/balloon.svg', { faceTop: '15%', faceLeft: '15%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/barrel.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/baseball.svg', { faceTop: '20%', faceLeft: '30%', faceWidth: '40%', faceHeight: '60%' }),
-                makePiece('assets/avatar/pieces/box.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/bunny.svg', { faceTop: '50%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/carton.svg', { faceTop: '40%', faceLeft: '30%', faceWidth: '25%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/cloud.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/Controller.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
-                makePiece('assets/avatar/pieces/crown.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
-                makePiece('assets/avatar/pieces/cup.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/cupcake.svg', { faceTop: '50%', faceLeft: '25%', faceWidth: '50%', faceHeight: '20%' }),
-                makePiece('assets/avatar/pieces/eyeball.svg', { faceTop: '45%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/Flower.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
-                makePiece('assets/avatar/pieces/flower2.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
-                makePiece('assets/avatar/pieces/ghost.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/heart.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/icecream2.svg', { faceTop: '10%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/kitty.svg', { faceTop: '30%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/lemon.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/moch.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/mug.svg', { faceTop: '42%', faceLeft: '15%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/nose.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/poop.svg', { faceTop: '40%', faceLeft: '25%', faceWidth: '50%', faceHeight: '40%' }),
-                makePiece('assets/avatar/pieces/skull2.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/taco.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
-                makePiece('assets/avatar/pieces/teddy.svg', { faceTop: '35%', faceLeft: '25%', faceWidth: '50%', faceHeight: '50%' }),
-                makePiece('assets/avatar/pieces/tooth.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '45%' }),
-                makePiece('assets/avatar/pieces/tophat.svg', { faceTop: '20%', faceLeft: '25%', faceWidth: '50%', faceHeight: '30%' }),
-                makePiece('assets/avatar/pieces/tree.svg', { faceTop: '25%', faceLeft: '25%', faceWidth: '50%', faceHeight: '35%' }),
-                makePiece('assets/avatar/pieces/witch.svg', { faceTop: '25%', faceLeft: '33%', faceWidth: '37%', faceHeight: '38%' }),
-            ],
-            allFaces: [
-                /*
-powershell: Get-ChildItem  -File -Name
-
-regex find: (.+)
-regex replace: makeFace('assets/avatar/faces/$1', { }),
-
-*/
-                makeFace('assets/avatar/faces/angry.svg', { }),
-                makeFace('assets/avatar/faces/cray.svg', { }),
-                makeFace('assets/avatar/faces/crayeyes.svg', { }),
-                makeFace('assets/avatar/faces/eyes.svg', { }),
-                makeFace('assets/avatar/faces/eyes2.svg', { }),
-                makeFace('assets/avatar/faces/eyes3.svg', { }),
-                makeFace('assets/avatar/faces/eyes4.svg', { }),
-                makeFace('assets/avatar/faces/hap.svg', { }),
-                makeFace('assets/avatar/faces/Hap2.svg', { }),
-                makeFace('assets/avatar/faces/Hap3.svg', { }),
-                makeFace('assets/avatar/faces/hap4.svg', { }),
-                makeFace('assets/avatar/faces/hap5.svg', { }),
-                makeFace('assets/avatar/faces/hap6.svg', { }),
-                makeFace('assets/avatar/faces/happi.svg', { }),
-                makeFace('assets/avatar/faces/hearthap.svg', { }),
-                makeFace('assets/avatar/faces/hee.svg', { }),
-                makeFace('assets/avatar/faces/hmm.svg', { }),
-                makeFace('assets/avatar/faces/hmm2.svg', { }),
-                makeFace('assets/avatar/faces/hmm3.svg', { }),
-                makeFace('assets/avatar/faces/hmph.svg', { }),
-                makeFace('assets/avatar/faces/hnrgh.svg', { }),
-                makeFace('assets/avatar/faces/kitti.svg', { }),
-                makeFace('assets/avatar/faces/Laughalt.svg', { }),
-                makeFace('assets/avatar/faces/moch.svg', { }),
-                makeFace('assets/avatar/faces/nyah.svg', { }),
-                makeFace('assets/avatar/faces/nyheh.svg', { }),
-                makeFace('assets/avatar/faces/nyheh2.svg', { }),
-                makeFace('assets/avatar/faces/nyheh3.svg', { }),
-                makeFace('assets/avatar/faces/owo.svg', { }),
-                makeFace('assets/avatar/faces/owo2.svg', { }),
-                makeFace('assets/avatar/faces/pumkin.svg', { }),
-                makeFace('assets/avatar/faces/scared.svg', { }),
-                makeFace('assets/avatar/faces/scaredhap.svg', { }),
-                makeFace('assets/avatar/faces/scurry.svg', { }),
-                makeFace('assets/avatar/faces/spook.svg', { }),
-                makeFace('assets/avatar/faces/spook2.svg', { }),
-                makeFace('assets/avatar/faces/spookihap.svg', { }),
-                makeFace('assets/avatar/faces/spookihap2.svg', { }),
-                makeFace('assets/avatar/faces/spookihap3.svg', { }),
-                makeFace('assets/avatar/faces/spookihap4.svg', { }),
-                makeFace('assets/avatar/faces/stars.svg', { }),
-                makeFace('assets/avatar/faces/ugh.svg', { }),
-                makeFace('assets/avatar/faces/uwu.svg', { }),
-                makeFace('assets/avatar/faces/wheat.svg', { }),
-                makeFace('assets/avatar/faces/pika.svg', { }),
-                makeFace('assets/avatar/faces/thonk.svg', { }),
-                makeFace('assets/avatar/faces/hap7.svg', { }),
-                makeFace('assets/avatar/faces/harts.svg', { }),
-                makeFace('assets/avatar/faces/mochpbbt.svg', { }),
-                makeFace('assets/avatar/faces/nyah2.svg', { }),
-                makeFace('assets/avatar/faces/sprakle.svg', { }),
-                makeFace('assets/avatar/faces/ara.svg', { }),
-                makeFace('assets/avatar/faces/stars2.svg', { }),
-                makeFace('assets/avatar/faces/cool.svg', { }),
-                makeFace('assets/avatar/faces/xox.svg', { }),
-                makeFace('assets/avatar/faces/SMIL.svg', { }),
-                makeFace('assets/avatar/faces/myan2.svg', { }),
-                makeFace('assets/avatar/faces/myan.svg', { }),
-                makeFace('assets/avatar/faces/anime.svg', { }),
-            ],
+            allPieces: _.map(customizationConfig.avatarPieces, makePiece),
+            allFaces: _.map(customizationConfig.avatarFaces, makeFace),
 
             availableColors: [],
             availablePieces: [],
@@ -1293,11 +1211,11 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                         xPercent = x / element.offsetWidth;
                         yPercent = y / element.offsetHeight;
 
-                        xPercent = xPercent - (makeNumber(piece.options.faceWidth) / 200);
-                        yPercent = yPercent - (makeNumber(piece.options.faceHeight) / 200);
+                        xPercent = xPercent - (makeNumber(piece.faceWidth) / 200);
+                        yPercent = yPercent - (makeNumber(piece.faceHeight) / 200);
 
-                        piece.options.faceLeft = makePercent(xPercent * 100);
-                        piece.options.faceTop = makePercent(yPercent * 100);
+                        piece.faceLeft = makePercent(xPercent * 100);
+                        piece.faceTop = makePercent(yPercent * 100);
                     }
                 }
             },
@@ -1317,24 +1235,24 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                         // positive = get smaller = zoom out
 
                         if (delta < 0) {
-                            if (makeNumber(piece.options.faceWidth) > 100 || makeNumber(piece.options.faceHeight) > 100) {
+                            if (makeNumber(piece.faceWidth) > 100 || makeNumber(piece.faceHeight) > 100) {
                                 return;
                             }
                             
-                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) - 0.5);
-                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) - 0.5);
-                            piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) + 1);
-                            piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) + 1);
+                            piece.faceLeft = makePercent(makeNumber(piece.faceLeft) - 0.5);
+                            piece.faceTop = makePercent(makeNumber(piece.faceTop) - 0.5);
+                            piece.faceWidth = makePercent(makeNumber(piece.faceWidth) + 1);
+                            piece.faceHeight = makePercent(makeNumber(piece.faceHeight) + 1);
                         }
                         else {                            
-                            if (makeNumber(piece.options.faceWidth) < 5 || makeNumber(piece.options.faceHeight) < 5) {
+                            if (makeNumber(piece.faceWidth) < 5 || makeNumber(piece.faceHeight) < 5) {
                                 return;
                             }
 
-                            piece.options.faceLeft = makePercent(makeNumber(piece.options.faceLeft) + 0.5);
-                            piece.options.faceTop = makePercent(makeNumber(piece.options.faceTop) + 0.5);
-                            piece.options.faceWidth = makePercent(makeNumber(piece.options.faceWidth) - 1);
-                            piece.options.faceHeight = makePercent(makeNumber(piece.options.faceHeight) - 1);
+                            piece.faceLeft = makePercent(makeNumber(piece.faceLeft) + 0.5);
+                            piece.faceTop = makePercent(makeNumber(piece.faceTop) + 0.5);
+                            piece.faceWidth = makePercent(makeNumber(piece.faceWidth) - 1);
+                            piece.faceHeight = makePercent(makeNumber(piece.faceHeight) - 1);
                         }
                     }
                 }
@@ -1347,33 +1265,6 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
         viewModel.customization.refreshPicker('color');
         viewModel.customization.refreshPicker('face');
         viewModel.customization.refreshPicker('piece');
-
-        viewModel.availableAvatarCssClasses = [
-            { cssClass: 'fas fa-apple-alt', id: 'apple-alt' },
-            { cssClass: 'fas fa-bread-slice', id: 'bread-slice' },
-            { cssClass: 'fas fa-candy-cane', id: 'candy-cane' },
-            { cssClass: 'fas fa-cat', id: 'cat' },
-            { cssClass: 'fas fa-cheese', id: 'cheese' },
-            { cssClass: 'fas fa-cookie', id: 'cookie' },
-            { cssClass: 'fas fa-crow', id: 'crow' },
-            { cssClass: 'fas fa-dog', id: 'dog' },
-            { cssClass: 'fas fa-dove', id: 'dove' },
-            { cssClass: 'fas fa-dragon', id: 'dragon' },
-            { cssClass: 'fas fa-egg', id: 'egg' },
-            { cssClass: 'fas fa-fish', id: 'fish' },
-            { cssClass: 'fas fa-frog', id: 'frog' },
-            { cssClass: 'fas fa-hamburger', id: 'hamburger' },
-            { cssClass: 'fas fa-hat-wizard', id: 'hat-wizard' },
-            { cssClass: 'fas fa-hippo', id: 'hippo' },
-            { cssClass: 'fas fa-horse', id: 'horse' },
-            { cssClass: 'fas fa-kiwi-bird', id: 'kiwi-bird' },
-            { cssClass: 'fas fa-lemon', id: 'lemon' },
-            { cssClass: 'fas fa-otter', id: 'otter' },
-            { cssClass: 'fas fa-pizza-slice', id: 'pizza-slice' },
-            { cssClass: 'fas fa-robot', id: 'robot' },
-            { cssClass: 'fas fa-space-shuttle', id: 'space-shuttle' },
-            { cssClass: 'fas fa-spider', id: 'spider' }
-        ];
 
         if (viewModel.player.name === null) {
             viewModel.player.name = viewModel.customization.generateName();
@@ -1410,6 +1301,14 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
                         return objValue;
                     }
                 });
+
+                if (_.isPlainObject(viewModel.player.metadata.avatar.value)) {
+                    // Backdate from when pieces had "options" properties
+                    if (viewModel.player.metadata.avatar.value.piece && viewModel.player.metadata.avatar.value.piece.options) {
+                        _.merge(viewModel.player.metadata.avatar.value.piece, viewModel.player.metadata.avatar.value.piece.options);
+                        delete viewModel.player.metadata.avatar.value.piece.options;
+                    }
+                }
             }
             catch (ex) { }
         }
@@ -1457,10 +1356,10 @@ regex replace: makeFace('assets/avatar/faces/$1', { }),
          v-if="player.metadata.avatar.value.face"
          :style="{ 
              'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',
-             'top': player.metadata.avatar.value.piece.options.faceTop,
-             'left': player.metadata.avatar.value.piece.options.faceLeft,
-             'width': player.metadata.avatar.value.piece.options.faceWidth,
-             'height': player.metadata.avatar.value.piece.options.faceHeight
+             'top': player.metadata.avatar.value.piece.faceTop,
+             'left': player.metadata.avatar.value.piece.faceLeft,
+             'width': player.metadata.avatar.value.piece.faceWidth,
+             'height': player.metadata.avatar.value.piece.faceHeight
          }"></div>
 </div>
 
