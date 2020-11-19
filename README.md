@@ -28,8 +28,8 @@ Currently implemented:
   * Use *?game=chess* on the URL to access it
   * Currently missing various configuration options, rooking, promotions, randomisation
 * Yut
- * Use *?game=yut* on the URL to access it
- * Badly styled
+  * Use *?game=yut* on the URL to access it
+  * Badly styled
 
 # TODO
 * Chess config (allow rooking, allow pawn promotion, place random)

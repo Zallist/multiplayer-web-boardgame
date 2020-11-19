@@ -61,7 +61,7 @@ app.helpers = (function () {
 
     helpers.makeDialog = function makeDialog(options) {
         // Assumes we've got bootstrap and Vue
-        var dialog, app, data;
+        var dialog, vueApp, data;
 
         options = _.merge({
             onClose: () => {},
@@ -104,7 +104,7 @@ app.helpers = (function () {
                     data.close();
                 }
             }
-        }
+        };
 
         dialog = document.createElement('div');
         dialog.innerHTML = `
@@ -133,18 +133,21 @@ app.helpers = (function () {
   </div>
 </div>
 `;
-        app = Vue.createApp({
-            data: function () { return data; }
+        vueApp = Vue.createApp({
+            data: () => data
         });
         
         _.forEach(data.options.vueComponents, function (component, key) {
-            app.component(key, component);
+            vueApp.component(key, component);
         });
 
-        app.mount(dialog);
+        vueApp.mount(dialog);
         document.body.appendChild(dialog);
         document.body.classList.add('modal-open');
         dialog.getElementsByClassName('modal')[0].focus();
+        
+        app.__latestDialog = dialog;
+        app.__latestDialogViewmodel = data;
     };
 
     helpers.copyTextToClipboard = function (text) {

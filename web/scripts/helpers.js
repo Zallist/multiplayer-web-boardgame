@@ -44,7 +44,7 @@ app.helpers = (function () {
     };
     helpers.makeDialog = function makeDialog(options) {
         // Assumes we've got bootstrap and Vue
-        var dialog, app, data;
+        var dialog, vueApp, data;
         options = _.merge({
             onClose: function () { },
             components: [],
@@ -86,16 +86,18 @@ app.helpers = (function () {
         };
         dialog = document.createElement('div');
         dialog.innerHTML = "\n<div class=\"modal-backdrop fade show\" v-if=\"$root.options.backdrop\"></div>\n<div class=\"modal fade show\" role=\"dialog\" tabindex=\"-1\" @keydown.esc=\"$root.escape\" @click=\"$root.escape\" style=\"display: block;\">\n  <div class=\"modal-dialog\" role=\"document\" @click.stop :class=\"$root.options.dialogClass\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\" v-if=\"$root.options.title || !$root.options.notEscapable\">\n        <h5 class=\"modal-title\" v-if=\"$root.options.title\">{{ $root.options.title }}</h5>\n        <button type=\"button\" class=\"close\" aria-label=\"Close\" v-if=\"!$root.options.notEscapable\" @click=\"$root.escape\">\n          <span aria-hidden=\"true\">&times;</span>\n        </button>\n      </div>\n      <div class=\"modal-body\">\n      " + (data.options.contentHtml ? data.options.contentHtml : "<p>{{ $root.options.content }}</p>") + "\n      </div>\n      <div class=\"modal-footer\" v-if=\"$root.options.buttons && $root.options.buttons.length > 0\">\n        <button type=\"button\" class=\"btn btn-lg flex-fill\" \n          v-for=\"(button, buttonIndex) in $root.options.buttons\"\n          :class=\"[ 'btn-' + (buttonIndex === 0 ? 'primary' : 'secondary') ]\"\n          @click=\"$root.close(button.action)\">\n          {{ button.text }}\n        </button>\n      </div>\n    </div>\n  </div>\n</div>\n";
-        app = Vue.createApp({
+        vueApp = Vue.createApp({
             data: function () { return data; }
         });
         _.forEach(data.options.vueComponents, function (component, key) {
-            app.component(key, component);
+            vueApp.component(key, component);
         });
-        app.mount(dialog);
+        vueApp.mount(dialog);
         document.body.appendChild(dialog);
         document.body.classList.add('modal-open');
         dialog.getElementsByClassName('modal')[0].focus();
+        app.__latestDialog = dialog;
+        app.__latestDialogViewmodel = data;
     };
     helpers.copyTextToClipboard = function (text) {
         var textArea = document.createElement("textarea");

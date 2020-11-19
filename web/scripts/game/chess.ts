@@ -60,7 +60,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="5" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
+                <input type="range" class="custom-range" min="5" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
             <div class="col-4">
                 <input type="number" class="form-control form-control-sm" min="5" max="180" :step="5" v-model.number="$data.$vm.gameState.game.configuration.turnTime" />
@@ -72,7 +72,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="4" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridHeight" />
+                <input type="range" class="custom-range" min="4" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridHeight" />
             </div>
             <div class="col-4">
                 <input type="number" class="form-control form-control-sm" min="4" max="24" step="1" v-model.number="$data.$vm.gameState.game.configuration.gridHeight" />
@@ -84,7 +84,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="8" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridWidth" />
+                <input type="range" class="custom-range" min="8" max="24" step="1" v-model="$data.$vm.gameState.game.configuration.gridWidth" />
             </div>
             <div class="col-4">
                 <input type="number" class="form-control form-control-sm" min="8" max="24" step="1" v-model.number="$data.$vm.gameState.game.configuration.gridWidth" />

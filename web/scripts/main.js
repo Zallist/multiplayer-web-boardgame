@@ -1,5 +1,6 @@
 /// <reference path="types/anyObj.d.ts" />
 /// <reference path="types/player.d.ts" />
+/// <reference path="customization-config.js" />
 var app = app || {};
 app.main = (function () {
     var viewModel;
@@ -713,9 +714,18 @@ app.main = (function () {
                 });
             };
             events.viewConfig = function () {
+                var components = _.clone(app.game.vueComponents);
+                components['global-config-panel'] = {
+                    data: function () {
+                        return {
+                            $vm: viewModel
+                        };
+                    },
+                    template: "\n<div class=\"mb-3\">\n    <label>Game Volume</label>\n    <input type=\"range\" class=\"custom-range\" min=\"0.0\" max=\"1.0\" step=\"0.05\" v-model=\"$data.$vm.config.volume\" />\n</div>\n"
+                };
                 app.helpers.makeDialog({
-                    vueComponents: app.game.vueComponents,
-                    contentHtml: '<config-panel></config-panel>',
+                    vueComponents: components,
+                    contentHtml: "\n<global-config-panel></global-config-panel>\n<hr />\n<config-panel></config-panel>\n",
                     buttons: [],
                     dialogClass: 'modal-dialog--config',
                     onClose: function () {
@@ -832,6 +842,15 @@ app.main = (function () {
         };
         // == /game state
         viewModel.gameStarted = null;
+        // Personal config
+        viewModel.config = {
+            volume: 1.0
+        };
+        Vue.watch(viewModel.config, function (config) {
+            Howler.volume(config.volume);
+            // Save the config
+            localStorage.setItem('global-config', JSON.stringify(config));
+        }, { deep: true });
         // Window state stuff
         viewModel.gamePanelHeight = window.innerHeight;
         viewModel.gamePanelWidth = window.innerWidth;
@@ -860,6 +879,7 @@ app.main = (function () {
             };
             return item;
         }
+        // Backup code in case the customization config file is bad and has errors
         if (!window.customizationConfig) {
             window.customizationConfig = {
                 avatarPieces: [
@@ -1007,6 +1027,13 @@ app.main = (function () {
                         delete viewModel.player.metadata.avatar.value.piece.options;
                     }
                 }
+            }
+            catch (ex) { }
+        }
+        if (localStorage.getItem('global-config')) {
+            try {
+                var config = JSON.parse(localStorage.getItem('global-config'));
+                _.merge(viewModel.config, config);
             }
             catch (ex) { }
         }

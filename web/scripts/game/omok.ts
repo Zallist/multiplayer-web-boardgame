@@ -59,7 +59,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" :min="$data.$vm.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
+                <input type="range" class="custom-range" :min="$data.$vm.gameState.game.configuration.turnTime > 10 ? 1 : 0.25" max="180" :step="1" v-model="$data.$vm.gameState.game.configuration.turnTime" />
             </div>
             <div class="col-4">
                 <input type="number" class="form-control form-control-sm" min="0.25" max="180" :step="0.25" v-model.number="$data.$vm.gameState.game.configuration.turnTime" />
@@ -75,7 +75,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="1" max="100" step="1" v-model="$data.$vm.gameState.game.configuration.gridSize" />
+                <input type="range" class="custom-range" min="1" max="100" step="1" v-model="$data.$vm.gameState.game.configuration.gridSize" />
             </div>
             <div class="col-4">
                 <input type="number" class="form-control form-control-sm" min="1" max="100" step="1" v-model.number="$data.$vm.gameState.game.configuration.gridSize" />
@@ -91,7 +91,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
         <div class="form-row">
             <div class="col-8">
-                <input type="range" class="form-control form-control-sm form-control-range" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model="$data.$vm.gameState.game.configuration.numberInARowRequired" />
+                <input type="range" class="custom-range" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model="$data.$vm.gameState.game.configuration.numberInARowRequired" />
             </div>
             <div class="col-4">
                 <input type="number" class="form-control form-control-sm" min="1" :max="$data.$vm.gameState.game.configuration.gridSize" step="1" v-model.number="$data.$vm.gameState.game.configuration.numberInARowRequired" />
