@@ -1074,7 +1074,7 @@ app.main = (function () {
                         break;
                 }
             },
-            pieceClick: function (player, x, y, element) {
+            pieceMove: _.throttle(function (player, x, y, element) {
                 var face, piece, xPercent, yPercent;
                 function makeNumber(percentage) { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num) { return num + '%'; }
@@ -1090,8 +1090,8 @@ app.main = (function () {
                         piece.faceTop = makePercent(yPercent * 100);
                     }
                 }
-            },
-            pieceZoomed: function (player, delta, element) {
+            }, 50, { leading: true, trailing: true }),
+            pieceZoom: function (player, delta, element) {
                 var face, piece;
                 function makeNumber(percentage) { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num) { return num + '%'; }
@@ -1187,7 +1187,7 @@ app.main = (function () {
         Object.defineProperty(window, '_numeral', { value: numeral });
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
-            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     v-on=\"customize ? { \n        click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); },\n        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoomed(player, $event.deltaY, $event.currentTarget); }\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.faceTop,\n             'left': player.metadata.avatar.value.piece.faceLeft,\n             'width': player.metadata.avatar.value.piece.faceWidth,\n             'height': player.metadata.avatar.value.piece.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
+            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     :class=\"{ 'avatar__piece-wrap--customizable': customize }\"\n     v-on=\"customize ? { \n        'mousedown': function ($event) { $event.currentTarget.mouseIsHeldDown = true; },\n        'mouseup': function ($event) { $event.currentTarget.mouseIsHeldDown = false; $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); },\n        'mousemove': function ($event) { if ($event.currentTarget.mouseIsHeldDown) { $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); } },\n        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoom(player, $event.deltaY, $event.currentTarget); }\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.faceTop,\n             'left': player.metadata.avatar.value.piece.faceLeft,\n             'width': player.metadata.avatar.value.piece.faceWidth,\n             'height': player.metadata.avatar.value.piece.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
         });
         // Borrowed from https://codepen.io/square0225/pen/QdvLQg
         page.pageVue.component('fill-circle', {

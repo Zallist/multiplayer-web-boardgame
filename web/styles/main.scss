@@ -139,6 +139,10 @@ body {
         -webkit-mask-repeat: no-repeat;
         -webkit-mask-position: center center;
     }
+
+    &.avatar__piece-wrap--customizable {
+        cursor: move;
+    }
 }
 
 .game__landing {

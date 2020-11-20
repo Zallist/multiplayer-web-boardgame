@@ -1378,7 +1378,7 @@ app.main = (function () {
                 }
             },
 
-            pieceClick: function (player, x, y, element) {
+            pieceMove: _.throttle(function (player, x, y, element) {
                 let face, piece,
                     xPercent, yPercent;
 
@@ -1400,9 +1400,9 @@ app.main = (function () {
                         piece.faceTop = makePercent(yPercent * 100);
                     }
                 }
-            },
+            }, 50, { leading: true, trailing: true }),
 
-            pieceZoomed: function (player, delta, element) {
+            pieceZoom: function (player, delta, element) {
                 let face, piece;
 
                 function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
@@ -1527,9 +1527,12 @@ app.main = (function () {
     
 <div v-else-if="player.metadata.avatar.type=='piece'"
      class="avatar__piece-wrap"
+     :class="{ 'avatar__piece-wrap--customizable': customize }"
      v-on="customize ? { 
-        click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); },
-        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoomed(player, $event.deltaY, $event.currentTarget); }
+        'mousedown': function ($event) { $event.currentTarget.mouseIsHeldDown = true; },
+        'mouseup': function ($event) { $event.currentTarget.mouseIsHeldDown = false; $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); },
+        'mousemove': function ($event) { if ($event.currentTarget.mouseIsHeldDown) { $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); } },
+        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoom(player, $event.deltaY, $event.currentTarget); }
     } : {}">
      
     <div class="avatar__piece-piece"
