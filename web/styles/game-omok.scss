@@ -51,17 +51,9 @@
         }
 
         @keyframes wiggle {
-            0% {
-                transform: rotate(8deg);
-            }
-
-            50% {
-                transform: rotate(-8deg);
-            }
-
-            100% {
-                transform: rotate(8deg);
-            }
+            0% { transform: rotate(8deg); }
+            50% { transform: rotate(-8deg); }
+            100% { transform: rotate(8deg); }
         }
 
         &.omok__piece--last-placed {

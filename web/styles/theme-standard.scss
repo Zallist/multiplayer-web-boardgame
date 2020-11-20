@@ -340,10 +340,22 @@ h1 {
     @include insetBoxShadow($panelBorderColor);
 
     &.avatar__box--spectating { @include insetBoxShadow(#7f8c8d); }
-    &.avatar__box--turn { @include insetBoxShadow(#e74c3c); }
     &.avatar__box--ready { @include insetBoxShadow(#e67e22); }
     &.avatar__box--me { @include insetBoxShadow(#8e44ad); }
-    &.avatar__box--me.avatar__box--turn { @include insetBoxShadow(#27ae60); }
+
+    @keyframes wiggle {
+        0% { transform: rotate(8deg); }
+        50% { transform: rotate(-8deg); }
+        100% { transform: rotate(8deg); }
+    }
+    &.avatar__box--turn { 
+        @include insetBoxShadow(#e74c3c);
+    }
+
+    &.avatar__box--me.avatar__box--turn { 
+        @include insetBoxShadow(#27ae60); 
+        animation: wiggle 0.5s infinite;
+    }
     
     .player__avatar__name {
         position: absolute;

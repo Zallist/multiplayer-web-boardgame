@@ -414,17 +414,29 @@ h1 {
 .avatar__box.avatar__box--spectating {
   box-shadow: 0px 0px 0px 4px inset #7f8c8d, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
-.avatar__box.avatar__box--turn {
-  box-shadow: 0px 0px 0px 4px inset #e74c3c, 0px 8px 0 rgba(25, 46, 88, 0.8);
-}
 .avatar__box.avatar__box--ready {
   box-shadow: 0px 0px 0px 4px inset #e67e22, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
 .avatar__box.avatar__box--me {
   box-shadow: 0px 0px 0px 4px inset #8e44ad, 0px 8px 0 rgba(25, 46, 88, 0.8);
 }
+@keyframes wiggle {
+  0% {
+    transform: rotate(8deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+  100% {
+    transform: rotate(8deg);
+  }
+}
+.avatar__box.avatar__box--turn {
+  box-shadow: 0px 0px 0px 4px inset #e74c3c, 0px 8px 0 rgba(25, 46, 88, 0.8);
+}
 .avatar__box.avatar__box--me.avatar__box--turn {
   box-shadow: 0px 0px 0px 4px inset #27ae60, 0px 8px 0 rgba(25, 46, 88, 0.8);
+  animation: wiggle 0.5s infinite;
 }
 .avatar__box .player__avatar__name {
   position: absolute;
