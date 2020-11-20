@@ -350,6 +350,29 @@ h1 {
   box-shadow: 0px 8px 0 rgba(48, 88, 167, 0.8) !important;
 }
 
+.customization__item {
+  position: relative;
+}
+.customization__item.customization__item--locked {
+  opacity: 1;
+  border-color: #A0A0A0 !important;
+}
+.customization__item.customization__item--locked:after {
+  content: "";
+  display: block;
+  position: absolute;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-image: url("data:image/svg+xml,%3Csvg aria-hidden='true' focusable='false' data-prefix='fas' data-icon='lock' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512' class='svg-inline--fa fa-lock fa-w-14 fa-3x'%3E%3Cpath fill='A0A0A0' d='M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z' class=''%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 75% 75%;
+  opacity: 0.5;
+}
+
 .turn__tracker__header {
   background-position: left top;
   background-repeat: no-repeat;

@@ -7,6 +7,7 @@ declare var _: anyObj;
 declare var chance: anyObj;
 declare var axios: anyObj;
 declare var signalR: anyObj;
+declare var numeral: any;
 declare var randomColor: any;
 declare var Howler: any;
 
@@ -1050,22 +1051,22 @@ app.main = (function () {
                     title: (you ? 'Your' : (player.name + (_.endsWith(player.name, 's') ? '\'' : '\'s'))) + ' Stats',
                     contentHtml: `
 <div>
-    <strong>{{ $root.options.player.metadata.totalStats.wins }}</strong>
+    <strong>{{ _numeral($root.options.player.metadata.totalStats.wins).format('0,0') }}</strong>
     {{ ' win' + ($root.options.player.metadata.totalStats.wins === 1 ? '' : 's') }}
     and
-    <strong>{{ $root.options.player.metadata.totalStats.losses }}</strong>
+    <strong>{{ _numeral($root.options.player.metadata.totalStats.losses).format('0,0') }}</strong>
     {{ ' loss' + ($root.options.player.metadata.totalStats.losses === 1 ? '' : 'es') }}
     <br />
-    <strong>{{ $root.options.player.metadata.totalStats.piecesPlaced }}</strong>
+    <strong>{{ _numeral($root.options.player.metadata.totalStats.piecesPlaced).format('0,0') }}</strong>
     {{ ' piece' + ($root.options.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}
     placed
     <br />
-    <strong>{{ (($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>
+    <strong>{{ _numeral((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0)).format('0,0') }}</strong>
     {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}
     in game,
-    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> ` + (you ? 'your' : 'their') + ` turn
+    <strong>{{ _numeral((($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0)).format('0,0') }}</strong> ` + (you ? 'your' : 'their') + ` turn
     <div v-if="$root.options.player.metadata.totalStats.timesHacked > 0">
-        <strong>{{ $root.options.player.metadata.totalStats.timesHacked }}</strong>
+        <strong>{{ _numeral($root.options.player.metadata.totalStats.timesHacked).format('0,0') }}</strong>
         {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}
         detected hacking
     </div>
@@ -1200,7 +1201,7 @@ app.main = (function () {
         class CustomizationConfigItem {
             url: string;
 
-            requirements: {
+            requirements: anyObj = {
                 // Min stats required
                 wins: 0,
                 losses: 0,
@@ -1216,12 +1217,12 @@ app.main = (function () {
 
                 if (!player) player = viewModel.player;
 
-                if (!player || !player.metadata || !player.metadata.totalStats) {
+                if (player && player.metadata && player.metadata.totalStats) {
                     myStats = player.metadata.totalStats;
                 }
 
-                needs = _.mapValues(this.requirements, (value: any, key: string) => {
-                    let need: StatNeed;
+                needs = _.map(this.requirements, (value: any, key: string) => {
+                    let need: StatNeed = <StatNeed>{};
 
                     need.need = value;
                     need.have = myStats[key] || 0;
@@ -1229,23 +1230,25 @@ app.main = (function () {
 
                     switch (key) {
                         case 'timeInGame':
-                            need.message = `In Game (minutes): ${need.have / 60000}/${need.need / 60000}`;
+                            need.message = `In Game (minutes): ${numeral(need.have / 60000).format('0,0')} / ${numeral(need.need / 60000).format('0,0')}`;
                             break;
                         case 'timeMyTurn':
-                            need.message = `My Turn (minutes): ${need.have / 60000}/${need.need / 60000}`;
+                            need.message = `My Turn (minutes): ${numeral(need.have / 60000).format('0,0')} / ${numeral(need.need / 60000).format('0,0')}`;
                             break;
                         case 'piecesPlaced':
-                            need.message = `Pieces Placed: ${need.have}/${need.need}`;
+                            need.message = `Pieces Placed: ${numeral(need.have).format('0,0')} / ${numeral(need.need).format('0,0')}`;
                             break;
                         case 'wins':
                         case 'losses':
                         default:
-                            need.message = `${_.capitalize(key)}: ${need.have}/${need.need}`;
+                            need.message = `${_.capitalize(key)}: ${numeral(need.have).format('0,0')} / ${numeral(need.need).format('0,0')}`;
                             break;
                     }
 
                     return need;
                 });
+
+                needs = _.reject(needs, { need: 0 });
 
                 return needs;
             }
@@ -1255,6 +1258,21 @@ app.main = (function () {
                 if (!player) return false;
 
                 return !_.some(this.requirementsNeeded(player), (need: StatNeed): boolean => need.have < need.need);
+            };
+
+            select(player: Player): boolean {         
+                if (this.requirementsMet(player)) {
+                    player.metadata.avatar.type = 'piece';
+    
+                    if (!_.isPlainObject(player.metadata.avatar.value)) {
+                        player.metadata.avatar.value = { };
+                    }
+
+                    return true;
+                }
+                else {
+                    return false;
+                }
             };
 
             constructor(obj: anyObj) {
@@ -1271,6 +1289,16 @@ app.main = (function () {
             faceTop: string;
             faceHeight: string;
             faceWidth: string;
+
+            select(player: Player): boolean {
+                if (super.select(player)) {
+                    player.metadata.avatar.value.piece = _.cloneDeep(this);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
 
             constructor(obj: anyObj) {
                 super(obj);
@@ -1293,6 +1321,16 @@ app.main = (function () {
         }
 
         class CustomizationFace extends CustomizationConfigItem {
+            select(player: Player): boolean {
+                if (super.select(player)) {
+                    player.metadata.avatar.value.face = _.cloneDeep(this);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+
             constructor(obj: anyObj) {
                 super(obj);                
             }
@@ -1326,7 +1364,7 @@ app.main = (function () {
             faceAmount: 5,
             pieceAmount: 6,
 
-            refreshPicker: function (picker) {
+            refreshPicker: function (picker?: string) {
                 switch (picker || viewModel.customization.picker) {
                     case 'color':
                         viewModel.customization.availableColors = randomColor({ count: viewModel.customization.colorAmount });
@@ -1338,31 +1376,6 @@ app.main = (function () {
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
                         break;
                 }
-            },
-
-            selectPiece: function (piece) {
-                viewModel.player.metadata.avatar.type = 'piece';
-
-                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
-                    viewModel.player.metadata.avatar.value = {
-                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
-                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
-                    };
-                }
-
-                viewModel.player.metadata.avatar.value.piece = _.cloneDeep(piece);
-            },
-            selectFace: function (face) {
-                viewModel.player.metadata.avatar.type = 'piece';
-
-                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
-                    viewModel.player.metadata.avatar.value = {
-                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
-                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
-                    };
-                }
-
-                viewModel.player.metadata.avatar.value.face = _.cloneDeep(face);
             },
 
             pieceClick: function (player, x, y, element) {
@@ -1443,7 +1456,8 @@ app.main = (function () {
         }
 
         if (viewModel.player.metadata.avatar.value === null) {
-            viewModel.customization.selectPiece(viewModel.customization.availablePieces[0]);
+            viewModel.customization.availablePieces[0].select(viewModel.player);
+            viewModel.customization.availableFaces[0].select(viewModel.player);
         }
 
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
@@ -1502,6 +1516,7 @@ app.main = (function () {
 
         // Expose lodash to Vue
         Object.defineProperty(window, '_lodash', { value: _ });
+        Object.defineProperty(window, '_numeral', { value: numeral });
 
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],

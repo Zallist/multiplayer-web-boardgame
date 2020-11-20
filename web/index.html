@@ -113,8 +113,11 @@
                                  v-for="(item, index) in $root.customization.availablePieces" 
                                  :class="'mt-3 order-' + Math.min(index,12)">
 
-                                <button type="button" class="btn btn-icon btn-icon--populated"
-                                        @click="$root.customization.selectPiece(item)">
+                                <button type="button" class="btn btn-icon btn-icon--populated customization__item"
+                                        :class="{ 'customization__item--locked': !item.requirementsMet($root.player) }"
+                                        :disabled="!item.requirementsMet($root.player)"
+                                        :title="_lodash.map(item.requirementsNeeded($root.player), 'message').join('\n')"
+                                        v-on="{ 'click': item.requirementsMet($root.player) ? function () { item.select($root.player); } : null }">
                                     <i style="float: left;" :style="{ 'mask-image': 'url(' + item.url + ')', '-webkit-mask-image': 'url(' + item.url + ')', 'background-color': $root.player.metadata.color, 'opacity': 0.5 }"></i>
                                     <i :style="{ 'background-image': 'url(' + item.url + ')' }"></i>
                                 </button>
@@ -123,8 +126,11 @@
                                  v-for="(item, index) in $root.customization.availableFaces"
                                  :class="'mt-3 order-' + Math.min(index + 1,12)">
 
-                                <button type="button" class="btn btn-icon btn-icon--populated"
-                                        @click="$root.customization.selectFace(item)">
+                                <button type="button" class="btn btn-icon btn-icon--populated customization__item"
+                                        :class="{ 'customization__item--locked': !item.requirementsMet($root.player) }"
+                                        :disabled="!item.requirementsMet($root.player)"
+                                        :title="_lodash.map(item.requirementsNeeded($root.player), 'message').join('\n')"
+                                        v-on="{ 'click': item.requirementsMet($root.player) ? function () { item.select($root.player); } : null }">
                                     <i :style="{ 'background-image': 'url(' + item.url + ')' }"></i>
                                 </button>
                             </div>
@@ -446,6 +452,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js" integrity="sha512-90vH1Z83AJY9DmlWa8WkjkV79yfS2n2Oxhsi2dZbIv0nC4E6m5AbH8Nh156kkM7JePmqD6tcZsfad1ueoaovww==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.js" integrity="sha512-REb0S2epbS0XtS28ifNa1haxmTZigXjB+Tx5IHCvXZndWB2RL431Vt1qONzFoe0dPwA8WGow+xxkQwhVr44nRg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.0/howler.min.js" integrity="sha512-ALoawPS0JxHQ+8dGL7htZIlVNRaE/SN9gHD4G8pJJTi9H4BQ/3PjdvhggSGR34g00mvTPFkxQuveQUsJA5664Q==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js" integrity="sha512-USPCA7jmJHlCNRSFwUFq3lAm9SaOjwG8TaB8riqx3i/dAJqhaYilVnaf2eVUH5zjq89BU6YguUuAno+jpRvUqA==" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aspnet-signalr/1.1.4/signalr.min.js" integrity="sha512-hqwtOj6waHZZoLRoJoLn0tq34JS97tR1QmhM69uvyrt3LVBiR1o0xeOVAskjUFL1L1fahQH2W7IdcMaFbqCEaw==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js" integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg==" crossorigin="anonymous"></script>

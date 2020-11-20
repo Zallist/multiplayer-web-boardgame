@@ -826,7 +826,7 @@ app.main = (function () {
                 app.helpers.makeDialog({
                     player: player,
                     title: (you ? 'Your' : (player.name + (_.endsWith(player.name, 's') ? '\'' : '\'s'))) + ' Stats',
-                    contentHtml: "\n<div>\n    <strong>{{ $root.options.player.metadata.totalStats.wins }}</strong>\n    {{ ' win' + ($root.options.player.metadata.totalStats.wins === 1 ? '' : 's') }}\n    and\n    <strong>{{ $root.options.player.metadata.totalStats.losses }}</strong>\n    {{ ' loss' + ($root.options.player.metadata.totalStats.losses === 1 ? '' : 'es') }}\n    <br />\n    <strong>{{ $root.options.player.metadata.totalStats.piecesPlaced }}</strong>\n    {{ ' piece' + ($root.options.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}\n    placed\n    <br />\n    <strong>{{ (($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) }}</strong>\n    {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}\n    in game,\n    <strong>{{ (($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0) }}</strong> " + (you ? 'your' : 'their') + " turn\n    <div v-if=\"$root.options.player.metadata.totalStats.timesHacked > 0\">\n        <strong>{{ $root.options.player.metadata.totalStats.timesHacked }}</strong>\n        {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}\n        detected hacking\n    </div>\n</div>\n                    ",
+                    contentHtml: "\n<div>\n    <strong>{{ _numeral($root.options.player.metadata.totalStats.wins).format('0,0') }}</strong>\n    {{ ' win' + ($root.options.player.metadata.totalStats.wins === 1 ? '' : 's') }}\n    and\n    <strong>{{ _numeral($root.options.player.metadata.totalStats.losses).format('0,0') }}</strong>\n    {{ ' loss' + ($root.options.player.metadata.totalStats.losses === 1 ? '' : 'es') }}\n    <br />\n    <strong>{{ _numeral($root.options.player.metadata.totalStats.piecesPlaced).format('0,0') }}</strong>\n    {{ ' piece' + ($root.options.player.metadata.totalStats.piecesPlaced === 1 ? '' : 's') }}\n    placed\n    <br />\n    <strong>{{ _numeral((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0)).format('0,0') }}</strong>\n    {{ ' minute' + ((($root.options.player.metadata.totalStats.timeInGame / 60000) | 0) === 1 ? '' : 's') }}\n    in game,\n    <strong>{{ _numeral((($root.options.player.metadata.totalStats.timeMyTurn / 60000) | 0)).format('0,0') }}</strong> " + (you ? 'your' : 'their') + " turn\n    <div v-if=\"$root.options.player.metadata.totalStats.timesHacked > 0\">\n        <strong>{{ _numeral($root.options.player.metadata.totalStats.timesHacked).format('0,0') }}</strong>\n        {{ ' time' + ($root.options.player.metadata.totalStats.timesHacked === 1 ? '' : 's') }}\n        detected hacking\n    </div>\n</div>\n                    ",
                     buttons: []
                 });
             };
@@ -919,6 +919,15 @@ app.main = (function () {
         ;
         var CustomizationConfigItem = /** @class */ (function () {
             function CustomizationConfigItem(obj) {
+                this.requirements = {
+                    // Min stats required
+                    wins: 0,
+                    losses: 0,
+                    timeInGame: 0,
+                    timeMyTurn: 0,
+                    piecesPlaced: 0,
+                    timesHacked: 0
+                };
                 this.url = obj.url;
                 if (_.isPlainObject(obj.requirements)) {
                     _.merge(this.requirements, obj.requirements);
@@ -928,32 +937,33 @@ app.main = (function () {
                 var myStats = {}, needs;
                 if (!player)
                     player = viewModel.player;
-                if (!player || !player.metadata || !player.metadata.totalStats) {
+                if (player && player.metadata && player.metadata.totalStats) {
                     myStats = player.metadata.totalStats;
                 }
-                needs = _.mapValues(this.requirements, function (value, key) {
-                    var need;
+                needs = _.map(this.requirements, function (value, key) {
+                    var need = {};
                     need.need = value;
                     need.have = myStats[key] || 0;
                     need.stat = key;
                     switch (key) {
                         case 'timeInGame':
-                            need.message = "In Game (minutes): " + need.have / 60000 + "/" + need.need / 60000;
+                            need.message = "In Game (minutes): " + numeral(need.have / 60000).format('0,0') + " / " + numeral(need.need / 60000).format('0,0');
                             break;
                         case 'timeMyTurn':
-                            need.message = "My Turn (minutes): " + need.have / 60000 + "/" + need.need / 60000;
+                            need.message = "My Turn (minutes): " + numeral(need.have / 60000).format('0,0') + " / " + numeral(need.need / 60000).format('0,0');
                             break;
                         case 'piecesPlaced':
-                            need.message = "Pieces Placed: " + need.have + "/" + need.need;
+                            need.message = "Pieces Placed: " + numeral(need.have).format('0,0') + " / " + numeral(need.need).format('0,0');
                             break;
                         case 'wins':
                         case 'losses':
                         default:
-                            need.message = _.capitalize(key) + ": " + need.have + "/" + need.need;
+                            need.message = _.capitalize(key) + ": " + numeral(need.have).format('0,0') + " / " + numeral(need.need).format('0,0');
                             break;
                     }
                     return need;
                 });
+                needs = _.reject(needs, { need: 0 });
                 return needs;
             };
             CustomizationConfigItem.prototype.requirementsMet = function (player) {
@@ -962,6 +972,19 @@ app.main = (function () {
                 if (!player)
                     return false;
                 return !_.some(this.requirementsNeeded(player), function (need) { return need.have < need.need; });
+            };
+            ;
+            CustomizationConfigItem.prototype.select = function (player) {
+                if (this.requirementsMet(player)) {
+                    player.metadata.avatar.type = 'piece';
+                    if (!_.isPlainObject(player.metadata.avatar.value)) {
+                        player.metadata.avatar.value = {};
+                    }
+                    return true;
+                }
+                else {
+                    return false;
+                }
             };
             ;
             return CustomizationConfigItem;
@@ -985,6 +1008,16 @@ app.main = (function () {
                 _this.faceWidth = makePercentage(obj.faceWidth, 50);
                 return _this;
             }
+            CustomizationPiece.prototype.select = function (player) {
+                if (_super.prototype.select.call(this, player)) {
+                    player.metadata.avatar.value.piece = _.cloneDeep(this);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+            ;
             return CustomizationPiece;
         }(CustomizationConfigItem));
         var CustomizationFace = /** @class */ (function (_super) {
@@ -992,6 +1025,16 @@ app.main = (function () {
             function CustomizationFace(obj) {
                 return _super.call(this, obj) || this;
             }
+            CustomizationFace.prototype.select = function (player) {
+                if (_super.prototype.select.call(this, player)) {
+                    player.metadata.avatar.value.face = _.cloneDeep(this);
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            };
+            ;
             return CustomizationFace;
         }(CustomizationConfigItem));
         // Backup code in case the customization config file is bad and has errors
@@ -1030,26 +1073,6 @@ app.main = (function () {
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
                         break;
                 }
-            },
-            selectPiece: function (piece) {
-                viewModel.player.metadata.avatar.type = 'piece';
-                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
-                    viewModel.player.metadata.avatar.value = {
-                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
-                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
-                    };
-                }
-                viewModel.player.metadata.avatar.value.piece = _.cloneDeep(piece);
-            },
-            selectFace: function (face) {
-                viewModel.player.metadata.avatar.type = 'piece';
-                if (!_.isObject(viewModel.player.metadata.avatar.value)) {
-                    viewModel.player.metadata.avatar.value = {
-                        piece: _.cloneDeep(viewModel.customization.availablePieces[0]),
-                        face: _.cloneDeep(viewModel.customization.availableFaces[0])
-                    };
-                }
-                viewModel.player.metadata.avatar.value.face = _.cloneDeep(face);
             },
             pieceClick: function (player, x, y, element) {
                 var face, piece, xPercent, yPercent;
@@ -1113,7 +1136,8 @@ app.main = (function () {
             viewModel.player.metadata.color = viewModel.customization.availableColors[0];
         }
         if (viewModel.player.metadata.avatar.value === null) {
-            viewModel.customization.selectPiece(viewModel.customization.availablePieces[0]);
+            viewModel.customization.availablePieces[0].select(viewModel.player);
+            viewModel.customization.availableFaces[0].select(viewModel.player);
         }
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
         return viewModel;
@@ -1160,6 +1184,7 @@ app.main = (function () {
         });
         // Expose lodash to Vue
         Object.defineProperty(window, '_lodash', { value: _ });
+        Object.defineProperty(window, '_numeral', { value: numeral });
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
             template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     v-on=\"customize ? { \n        click: function ($event) { $root.customization.pieceClick(player, $event.offsetX, $event.offsetY, $event.currentTarget); },\n        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoomed(player, $event.deltaY, $event.currentTarget); }\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.faceTop,\n             'left': player.metadata.avatar.value.piece.faceLeft,\n             'width': player.metadata.avatar.value.piece.faceWidth,\n             'height': player.metadata.avatar.value.piece.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
