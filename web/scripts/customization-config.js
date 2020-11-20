@@ -4,7 +4,7 @@ var customizationConfig = {
     avatarPieces: [
         // Face sizes are in percentages, and state where the face "default" sits on the piece
         // Fully centered inside the box specified
-        { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70 },
+        { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70, requirements: { wins: 150, losses: 150, timeInGame: 1500000, timeMyTurn: 1500000, piecesPlaced: 1500 } },
         { url: "assets/avatar/pieces/balloon.svg", faceTop: 15, faceLeft: 15, faceWidth: 50, faceHeight: 50 },
         { url: "assets/avatar/pieces/barrel.svg", faceTop: 35, faceLeft: 25, faceWidth: 50, faceHeight: 50 },
         { url: "assets/avatar/pieces/baseball.svg", faceTop: 20, faceLeft: 30, faceWidth: 40, faceHeight: 60 },

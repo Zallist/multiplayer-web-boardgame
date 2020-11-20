@@ -1190,35 +1190,114 @@ app.main = (function () {
         viewModel.gamePanelWidth = window.innerWidth;
 
         // Config stuff
-        function makePiece(obj) {
-            function makePercentage(value, defaultValue) {
-                value = Number(value);
+        interface StatNeed {
+            message: string;
+            need: number;
+            have: number;
+            stat: string;
+        };
 
-                if (!_.isFinite(value)) {
-                    value = defaultValue;
+        class CustomizationConfigItem {
+            url: string;
+
+            requirements: {
+                // Min stats required
+                wins: 0,
+                losses: 0,
+                timeInGame: 0,
+                timeMyTurn: 0,
+                piecesPlaced: 0,
+                timesHacked: 0
+            };
+
+            requirementsNeeded(player?: Player): StatNeed[] { 
+                let myStats: anyObj = {},
+                    needs: StatNeed[];
+
+                if (!player) player = viewModel.player;
+
+                if (!player || !player.metadata || !player.metadata.totalStats) {
+                    myStats = player.metadata.totalStats;
                 }
 
-                return value + '%';
+                needs = _.mapValues(this.requirements, (value: any, key: string) => {
+                    let need: StatNeed;
+
+                    need.need = value;
+                    need.have = myStats[key] || 0;
+                    need.stat = key;
+
+                    switch (key) {
+                        case 'timeInGame':
+                            need.message = `In Game (minutes): ${need.have / 60000}/${need.need / 60000}`;
+                            break;
+                        case 'timeMyTurn':
+                            need.message = `My Turn (minutes): ${need.have / 60000}/${need.need / 60000}`;
+                            break;
+                        case 'piecesPlaced':
+                            need.message = `Pieces Placed: ${need.have}/${need.need}`;
+                            break;
+                        case 'wins':
+                        case 'losses':
+                        default:
+                            need.message = `${_.capitalize(key)}: ${need.have}/${need.need}`;
+                            break;
+                    }
+
+                    return need;
+                });
+
+                return needs;
+            }
+
+            requirementsMet(player?: Player): boolean {                
+                if (!player) player = viewModel.player;
+                if (!player) return false;
+
+                return !_.some(this.requirementsNeeded(player), (need: StatNeed): boolean => need.have < need.need);
             };
 
-            const item = {
-                url: obj.url,
-                faceLeft: makePercentage(obj.faceLeft, 25),
-                faceTop: makePercentage(obj.faceTop, 25),
-                faceHeight: makePercentage(obj.faceHeight, 50),
-                faceWidth: makePercentage(obj.faceWidth, 50),
-            };
+            constructor(obj: anyObj) {
+                this.url = obj.url;
 
-            return item;
+                if (_.isPlainObject(obj.requirements)) {
+                    _.merge(this.requirements, obj.requirements);
+                }
+            }
+        };
+
+        class CustomizationPiece extends CustomizationConfigItem {
+            faceLeft: string;
+            faceTop: string;
+            faceHeight: string;
+            faceWidth: string;
+
+            constructor(obj: anyObj) {
+                super(obj);
+                
+                function makePercentage(value, defaultValue: number): string {
+                    value = Number(value);
+
+                    if (!_.isFinite(value)) {
+                        value = defaultValue;
+                    }
+
+                    return value + '%';
+                };
+
+                this.faceLeft = makePercentage(obj.faceLeft, 25);
+                this.faceTop = makePercentage(obj.faceTop, 25);
+                this.faceHeight = makePercentage(obj.faceHeight, 50);
+                this.faceWidth = makePercentage(obj.faceWidth, 50);
+            }
         }
-        function makeFace(obj) {
-            const item = {
-                url: obj.url
-            };
 
-            return item;
+        class CustomizationFace extends CustomizationConfigItem {
+            constructor(obj: anyObj) {
+                super(obj);                
+            }
         }
-
+        
         // Backup code in case the customization config file is bad and has errors
         if (!window.customizationConfig) {
             window.customizationConfig = {
@@ -1236,12 +1315,12 @@ app.main = (function () {
 
         viewModel.customization = {
             picker: 'piece',
-            allPieces: _.map(customizationConfig.avatarPieces, makePiece),
-            allFaces: _.map(customizationConfig.avatarFaces, makeFace),
+            allPieces: _.map(customizationConfig.avatarPieces, (obj: anyObj) => new CustomizationPiece(obj)) as CustomizationPiece[],
+            allFaces: _.map(customizationConfig.avatarFaces, (obj: anyObj) => new CustomizationFace(obj)) as CustomizationFace[],
 
-            availableColors: [],
-            availablePieces: [],
-            availableFaces: [],
+            availableColors: [] as string[],
+            availablePieces: [] as CustomizationPiece[],
+            availableFaces: [] as CustomizationFace[],
 
             colorAmount: 6,
             faceAmount: 5,
@@ -1254,11 +1333,9 @@ app.main = (function () {
                         break;
                     case 'face':
                         viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);
-                        //viewModel.customization.availableFaces = viewModel.customization.allFaces;
                         break;
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
-                        //viewModel.customization.availablePieces = viewModel.customization.allPieces;
                         break;
                 }
             },

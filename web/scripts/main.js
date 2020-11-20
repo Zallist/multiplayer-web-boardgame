@@ -1,6 +1,19 @@
 /// <reference path="types/anyObj.d.ts" />
 /// <reference path="types/player.d.ts" />
 /// <reference path="customization-config.js" />
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var app = app || {};
 app.main = (function () {
     var viewModel;
@@ -903,31 +916,84 @@ app.main = (function () {
         // Window state stuff
         viewModel.gamePanelHeight = window.innerHeight;
         viewModel.gamePanelWidth = window.innerWidth;
-        // Config stuff
-        function makePiece(obj) {
-            function makePercentage(value, defaultValue) {
-                value = Number(value);
-                if (!_.isFinite(value)) {
-                    value = defaultValue;
+        ;
+        var CustomizationConfigItem = /** @class */ (function () {
+            function CustomizationConfigItem(obj) {
+                this.url = obj.url;
+                if (_.isPlainObject(obj.requirements)) {
+                    _.merge(this.requirements, obj.requirements);
                 }
-                return value + '%';
             }
+            CustomizationConfigItem.prototype.requirementsNeeded = function (player) {
+                var myStats = {}, needs;
+                if (!player)
+                    player = viewModel.player;
+                if (!player || !player.metadata || !player.metadata.totalStats) {
+                    myStats = player.metadata.totalStats;
+                }
+                needs = _.mapValues(this.requirements, function (value, key) {
+                    var need;
+                    need.need = value;
+                    need.have = myStats[key] || 0;
+                    need.stat = key;
+                    switch (key) {
+                        case 'timeInGame':
+                            need.message = "In Game (minutes): " + need.have / 60000 + "/" + need.need / 60000;
+                            break;
+                        case 'timeMyTurn':
+                            need.message = "My Turn (minutes): " + need.have / 60000 + "/" + need.need / 60000;
+                            break;
+                        case 'piecesPlaced':
+                            need.message = "Pieces Placed: " + need.have + "/" + need.need;
+                            break;
+                        case 'wins':
+                        case 'losses':
+                        default:
+                            need.message = _.capitalize(key) + ": " + need.have + "/" + need.need;
+                            break;
+                    }
+                    return need;
+                });
+                return needs;
+            };
+            CustomizationConfigItem.prototype.requirementsMet = function (player) {
+                if (!player)
+                    player = viewModel.player;
+                if (!player)
+                    return false;
+                return !_.some(this.requirementsNeeded(player), function (need) { return need.have < need.need; });
+            };
             ;
-            var item = {
-                url: obj.url,
-                faceLeft: makePercentage(obj.faceLeft, 25),
-                faceTop: makePercentage(obj.faceTop, 25),
-                faceHeight: makePercentage(obj.faceHeight, 50),
-                faceWidth: makePercentage(obj.faceWidth, 50)
-            };
-            return item;
-        }
-        function makeFace(obj) {
-            var item = {
-                url: obj.url
-            };
-            return item;
-        }
+            return CustomizationConfigItem;
+        }());
+        ;
+        var CustomizationPiece = /** @class */ (function (_super) {
+            __extends(CustomizationPiece, _super);
+            function CustomizationPiece(obj) {
+                var _this = _super.call(this, obj) || this;
+                function makePercentage(value, defaultValue) {
+                    value = Number(value);
+                    if (!_.isFinite(value)) {
+                        value = defaultValue;
+                    }
+                    return value + '%';
+                }
+                ;
+                _this.faceLeft = makePercentage(obj.faceLeft, 25);
+                _this.faceTop = makePercentage(obj.faceTop, 25);
+                _this.faceHeight = makePercentage(obj.faceHeight, 50);
+                _this.faceWidth = makePercentage(obj.faceWidth, 50);
+                return _this;
+            }
+            return CustomizationPiece;
+        }(CustomizationConfigItem));
+        var CustomizationFace = /** @class */ (function (_super) {
+            __extends(CustomizationFace, _super);
+            function CustomizationFace(obj) {
+                return _super.call(this, obj) || this;
+            }
+            return CustomizationFace;
+        }(CustomizationConfigItem));
         // Backup code in case the customization config file is bad and has errors
         if (!window.customizationConfig) {
             window.customizationConfig = {
@@ -944,8 +1010,8 @@ app.main = (function () {
         }
         viewModel.customization = {
             picker: 'piece',
-            allPieces: _.map(customizationConfig.avatarPieces, makePiece),
-            allFaces: _.map(customizationConfig.avatarFaces, makeFace),
+            allPieces: _.map(customizationConfig.avatarPieces, function (obj) { return new CustomizationPiece(obj); }),
+            allFaces: _.map(customizationConfig.avatarFaces, function (obj) { return new CustomizationFace(obj); }),
             availableColors: [],
             availablePieces: [],
             availableFaces: [],
@@ -959,11 +1025,9 @@ app.main = (function () {
                         break;
                     case 'face':
                         viewModel.customization.availableFaces = _.take(_.shuffle(viewModel.customization.allFaces), viewModel.customization.faceAmount);
-                        //viewModel.customization.availableFaces = viewModel.customization.allFaces;
                         break;
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
-                        //viewModel.customization.availablePieces = viewModel.customization.allPieces;
                         break;
                 }
             },
