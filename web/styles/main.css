@@ -118,7 +118,8 @@ html {
 }
 .avatar__piece-wrap .avatar__piece-piece,
 .avatar__piece-wrap .avatar__piece-piece-mask,
-.avatar__piece-wrap .avatar__piece-face {
+.avatar__piece-wrap .avatar__piece-face,
+.avatar__piece-wrap .avatar__piece-accessory {
   position: absolute;
   top: 0;
   bottom: 0;

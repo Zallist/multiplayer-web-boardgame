@@ -917,8 +917,8 @@ app.main = (function () {
         viewModel.gamePanelHeight = window.innerHeight;
         viewModel.gamePanelWidth = window.innerWidth;
         ;
-        var CustomizationConfigItem = /** @class */ (function () {
-            function CustomizationConfigItem(obj) {
+        var CustomizationAvatarItemBase = /** @class */ (function () {
+            function CustomizationAvatarItemBase(obj) {
                 this.requirements = {
                     // Min stats required
                     wins: 0,
@@ -933,7 +933,7 @@ app.main = (function () {
                     _.merge(this.requirements, obj.requirements);
                 }
             }
-            CustomizationConfigItem.prototype.requirementsNeeded = function (player) {
+            CustomizationAvatarItemBase.prototype.requirementsNeeded = function (player) {
                 var myStats = {}, needs;
                 if (!player)
                     player = viewModel.player;
@@ -966,7 +966,7 @@ app.main = (function () {
                 needs = _.reject(needs, { need: 0 });
                 return needs;
             };
-            CustomizationConfigItem.prototype.requirementsMet = function (player) {
+            CustomizationAvatarItemBase.prototype.requirementsMet = function (player) {
                 if (!player)
                     player = viewModel.player;
                 if (!player)
@@ -974,7 +974,7 @@ app.main = (function () {
                 return !_.some(this.requirementsNeeded(player), function (need) { return need.have < need.need; });
             };
             ;
-            CustomizationConfigItem.prototype.select = function (player) {
+            CustomizationAvatarItemBase.prototype.select = function (player) {
                 if (this.requirementsMet(player)) {
                     player.metadata.avatar.type = 'piece';
                     if (!_.isObjectLike(player.metadata.avatar.value)) {
@@ -987,12 +987,12 @@ app.main = (function () {
                 }
             };
             ;
-            return CustomizationConfigItem;
+            return CustomizationAvatarItemBase;
         }());
         ;
-        var CustomizationPiece = /** @class */ (function (_super) {
-            __extends(CustomizationPiece, _super);
-            function CustomizationPiece(obj) {
+        var CustomizationAvatarItemPiece = /** @class */ (function (_super) {
+            __extends(CustomizationAvatarItemPiece, _super);
+            function CustomizationAvatarItemPiece(obj) {
                 var _this = _super.call(this, obj) || this;
                 function makePercentage(value, defaultValue) {
                     value = Number(value);
@@ -1008,7 +1008,7 @@ app.main = (function () {
                 _this.faceWidth = makePercentage(obj.faceWidth, 50);
                 return _this;
             }
-            CustomizationPiece.prototype.select = function (player) {
+            CustomizationAvatarItemPiece.prototype.select = function (player) {
                 if (_super.prototype.select.call(this, player)) {
                     player.metadata.avatar.value.piece = _.cloneDeep(this);
                     if (_.isObjectLike(player.metadata.avatar.value.face)) {
@@ -1024,27 +1024,32 @@ app.main = (function () {
                 }
             };
             ;
-            return CustomizationPiece;
-        }(CustomizationConfigItem));
-        var CustomizationFace = /** @class */ (function (_super) {
-            __extends(CustomizationFace, _super);
-            function CustomizationFace(obj) {
+            return CustomizationAvatarItemPiece;
+        }(CustomizationAvatarItemBase));
+        var CustomizationAvatarItem = /** @class */ (function (_super) {
+            __extends(CustomizationAvatarItem, _super);
+            function CustomizationAvatarItem(obj, avatarProperty, left, top, width, height) {
+                if (left === void 0) { left = "25%"; }
+                if (top === void 0) { top = "25%"; }
+                if (width === void 0) { width = "50%"; }
+                if (height === void 0) { height = "50%"; }
                 var _this = _super.call(this, obj) || this;
-                _this.left = "25%";
-                _this.top = "25%";
-                _this.width = "50%";
-                _this.height = "50%";
+                _this.left = left;
+                _this.top = top;
+                _this.width = width;
+                _this.height = height;
+                _this.avatarProperty = avatarProperty;
                 return _this;
             }
-            CustomizationFace.prototype.select = function (player) {
+            CustomizationAvatarItem.prototype.select = function (player) {
                 if (_super.prototype.select.call(this, player)) {
-                    var original = player.metadata.avatar.value.face;
-                    player.metadata.avatar.value.face = _.cloneDeep(this);
+                    var original = player.metadata.avatar.value[this.avatarProperty];
+                    player.metadata.avatar.value[this.avatarProperty] = _.cloneDeep(this);
                     if (_.isObjectLike(original)) {
-                        player.metadata.avatar.value.face.left = original.left;
-                        player.metadata.avatar.value.face.top = original.top;
-                        player.metadata.avatar.value.face.width = original.width;
-                        player.metadata.avatar.value.face.height = original.height;
+                        player.metadata.avatar.value[this.avatarProperty].left = original.left;
+                        player.metadata.avatar.value[this.avatarProperty].top = original.top;
+                        player.metadata.avatar.value[this.avatarProperty].width = original.width;
+                        player.metadata.avatar.value[this.avatarProperty].height = original.height;
                     }
                     return true;
                 }
@@ -1053,8 +1058,8 @@ app.main = (function () {
                 }
             };
             ;
-            return CustomizationFace;
-        }(CustomizationConfigItem));
+            return CustomizationAvatarItem;
+        }(CustomizationAvatarItemBase));
         // Backup code in case the customization config file is bad and has errors
         if (!window.customizationConfig) {
             window.customizationConfig = {
@@ -1066,19 +1071,42 @@ app.main = (function () {
                 avatarFaces: [
                     { url: "assets/avatar/faces/angry.svg" },
                     { url: "assets/avatar/faces/cray.svg" },
+                ],
+                avatarAccessories: [
+                    { url: "assets/avatar/pieces/tophat.svg" },
+                    { url: "assets/avatar/pieces/witch.svg" },
                 ]
             };
         }
         viewModel.customization = {
+            pickers: [
+                { id: 'color', buttonClass: 'btn-color-wheel', iconClass: 'fas fa-palette', name: 'Color' },
+                { id: 'piece', buttonClass: 'btn-puzzle-piece', iconClass: 'fas fa-puzzle-piece', name: 'Piece' },
+                { id: 'face', buttonClass: 'btn-face', iconClass: 'fas fa-smile-beam', name: 'Face' },
+                { id: 'accessory', buttonClass: 'btn-accessory', iconClass: 'fas fa-ribbon', name: 'Accessory' }
+            ],
+            getPickerAt: function (offset) {
+                var pickerIndex = _.findIndex(viewModel.customization.pickers, { id: viewModel.customization.picker });
+                // Easier to only go forwards
+                if (offset < 0) {
+                    offset = _.size(viewModel.customization.pickers) + offset;
+                }
+                offset = (pickerIndex + offset) % _.size(viewModel.customization.pickers);
+                return viewModel.customization.pickers[offset];
+            },
+            getCurrentPicker: function () { return viewModel.customization.getPickerAt(0); },
             picker: 'piece',
-            allPieces: _.map(customizationConfig.avatarPieces, function (obj) { return new CustomizationPiece(obj); }),
-            allFaces: _.map(customizationConfig.avatarFaces, function (obj) { return new CustomizationFace(obj); }),
+            allPieces: _.map(customizationConfig.avatarPieces, function (obj) { return new CustomizationAvatarItemPiece(obj); }),
+            allFaces: _.map(customizationConfig.avatarFaces, function (obj) { return new CustomizationAvatarItem(obj, 'face'); }),
+            allAccessories: _.map(customizationConfig.avatarAccessories, function (obj) { return new CustomizationAvatarItem(obj, 'accessory', '35%', '10%', '30%', '20%'); }),
             availableColors: [],
             availablePieces: [],
             availableFaces: [],
+            availableAccessories: [],
             colorAmount: 6,
             faceAmount: 5,
             pieceAmount: 6,
+            accessoryAmount: 5,
             refreshPicker: function (picker) {
                 switch (picker || viewModel.customization.picker) {
                     case 'color':
@@ -1090,52 +1118,73 @@ app.main = (function () {
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
                         break;
+                    case 'accessory':
+                        viewModel.customization.availableAccessories = _.take(_.shuffle(viewModel.customization.allAccessories), viewModel.customization.accessoryAmount);
+                        break;
                 }
             },
             pieceMove: _.throttle(function (player, x, y, element) {
-                var face, piece, xPercent, yPercent;
+                var avatarItem, xPercent, yPercent;
                 function makeNumber(percentage) { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num) { return num + '%'; }
                 if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
-                    piece = player.metadata.avatar.value.piece;
-                    face = player.metadata.avatar.value.face;
-                    if (face && piece) {
+                    switch (viewModel.customization.picker) {
+                        case 'accessory':
+                            avatarItem = player.metadata.avatar.value.accessory;
+                            break;
+                        case 'piece':
+                        case 'face':
+                        case 'color':
+                        default:
+                            avatarItem = player.metadata.avatar.value.face;
+                            break;
+                    }
+                    if (avatarItem) {
                         xPercent = x / element.offsetWidth;
                         yPercent = y / element.offsetHeight;
-                        xPercent = xPercent - (makeNumber(face.width) / 200);
-                        yPercent = yPercent - (makeNumber(face.height) / 200);
-                        face.left = makePercent(xPercent * 100);
-                        face.top = makePercent(yPercent * 100);
+                        xPercent = xPercent - (makeNumber(avatarItem.width) / 200);
+                        yPercent = yPercent - (makeNumber(avatarItem.height) / 200);
+                        avatarItem.left = makePercent(xPercent * 100);
+                        avatarItem.top = makePercent(yPercent * 100);
                     }
                 }
             }, (1000 / 60), { leading: true, trailing: true }),
             pieceZoom: function (player, delta) {
-                var face, piece;
+                var avatarItem;
                 function makeNumber(percentage) { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num) { return num + '%'; }
                 if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
-                    piece = player.metadata.avatar.value.piece;
-                    face = player.metadata.avatar.value.face;
-                    if (face && piece) {
+                    switch (viewModel.customization.picker) {
+                        case 'accessory':
+                            avatarItem = player.metadata.avatar.value.accessory;
+                            break;
+                        case 'piece':
+                        case 'face':
+                        case 'color':
+                        default:
+                            avatarItem = player.metadata.avatar.value.face;
+                            break;
+                    }
+                    if (avatarItem) {
                         // negative = get bigger = zoom
                         // positive = get smaller = zoom out
                         if (delta < 0) {
-                            if (makeNumber(face.width) > 100 || makeNumber(face.height) > 100) {
+                            if (makeNumber(avatarItem.width) > 100 || makeNumber(avatarItem.height) > 100) {
                                 return;
                             }
-                            face.left = makePercent(makeNumber(face.left) - 0.5);
-                            face.top = makePercent(makeNumber(face.top) - 0.5);
-                            face.width = makePercent(makeNumber(face.width) + 1);
-                            face.height = makePercent(makeNumber(face.height) + 1);
+                            avatarItem.left = makePercent(makeNumber(avatarItem.left) - 0.5);
+                            avatarItem.top = makePercent(makeNumber(avatarItem.top) - 0.5);
+                            avatarItem.width = makePercent(makeNumber(avatarItem.width) + 1);
+                            avatarItem.height = makePercent(makeNumber(avatarItem.height) + 1);
                         }
                         else {
-                            if (makeNumber(face.width) < 5 || makeNumber(face.height) < 5) {
+                            if (makeNumber(avatarItem.width) < 5 || makeNumber(avatarItem.height) < 5) {
                                 return;
                             }
-                            face.left = makePercent(makeNumber(face.left) + 0.5);
-                            face.top = makePercent(makeNumber(face.top) + 0.5);
-                            face.width = makePercent(makeNumber(face.width) - 1);
-                            face.height = makePercent(makeNumber(face.height) - 1);
+                            avatarItem.left = makePercent(makeNumber(avatarItem.left) + 0.5);
+                            avatarItem.top = makePercent(makeNumber(avatarItem.top) + 0.5);
+                            avatarItem.width = makePercent(makeNumber(avatarItem.width) - 1);
+                            avatarItem.height = makePercent(makeNumber(avatarItem.height) - 1);
                         }
                     }
                 }
@@ -1156,12 +1205,15 @@ app.main = (function () {
                 }
             },
             generateName: function () {
-                return chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
+                return chance.prefix({})
+                    .replace(/\W+/g, '') + ' ' + chance.animal({})
+                    .replace(/[^\w\']+/g, ' ');
             }
         };
         viewModel.customization.refreshPicker('color');
         viewModel.customization.refreshPicker('face');
         viewModel.customization.refreshPicker('piece');
+        viewModel.customization.refreshPicker('accessory');
         if (viewModel.player.name === null) {
             viewModel.player.name = viewModel.customization.generateName();
         }
@@ -1220,7 +1272,7 @@ app.main = (function () {
         Object.defineProperty(window, '_numeral', { value: numeral });
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
-            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     :class=\"{ 'avatar__piece-wrap--customizable': customize }\"\n     v-on=\"customize ? { \n        'click': $root.customization.domEvents.pieceClick,\n        'mousedown': $root.customization.domEvents.pieceDrag,\n        'mousemove': $root.customization.domEvents.pieceDrag,\n        'wheel': $root.customization.domEvents.pieceWheel\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.face.top,\n             'left': player.metadata.avatar.value.face.left,\n             'width': player.metadata.avatar.value.face.width,\n             'height': player.metadata.avatar.value.face.height\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
+            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     :class=\"{ 'avatar__piece-wrap--customizable': customize }\"\n     v-on=\"customize ? { \n        'click': $root.customization.domEvents.pieceClick,\n        'mousedown': $root.customization.domEvents.pieceDrag,\n        'mousemove': $root.customization.domEvents.pieceDrag,\n        'wheel': $root.customization.domEvents.pieceWheel\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.face.top,\n             'left': player.metadata.avatar.value.face.left,\n             'width': player.metadata.avatar.value.face.width,\n             'height': player.metadata.avatar.value.face.height\n         }\"></div>\n         \n    <div class=\"avatar__piece-accessory\"\n         v-if=\"player.metadata.avatar.value.accessory\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.accessory.url + ')',\n             'top': player.metadata.avatar.value.accessory.top,\n             'left': player.metadata.avatar.value.accessory.left,\n             'width': player.metadata.avatar.value.accessory.width,\n             'height': player.metadata.avatar.value.accessory.height\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
         });
         // Borrowed from https://codepen.io/square0225/pen/QdvLQg
         page.pageVue.component('fill-circle', {

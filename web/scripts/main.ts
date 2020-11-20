@@ -1198,7 +1198,7 @@ app.main = (function () {
             stat: string;
         };
 
-        class CustomizationConfigItem {
+        class CustomizationAvatarItemBase {
             url: string;
 
             requirements: anyObj = {
@@ -1284,7 +1284,7 @@ app.main = (function () {
             }
         };
 
-        class CustomizationPiece extends CustomizationConfigItem {
+        class CustomizationAvatarItemPiece extends CustomizationAvatarItemBase {
             faceLeft: string;
             faceTop: string;
             faceHeight: string;
@@ -1328,21 +1328,25 @@ app.main = (function () {
             }
         }
 
-        class CustomizationFace extends CustomizationConfigItem {
-            left: string = "25%";
-            top: string = "25%";
-            width: string = "50%";
-            height: string = "50%";
+        class CustomizationAvatarItem extends CustomizationAvatarItemBase {
+            avatarProperty: string;
+
+            left: string;
+            top: string;
+            width: string;
+            height: string;
 
             select(player: Player): boolean {
                 if (super.select(player)) {
-                    let original = player.metadata.avatar.value.face;
-                    player.metadata.avatar.value.face = _.cloneDeep(this);
+                    let original = player.metadata.avatar.value[this.avatarProperty];
+
+                    player.metadata.avatar.value[this.avatarProperty] = _.cloneDeep(this);
+
                     if (_.isObjectLike(original)) {
-                        player.metadata.avatar.value.face.left = original.left;
-                        player.metadata.avatar.value.face.top = original.top;
-                        player.metadata.avatar.value.face.width = original.width;
-                        player.metadata.avatar.value.face.height = original.height;
+                        player.metadata.avatar.value[this.avatarProperty].left = original.left;
+                        player.metadata.avatar.value[this.avatarProperty].top = original.top;
+                        player.metadata.avatar.value[this.avatarProperty].width = original.width;
+                        player.metadata.avatar.value[this.avatarProperty].height = original.height;
                     }
 
                     return true;
@@ -1352,8 +1356,23 @@ app.main = (function () {
                 }
             };
 
-            constructor(obj: anyObj) {
-                super(obj);                
+            constructor(
+                obj: anyObj, 
+                avatarProperty: string, 
+                left: string = "25%", 
+                top: string = "25%", 
+                width: string = "50%", 
+                height: string = "50%"
+            ) {
+
+                super(obj);
+
+                this.left = left;
+                this.top = top;
+                this.width = width;
+                this.height = height;
+
+                this.avatarProperty = avatarProperty;
             }
         }
         
@@ -1368,22 +1387,50 @@ app.main = (function () {
                 avatarFaces: [
                     { url: "assets/avatar/faces/angry.svg" },
                     { url: "assets/avatar/faces/cray.svg" },
-                ]
+                ],
+                avatarAccessories: [
+                    { url: "assets/avatar/pieces/tophat.svg" },
+                    { url: "assets/avatar/pieces/witch.svg" },
+                ],
             };
         }
 
         viewModel.customization = {
+            pickers: [
+                { id: 'color', buttonClass: 'btn-color-wheel', iconClass: 'fas fa-palette', name: 'Color' },
+                { id: 'piece', buttonClass: 'btn-puzzle-piece', iconClass: 'fas fa-puzzle-piece', name: 'Piece' },
+                { id: 'face', buttonClass: 'btn-face', iconClass: 'fas fa-smile-beam', name: 'Face' },
+                { id: 'accessory', buttonClass: 'btn-accessory', iconClass: 'fas fa-ribbon', name: 'Accessory' }
+            ],
+
+            getPickerAt: (offset: number) => {
+                let pickerIndex = _.findIndex(viewModel.customization.pickers, { id: viewModel.customization.picker });
+
+                // Easier to only go forwards
+                if (offset < 0) {
+                    offset = _.size(viewModel.customization.pickers) + offset;
+                }
+
+                offset = (pickerIndex + offset) % _.size(viewModel.customization.pickers);
+
+                return viewModel.customization.pickers[offset];
+            },
+            getCurrentPicker: () => viewModel.customization.getPickerAt(0),
+
             picker: 'piece',
-            allPieces: _.map(customizationConfig.avatarPieces, (obj: anyObj) => new CustomizationPiece(obj)) as CustomizationPiece[],
-            allFaces: _.map(customizationConfig.avatarFaces, (obj: anyObj) => new CustomizationFace(obj)) as CustomizationFace[],
+            allPieces: _.map(customizationConfig.avatarPieces, (obj: anyObj) => new CustomizationAvatarItemPiece(obj)) as CustomizationAvatarItemPiece[],
+            allFaces: _.map(customizationConfig.avatarFaces, (obj: anyObj) => new CustomizationAvatarItem(obj, 'face')) as CustomizationAvatarItem[],
+            allAccessories: _.map(customizationConfig.avatarAccessories, (obj: anyObj) => new CustomizationAvatarItem(obj, 'accessory', '35%', '10%', '30%', '20%')) as CustomizationAvatarItem[],
 
             availableColors: [] as string[],
-            availablePieces: [] as CustomizationPiece[],
-            availableFaces: [] as CustomizationFace[],
+            availablePieces: [] as CustomizationAvatarItemPiece[],
+            availableFaces: [] as CustomizationAvatarItem[],
+            availableAccessories: [] as CustomizationAvatarItem[],
 
             colorAmount: 6,
             faceAmount: 5,
             pieceAmount: 6,
+            accessoryAmount: 5,
 
             refreshPicker: function (picker?: string) {
                 switch (picker || viewModel.customization.picker) {
@@ -1396,66 +1443,87 @@ app.main = (function () {
                     case 'piece':
                         viewModel.customization.availablePieces = _.take(_.shuffle(viewModel.customization.allPieces), viewModel.customization.pieceAmount);
                         break;
+                    case 'accessory':
+                        viewModel.customization.availableAccessories = _.take(_.shuffle(viewModel.customization.allAccessories), viewModel.customization.accessoryAmount);
+                        break;
                 }
             },
 
             pieceMove: _.throttle(function (player: Player, x: number, y: number, element: HTMLElement) {
-                let face : CustomizationFace, piece : CustomizationPiece,
+                let avatarItem : CustomizationAvatarItem,
                     xPercent : number, yPercent : number;
 
                 function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num: number) : string { return num + '%'; }
 
                 if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
-                    piece = player.metadata.avatar.value.piece;
-                    face = player.metadata.avatar.value.face;
+                    switch (viewModel.customization.picker) {
+                        case 'accessory':
+                            avatarItem = player.metadata.avatar.value.accessory;
+                            break;
+                        case 'piece':
+                        case 'face':
+                        case 'color':
+                        default:
+                            avatarItem = player.metadata.avatar.value.face;
+                            break;
+                    }
 
-                    if (face && piece) {
+                    if (avatarItem) {
                         xPercent = x / element.offsetWidth;
                         yPercent = y / element.offsetHeight;
 
-                        xPercent = xPercent - (makeNumber(face.width) / 200);
-                        yPercent = yPercent - (makeNumber(face.height) / 200);
+                        xPercent = xPercent - (makeNumber(avatarItem.width) / 200);
+                        yPercent = yPercent - (makeNumber(avatarItem.height) / 200);
 
-                        face.left = makePercent(xPercent * 100);
-                        face.top = makePercent(yPercent * 100);
+                        avatarItem.left = makePercent(xPercent * 100);
+                        avatarItem.top = makePercent(yPercent * 100);
                     }
                 }
             }, (1000 / 60), { leading: true, trailing: true }),
 
-            pieceZoom: function (player, delta) {
-                let face : CustomizationFace, piece : CustomizationPiece,
+            pieceZoom: function (player: Player, delta: number) {
+                let avatarItem : CustomizationAvatarItem;
 
                 function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num: number) : string { return num + '%'; }
 
                 if (player.metadata.avatar.type === 'piece' && _.isObject(player.metadata.avatar.value)) {
-                    piece = player.metadata.avatar.value.piece;
-                    face = player.metadata.avatar.value.face;
+                    switch (viewModel.customization.picker) {
+                        case 'accessory':
+                            avatarItem = player.metadata.avatar.value.accessory;
+                            break;
+                        case 'piece':
+                        case 'face':
+                        case 'color':
+                        default:
+                            avatarItem = player.metadata.avatar.value.face;
+                            break;
+                    }
                 
-                    if (face && piece) {
+                    if (avatarItem) {
                         // negative = get bigger = zoom
                         // positive = get smaller = zoom out
 
                         if (delta < 0) {
-                            if (makeNumber(face.width) > 100 || makeNumber(face.height) > 100) {
+                            if (makeNumber(avatarItem.width) > 100 || makeNumber(avatarItem.height) > 100) {
                                 return;
                             }
                             
-                            face.left = makePercent(makeNumber(face.left) - 0.5);
-                            face.top = makePercent(makeNumber(face.top) - 0.5);
-                            face.width = makePercent(makeNumber(face.width) + 1);
-                            face.height = makePercent(makeNumber(face.height) + 1);
+                            avatarItem.left = makePercent(makeNumber(avatarItem.left) - 0.5);
+                            avatarItem.top = makePercent(makeNumber(avatarItem.top) - 0.5);
+                            avatarItem.width = makePercent(makeNumber(avatarItem.width) + 1);
+                            avatarItem.height = makePercent(makeNumber(avatarItem.height) + 1);
                         }
                         else {                            
-                            if (makeNumber(face.width) < 5 || makeNumber(face.height) < 5) {
+                            if (makeNumber(avatarItem.width) < 5 || makeNumber(avatarItem.height) < 5) {
                                 return;
                             }
 
-                            face.left = makePercent(makeNumber(face.left) + 0.5);
-                            face.top = makePercent(makeNumber(face.top) + 0.5);
-                            face.width = makePercent(makeNumber(face.width) - 1);
-                            face.height = makePercent(makeNumber(face.height) - 1);
+                            avatarItem.left = makePercent(makeNumber(avatarItem.left) + 0.5);
+                            avatarItem.top = makePercent(makeNumber(avatarItem.top) + 0.5);
+                            avatarItem.width = makePercent(makeNumber(avatarItem.width) - 1);
+                            avatarItem.height = makePercent(makeNumber(avatarItem.height) - 1);
                         }
                     }
                 }
@@ -1478,12 +1546,15 @@ app.main = (function () {
             },
 
             generateName: () => {
-                return chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
+                return chance.prefix({})
+                    .replace(/\W+/g, '') + ' ' + chance.animal({})
+                    .replace(/[^\w\']+/g, ' ');
             }
         };
         viewModel.customization.refreshPicker('color');
         viewModel.customization.refreshPicker('face');
         viewModel.customization.refreshPicker('piece');
+        viewModel.customization.refreshPicker('accessory');
 
         if (viewModel.player.name === null) {
             viewModel.player.name = viewModel.customization.generateName();
@@ -1593,6 +1664,16 @@ app.main = (function () {
              'left': player.metadata.avatar.value.face.left,
              'width': player.metadata.avatar.value.face.width,
              'height': player.metadata.avatar.value.face.height
+         }"></div>
+         
+    <div class="avatar__piece-accessory"
+         v-if="player.metadata.avatar.value.accessory"
+         :style="{ 
+             'background-image': 'url(' + player.metadata.avatar.value.accessory.url + ')',
+             'top': player.metadata.avatar.value.accessory.top,
+             'left': player.metadata.avatar.value.accessory.left,
+             'width': player.metadata.avatar.value.accessory.width,
+             'height': player.metadata.avatar.value.accessory.height
          }"></div>
 </div>
 

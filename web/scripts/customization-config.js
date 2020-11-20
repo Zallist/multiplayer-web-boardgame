@@ -103,5 +103,9 @@ var customizationConfig = {
         { url: "assets/avatar/faces/myan2.svg" },
         { url: "assets/avatar/faces/myan.svg" },
         { url: "assets/avatar/faces/anime.svg" },
+    ],    
+    avatarAccessories: [
+        { url: "assets/avatar/pieces/tophat.svg" },
+        { url: "assets/avatar/pieces/witch.svg" },
     ]
 };
