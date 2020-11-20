@@ -1264,7 +1264,7 @@ app.main = (function () {
                 if (this.requirementsMet(player)) {
                     player.metadata.avatar.type = 'piece';
     
-                    if (!_.isPlainObject(player.metadata.avatar.value)) {
+                    if (!_.isObjectLike(player.metadata.avatar.value)) {
                         player.metadata.avatar.value = { };
                     }
 
@@ -1278,7 +1278,7 @@ app.main = (function () {
             constructor(obj: anyObj) {
                 this.url = obj.url;
 
-                if (_.isPlainObject(obj.requirements)) {
+                if (_.isObjectLike(obj.requirements)) {
                     _.merge(this.requirements, obj.requirements);
                 }
             }
@@ -1293,6 +1293,14 @@ app.main = (function () {
             select(player: Player): boolean {
                 if (super.select(player)) {
                     player.metadata.avatar.value.piece = _.cloneDeep(this);
+
+                    if (_.isObjectLike(player.metadata.avatar.value.face)) {
+                        player.metadata.avatar.value.face.left = this.faceLeft;
+                        player.metadata.avatar.value.face.top = this.faceTop;
+                        player.metadata.avatar.value.face.width = this.faceWidth;
+                        player.metadata.avatar.value.face.height = this.faceHeight;
+                    }
+
                     return true;
                 }
                 else {
@@ -1321,9 +1329,22 @@ app.main = (function () {
         }
 
         class CustomizationFace extends CustomizationConfigItem {
+            left: string = "25%";
+            top: string = "25%";
+            width: string = "50%";
+            height: string = "50%";
+
             select(player: Player): boolean {
                 if (super.select(player)) {
+                    let original = player.metadata.avatar.value.face;
                     player.metadata.avatar.value.face = _.cloneDeep(this);
+                    if (_.isObjectLike(original)) {
+                        player.metadata.avatar.value.face.left = original.left;
+                        player.metadata.avatar.value.face.top = original.top;
+                        player.metadata.avatar.value.face.width = original.width;
+                        player.metadata.avatar.value.face.height = original.height;
+                    }
+
                     return true;
                 }
                 else {
@@ -1378,9 +1399,9 @@ app.main = (function () {
                 }
             },
 
-            pieceMove: _.throttle(function (player, x, y, element) {
-                let face, piece,
-                    xPercent, yPercent;
+            pieceMove: _.throttle(function (player: Player, x: number, y: number, element: HTMLElement) {
+                let face : CustomizationFace, piece : CustomizationPiece,
+                    xPercent : number, yPercent : number;
 
                 function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num: number) : string { return num + '%'; }
@@ -1393,17 +1414,17 @@ app.main = (function () {
                         xPercent = x / element.offsetWidth;
                         yPercent = y / element.offsetHeight;
 
-                        xPercent = xPercent - (makeNumber(piece.faceWidth) / 200);
-                        yPercent = yPercent - (makeNumber(piece.faceHeight) / 200);
+                        xPercent = xPercent - (makeNumber(face.width) / 200);
+                        yPercent = yPercent - (makeNumber(face.height) / 200);
 
-                        piece.faceLeft = makePercent(xPercent * 100);
-                        piece.faceTop = makePercent(yPercent * 100);
+                        face.left = makePercent(xPercent * 100);
+                        face.top = makePercent(yPercent * 100);
                     }
                 }
-            }, 50, { leading: true, trailing: true }),
+            }, (1000 / 60), { leading: true, trailing: true }),
 
-            pieceZoom: function (player, delta, element) {
-                let face, piece;
+            pieceZoom: function (player, delta) {
+                let face : CustomizationFace, piece : CustomizationPiece,
 
                 function makeNumber(percentage: string) : number { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num: number) : string { return num + '%'; }
@@ -1417,30 +1438,46 @@ app.main = (function () {
                         // positive = get smaller = zoom out
 
                         if (delta < 0) {
-                            if (makeNumber(piece.faceWidth) > 100 || makeNumber(piece.faceHeight) > 100) {
+                            if (makeNumber(face.width) > 100 || makeNumber(face.height) > 100) {
                                 return;
                             }
                             
-                            piece.faceLeft = makePercent(makeNumber(piece.faceLeft) - 0.5);
-                            piece.faceTop = makePercent(makeNumber(piece.faceTop) - 0.5);
-                            piece.faceWidth = makePercent(makeNumber(piece.faceWidth) + 1);
-                            piece.faceHeight = makePercent(makeNumber(piece.faceHeight) + 1);
+                            face.left = makePercent(makeNumber(face.left) - 0.5);
+                            face.top = makePercent(makeNumber(face.top) - 0.5);
+                            face.width = makePercent(makeNumber(face.width) + 1);
+                            face.height = makePercent(makeNumber(face.height) + 1);
                         }
                         else {                            
-                            if (makeNumber(piece.faceWidth) < 5 || makeNumber(piece.faceHeight) < 5) {
+                            if (makeNumber(face.width) < 5 || makeNumber(face.height) < 5) {
                                 return;
                             }
 
-                            piece.faceLeft = makePercent(makeNumber(piece.faceLeft) + 0.5);
-                            piece.faceTop = makePercent(makeNumber(piece.faceTop) + 0.5);
-                            piece.faceWidth = makePercent(makeNumber(piece.faceWidth) - 1);
-                            piece.faceHeight = makePercent(makeNumber(piece.faceHeight) - 1);
+                            face.left = makePercent(makeNumber(face.left) + 0.5);
+                            face.top = makePercent(makeNumber(face.top) + 0.5);
+                            face.width = makePercent(makeNumber(face.width) - 1);
+                            face.height = makePercent(makeNumber(face.height) - 1);
                         }
                     }
                 }
             },
 
-            generateName: function () {
+            domEvents: {
+                pieceClick: ($event: MouseEvent) => { 
+                    viewModel.customization.pieceMove(viewModel.player, $event.offsetX, $event.offsetY, $event.currentTarget); 
+                },
+                pieceDrag: ($event: MouseEvent) => {
+                    if ($event.buttons & 1) {
+                        viewModel.customization.pieceMove(viewModel.player, $event.offsetX, $event.offsetY, $event.currentTarget);
+                    } 
+                },
+                pieceWheel: ($event: WheelEvent) => {
+                    $event.stopPropagation();
+                    $event.preventDefault(); 
+                    viewModel.customization.pieceZoom(viewModel.player, $event.deltaY);
+                }
+            },
+
+            generateName: () => {
                 return chance.prefix({}).replace(/\W+/g, '') + ' ' + chance.animal({}).replace(/[^\w\']+/g, ' ');
             }
         };
@@ -1485,7 +1522,7 @@ app.main = (function () {
                     }
                 });
 
-                if (_.isPlainObject(viewModel.player.metadata.avatar.value)) {
+                if (_.isObjectLike(viewModel.player.metadata.avatar.value)) {
                     // Backdate from when pieces had "options" properties
                     if (viewModel.player.metadata.avatar.value.piece && viewModel.player.metadata.avatar.value.piece.options) {
                         _.merge(viewModel.player.metadata.avatar.value.piece, viewModel.player.metadata.avatar.value.piece.options);
@@ -1529,10 +1566,10 @@ app.main = (function () {
      class="avatar__piece-wrap"
      :class="{ 'avatar__piece-wrap--customizable': customize }"
      v-on="customize ? { 
-        'mousedown': function ($event) { $event.currentTarget.mouseIsHeldDown = true; },
-        'mouseup': function ($event) { $event.currentTarget.mouseIsHeldDown = false; $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); },
-        'mousemove': function ($event) { if ($event.currentTarget.mouseIsHeldDown) { $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); } },
-        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoom(player, $event.deltaY, $event.currentTarget); }
+        'click': $root.customization.domEvents.pieceClick,
+        'mousedown': $root.customization.domEvents.pieceDrag,
+        'mousemove': $root.customization.domEvents.pieceDrag,
+        'wheel': $root.customization.domEvents.pieceWheel
     } : {}">
      
     <div class="avatar__piece-piece"
@@ -1552,10 +1589,10 @@ app.main = (function () {
          v-if="player.metadata.avatar.value.face"
          :style="{ 
              'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',
-             'top': player.metadata.avatar.value.piece.faceTop,
-             'left': player.metadata.avatar.value.piece.faceLeft,
-             'width': player.metadata.avatar.value.piece.faceWidth,
-             'height': player.metadata.avatar.value.piece.faceHeight
+             'top': player.metadata.avatar.value.face.top,
+             'left': player.metadata.avatar.value.face.left,
+             'width': player.metadata.avatar.value.face.width,
+             'height': player.metadata.avatar.value.face.height
          }"></div>
 </div>
 

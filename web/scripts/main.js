@@ -929,7 +929,7 @@ app.main = (function () {
                     timesHacked: 0
                 };
                 this.url = obj.url;
-                if (_.isPlainObject(obj.requirements)) {
+                if (_.isObjectLike(obj.requirements)) {
                     _.merge(this.requirements, obj.requirements);
                 }
             }
@@ -977,7 +977,7 @@ app.main = (function () {
             CustomizationConfigItem.prototype.select = function (player) {
                 if (this.requirementsMet(player)) {
                     player.metadata.avatar.type = 'piece';
-                    if (!_.isPlainObject(player.metadata.avatar.value)) {
+                    if (!_.isObjectLike(player.metadata.avatar.value)) {
                         player.metadata.avatar.value = {};
                     }
                     return true;
@@ -1011,6 +1011,12 @@ app.main = (function () {
             CustomizationPiece.prototype.select = function (player) {
                 if (_super.prototype.select.call(this, player)) {
                     player.metadata.avatar.value.piece = _.cloneDeep(this);
+                    if (_.isObjectLike(player.metadata.avatar.value.face)) {
+                        player.metadata.avatar.value.face.left = this.faceLeft;
+                        player.metadata.avatar.value.face.top = this.faceTop;
+                        player.metadata.avatar.value.face.width = this.faceWidth;
+                        player.metadata.avatar.value.face.height = this.faceHeight;
+                    }
                     return true;
                 }
                 else {
@@ -1023,11 +1029,23 @@ app.main = (function () {
         var CustomizationFace = /** @class */ (function (_super) {
             __extends(CustomizationFace, _super);
             function CustomizationFace(obj) {
-                return _super.call(this, obj) || this;
+                var _this = _super.call(this, obj) || this;
+                _this.left = "25%";
+                _this.top = "25%";
+                _this.width = "50%";
+                _this.height = "50%";
+                return _this;
             }
             CustomizationFace.prototype.select = function (player) {
                 if (_super.prototype.select.call(this, player)) {
+                    var original = player.metadata.avatar.value.face;
                     player.metadata.avatar.value.face = _.cloneDeep(this);
+                    if (_.isObjectLike(original)) {
+                        player.metadata.avatar.value.face.left = original.left;
+                        player.metadata.avatar.value.face.top = original.top;
+                        player.metadata.avatar.value.face.width = original.width;
+                        player.metadata.avatar.value.face.height = original.height;
+                    }
                     return true;
                 }
                 else {
@@ -1084,14 +1102,14 @@ app.main = (function () {
                     if (face && piece) {
                         xPercent = x / element.offsetWidth;
                         yPercent = y / element.offsetHeight;
-                        xPercent = xPercent - (makeNumber(piece.faceWidth) / 200);
-                        yPercent = yPercent - (makeNumber(piece.faceHeight) / 200);
-                        piece.faceLeft = makePercent(xPercent * 100);
-                        piece.faceTop = makePercent(yPercent * 100);
+                        xPercent = xPercent - (makeNumber(face.width) / 200);
+                        yPercent = yPercent - (makeNumber(face.height) / 200);
+                        face.left = makePercent(xPercent * 100);
+                        face.top = makePercent(yPercent * 100);
                     }
                 }
-            }, 50, { leading: true, trailing: true }),
-            pieceZoom: function (player, delta, element) {
+            }, (1000 / 60), { leading: true, trailing: true }),
+            pieceZoom: function (player, delta) {
                 var face, piece;
                 function makeNumber(percentage) { return Number(percentage.replace(/\%$/g, '')); }
                 function makePercent(num) { return num + '%'; }
@@ -1102,24 +1120,39 @@ app.main = (function () {
                         // negative = get bigger = zoom
                         // positive = get smaller = zoom out
                         if (delta < 0) {
-                            if (makeNumber(piece.faceWidth) > 100 || makeNumber(piece.faceHeight) > 100) {
+                            if (makeNumber(face.width) > 100 || makeNumber(face.height) > 100) {
                                 return;
                             }
-                            piece.faceLeft = makePercent(makeNumber(piece.faceLeft) - 0.5);
-                            piece.faceTop = makePercent(makeNumber(piece.faceTop) - 0.5);
-                            piece.faceWidth = makePercent(makeNumber(piece.faceWidth) + 1);
-                            piece.faceHeight = makePercent(makeNumber(piece.faceHeight) + 1);
+                            face.left = makePercent(makeNumber(face.left) - 0.5);
+                            face.top = makePercent(makeNumber(face.top) - 0.5);
+                            face.width = makePercent(makeNumber(face.width) + 1);
+                            face.height = makePercent(makeNumber(face.height) + 1);
                         }
                         else {
-                            if (makeNumber(piece.faceWidth) < 5 || makeNumber(piece.faceHeight) < 5) {
+                            if (makeNumber(face.width) < 5 || makeNumber(face.height) < 5) {
                                 return;
                             }
-                            piece.faceLeft = makePercent(makeNumber(piece.faceLeft) + 0.5);
-                            piece.faceTop = makePercent(makeNumber(piece.faceTop) + 0.5);
-                            piece.faceWidth = makePercent(makeNumber(piece.faceWidth) - 1);
-                            piece.faceHeight = makePercent(makeNumber(piece.faceHeight) - 1);
+                            face.left = makePercent(makeNumber(face.left) + 0.5);
+                            face.top = makePercent(makeNumber(face.top) + 0.5);
+                            face.width = makePercent(makeNumber(face.width) - 1);
+                            face.height = makePercent(makeNumber(face.height) - 1);
                         }
                     }
+                }
+            },
+            domEvents: {
+                pieceClick: function ($event) {
+                    viewModel.customization.pieceMove(viewModel.player, $event.offsetX, $event.offsetY, $event.currentTarget);
+                },
+                pieceDrag: function ($event) {
+                    if ($event.buttons & 1) {
+                        viewModel.customization.pieceMove(viewModel.player, $event.offsetX, $event.offsetY, $event.currentTarget);
+                    }
+                },
+                pieceWheel: function ($event) {
+                    $event.stopPropagation();
+                    $event.preventDefault();
+                    viewModel.customization.pieceZoom(viewModel.player, $event.deltaY);
                 }
             },
             generateName: function () {
@@ -1157,7 +1190,7 @@ app.main = (function () {
                         return objValue;
                     }
                 });
-                if (_.isPlainObject(viewModel.player.metadata.avatar.value)) {
+                if (_.isObjectLike(viewModel.player.metadata.avatar.value)) {
                     // Backdate from when pieces had "options" properties
                     if (viewModel.player.metadata.avatar.value.piece && viewModel.player.metadata.avatar.value.piece.options) {
                         _.merge(viewModel.player.metadata.avatar.value.piece, viewModel.player.metadata.avatar.value.piece.options);
@@ -1187,7 +1220,7 @@ app.main = (function () {
         Object.defineProperty(window, '_numeral', { value: numeral });
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
-            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     :class=\"{ 'avatar__piece-wrap--customizable': customize }\"\n     v-on=\"customize ? { \n        'mousedown': function ($event) { $event.currentTarget.mouseIsHeldDown = true; },\n        'mouseup': function ($event) { $event.currentTarget.mouseIsHeldDown = false; $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); },\n        'mousemove': function ($event) { if ($event.currentTarget.mouseIsHeldDown) { $root.customization.pieceMove(player, $event.offsetX, $event.offsetY, $event.currentTarget); } },\n        'wheel': function ($event) { $event.stopPropagation(); $event.preventDefault(); $root.customization.pieceZoom(player, $event.deltaY, $event.currentTarget); }\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.piece.faceTop,\n             'left': player.metadata.avatar.value.piece.faceLeft,\n             'width': player.metadata.avatar.value.piece.faceWidth,\n             'height': player.metadata.avatar.value.piece.faceHeight\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
+            template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     :class=\"{ 'avatar__piece-wrap--customizable': customize }\"\n     v-on=\"customize ? { \n        'click': $root.customization.domEvents.pieceClick,\n        'mousedown': $root.customization.domEvents.pieceDrag,\n        'mousemove': $root.customization.domEvents.pieceDrag,\n        'wheel': $root.customization.domEvents.pieceWheel\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.face.top,\n             'left': player.metadata.avatar.value.face.left,\n             'width': player.metadata.avatar.value.face.width,\n             'height': player.metadata.avatar.value.face.height\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"
         });
         // Borrowed from https://codepen.io/square0225/pen/QdvLQg
         page.pageVue.component('fill-circle', {

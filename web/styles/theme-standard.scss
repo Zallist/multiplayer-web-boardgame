@@ -344,9 +344,9 @@ h1 {
     &.avatar__box--me { @include insetBoxShadow(#8e44ad); }
 
     @keyframes wiggle {
-        0% { transform: rotate(8deg); }
-        50% { transform: rotate(-8deg); }
-        100% { transform: rotate(8deg); }
+        0% { transform: rotate(0.5deg); }
+        50% { transform: rotate(-0.5deg); }
+        100% { transform: rotate(0.5deg); }
     }
     &.avatar__box--turn { 
         @include insetBoxShadow(#e74c3c);
