@@ -95,6 +95,43 @@ app.makeGameObject = function (connection, app, viewModel) {
             </div>
         </div>
     </div>
+    <h2>Not Implemented Yet:</h2>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowPromotion" disabled>
+                Allow Pawn Promotion
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            <a href="https://en.wikipedia.org/wiki/Promotion_(chess)" target="_blank">Wikipedia: Pawn Promotion</a>
+        </small>
+    </div>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowCastling" disabled>
+                Allow Castling
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            <a href="https://en.wikipedia.org/wiki/Castling" target="_blank">Wikipedia: Castling</a>
+        </small>
+    </div>
+    <div class="mt-3">
+        <div class="form-check">
+            <label class="form-check-label">
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowEnpasse" disabled>
+                Allow Enpasse
+            </label>
+        </div>
+
+        <small class="form-text text-secondary config__help-text">
+            <a href="https://en.wikipedia.org/wiki/En_passant" target="_blank">Wikipedia: En passant</a>
+        </small>
+    </div>
 </fieldset>
 `
         }
