@@ -35,7 +35,11 @@ app.makeGameObject = function (connection, app, viewModel) {
                 <div v-for="pieceGroups in [$data.$game.piecesOnCellGrouped(cell.x, cell.y)]"
                      class="game__cell__content">
 
-                    <div class="cell__piece" v-for="pieceGroup in pieceGroups">
+                    <div class="cell__piece" v-for="pieceGroup in pieceGroups"
+                         v-move-when-mounted="{ 
+                             'key': 's:' + $data.$vm.gameState.started + '~' + pieceGroup.pieces[0].pieceId,
+                             'ignoreUpdate': true
+                         }">
                         <player-avatar :player="pieceGroup.player"></player-avatar>
                         <div class="cell__piece-count" v-if="pieceGroup.pieces.length > 1">{{ pieceGroup.pieces.length }}</div>
                     </div>

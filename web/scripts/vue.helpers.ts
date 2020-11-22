@@ -104,6 +104,7 @@ app.vueHelpers = (function () {
                     };
                 },
                 updated (element: HTMLElement, binding: anyObj) {
+                    if (binding.value.ignoreUpdate) return;
                     directives['move-when-mounted'].mounted(element, binding);
                 },
                 beforeUnmount (element: HTMLElement, binding: anyObj) {
