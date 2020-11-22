@@ -49,18 +49,18 @@
                             <button type="submit" class="btn btn-block btn-primary btn-lg">Create Room</button>
                         </form>
 
-                        <div class="row mt-3">
-                            <div class="col">
+                        <div class="d-flex flex-row justify-content-between mt-3">
+                            <div class="align-self-center">
                                 <button type="button" class="btn btn-lg d-block mx-auto btn-icon btn-config" @click="$root.events.viewConfig()">
                                     <i class="fas fa-cog"></i>
                                 </button>
                             </div>
-                            <div class="col">
+                            <div class="align-self-center">
                                 <button type="button" class="btn btn-lg d-block mx-auto btn-icon btn-stats" @click="$root.events.viewStats()">
                                     <i class="fas fa-trophy"></i>
                                 </button>
                             </div>
-                            <div class="col">
+                            <div class="align-self-center">
                                 <button type="button" class="btn btn-lg d-block mx-auto btn-icon btn-help" @click="$root.events.viewHelp()">
                                     <i class="fas fa-question"></i>
                                 </button>
@@ -71,19 +71,19 @@
                     <div class="col-12 col-md-6 mb-3">
                         <hr class="d-block d-sm-block d-md-none d-lg-none d-xl-none" />
     
-                        <div class="d-flex flex-columns align-content-center">
+                        <div class="d-flex flex-row justify-content-between">
                             <template v-for="picker in [$root.customization.getCurrentPicker()]">
-                                <div>
+                                <div class="align-self-center">
                                     <button type="button" class="btn btn-icon"
                                             :class="picker.buttonClass"
                                             @dblclick="$root.customization[picker.id + 'Amount'] += 1; $root.customization.refreshPicker(picker.id);">
                                         <i :class="picker.iconClass"></i>
                                     </button>
                                 </div>
-                                <div class="flex-fill text-center align-self-center">
+                                <div class="align-self-center text-center">
                                     <h1>{{ picker.name }} Picker</h1>
                                 </div>
-                                <div>
+                                <div class="align-self-center">
                                     <button type="button" class="btn btn-icon btn-refresh" @click="$root.customization.refreshPicker()">
                                         <i class="fas fa-sync"></i>
                                     </button>
@@ -91,7 +91,7 @@
                             </template>
                         </div>
 
-                        <div class="d-flex flex-columns align-content-center flex-wrap justify-content-around">
+                        <div class="d-flex flex-columns align-content-center flex-wrap justify-content-between">
                             <div v-if="$root.customization.picker === 'piece'"
                                  v-for="(item, index) in $root.customization.availablePieces" 
                                  :class="'mt-3 order-' + Math.min(index,12)">
@@ -207,6 +207,15 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="row mb-3" v-if="$root.gameSelector.canChangeGame">
+                    <div class="col-12 col-md-6">
+                        <hr />
+                        <button type="button" class="btn btn-secondary btn-block btn-lg"
+                                @click="$root.gameSelector.changeGame">
+                            Change Game
+                        </button>
                     </div>
                 </div>
             </div>
@@ -424,6 +433,8 @@
 
     <!-- customization config kept separate so it can be modified to your own needs without touching code -->
     <script src="scripts/customization-config.js"></script>
+    <!-- game config kept separate so it can be modified to your own needs without touching code -->
+    <script src="scripts/game-config.js"></script>
 
     <script src="scripts/main.js"></script>
 </body>

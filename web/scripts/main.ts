@@ -1,6 +1,7 @@
 /// <reference path="types/anyObj.d.ts" />
 /// <reference path="types/player.d.ts" />
 /// <reference path="customization-config.js" />
+/// <reference path="game-config.js" />
 
 declare var Vue: anyObj;
 declare var _: anyObj;
@@ -1566,6 +1567,38 @@ app.main = (function () {
         if (viewModel.player.metadata.avatar.value === null) {
             viewModel.customization.availablePieces[0].select(viewModel.player);
             viewModel.customization.availableFaces[0].select(viewModel.player);
+        }
+
+        viewModel.gameSelector = {
+            availableGames: _.get(window, 'availableGames'),
+            canChangeGame: _.size(_.get(window, 'availableGames')) > 0,
+            changeGame: function () {
+                app.helpers.makeDialog({
+                    availableGames: viewModel.gameSelector.availableGames,
+                    selectGame: (game: any) => {
+                        window.location.replace(page.helpers.getCurrentUrlWithArguments({ game: game.id }));
+                    },
+                    contentHtml: `
+<div v-for="(game, index) in $data.options.availableGames" class="d-flex flex-row" style="height: 90px;" :class="{ 'mt-3': index > 0 }">
+    <div class="align-self-center h-100 d-flex flex-row">
+        <img class="align-self-center" style="max-height: 100%; max-width: 100%;" :src="game.imageUrl" />
+    </div>
+    <div class="flex-fill align-self-center mx-3">
+        <h1 class="m-0">{{ game.name }}</h1>
+        <p class="m-0">{{ game.description }}</p>
+    </div>
+    <div class="align-self-center">
+        <button type="button" class="btn btn-primary btn-lg" @click="$data.options.selectGame(game)">Go</button>
+    </div>
+</div>
+`,
+                    buttons: []
+                });
+            }
+        };
+
+        if (!window.availableGames) {
+            window.availableGames = [];
         }
 
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));

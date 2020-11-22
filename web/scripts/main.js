@@ -1,6 +1,7 @@
 /// <reference path="types/anyObj.d.ts" />
 /// <reference path="types/player.d.ts" />
 /// <reference path="customization-config.js" />
+/// <reference path="game-config.js" />
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -1223,6 +1224,23 @@ app.main = (function () {
         if (viewModel.player.metadata.avatar.value === null) {
             viewModel.customization.availablePieces[0].select(viewModel.player);
             viewModel.customization.availableFaces[0].select(viewModel.player);
+        }
+        viewModel.gameSelector = {
+            availableGames: _.get(window, 'availableGames'),
+            canChangeGame: _.size(_.get(window, 'availableGames')) > 0,
+            changeGame: function () {
+                app.helpers.makeDialog({
+                    availableGames: viewModel.gameSelector.availableGames,
+                    selectGame: function (game) {
+                        window.location.replace(page.helpers.getCurrentUrlWithArguments({ game: game.id }));
+                    },
+                    contentHtml: "\n<div v-for=\"(game, index) in $data.options.availableGames\" class=\"d-flex flex-row\" style=\"height: 90px;\" :class=\"{ 'mt-3': index > 0 }\">\n    <div class=\"align-self-center h-100 d-flex flex-row\">\n        <img class=\"align-self-center\" style=\"max-height: 100%; max-width: 100%;\" :src=\"game.imageUrl\" />\n    </div>\n    <div class=\"flex-fill align-self-center mx-3\">\n        <h1 class=\"m-0\">{{ game.name }}</h1>\n        <p class=\"m-0\">{{ game.description }}</p>\n    </div>\n    <div class=\"align-self-center\">\n        <button type=\"button\" class=\"btn btn-primary btn-lg\" @click=\"$data.options.selectGame(game)\">Go</button>\n    </div>\n</div>\n",
+                    buttons: []
+                });
+            }
+        };
+        if (!window.availableGames) {
+            window.availableGames = [];
         }
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
         return viewModel;
