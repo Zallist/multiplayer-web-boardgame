@@ -18,7 +18,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                 };
             },
             template: `
-<div class="game__board" v-for="availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]">
+<div class="game__board" v-for="availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]"
+     v-touch-highlight>
     <div class="game__row" v-for="row in $data.$vm.gameState.game.boardCells">
         <div v-for="cell in row"
              @click.prevent="$data.$game.events.cellClicked(cell)"

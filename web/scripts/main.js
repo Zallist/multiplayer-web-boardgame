@@ -1278,16 +1278,59 @@ app.main = (function () {
             catch (ex) { }
         }
         page.pageVue = Vue.createApp({
-            data: function () { return page.viewModel; },
-            directives: {
-                focus: {
-                    mounted: function (el) { return el.focus(); }
-                }
-            }
+            data: function () { return page.viewModel; }
         });
         // Expose lodash to Vue
         Object.defineProperty(window, '_lodash', { value: _ });
         Object.defineProperty(window, '_numeral', { value: numeral });
+        page.pageVue.directive('focus', {
+            mounted: function (element) { element.focus(); }
+        });
+        page.pageVue.directive('touch-highlight', {
+            mounted: function (element) {
+                var highlightElement = null, timeoutHandle = null;
+                function removeHighlight() {
+                    if (highlightElement !== null) {
+                        highlightElement.parentNode.removeChild(highlightElement);
+                        highlightElement = null;
+                    }
+                    if (timeoutHandle !== null) {
+                        clearTimeout(timeoutHandle);
+                        timeoutHandle = null;
+                    }
+                }
+                function onTouchEvent(event) {
+                    var touch = event.touches[0], target = touch.target, boundingRect = target.getBoundingClientRect();
+                    removeHighlight();
+                    highlightElement = document.createElement('div');
+                    highlightElement.className = 'touch__highlight__element';
+                    document.body.appendChild(highlightElement);
+                    _.merge(highlightElement.style, {
+                        position: 'fixed',
+                        top: boundingRect.top + (boundingRect.height / 2) + 'px',
+                        left: boundingRect.left + (boundingRect.width / 2) + 'px',
+                        transform: 'translate(-50%,-50%)',
+                        zIndex: 9999,
+                        pointerEvents: 'none'
+                    });
+                    _.merge(highlightElement.style, {
+                        border: '4px solid #E74C3C',
+                        width: (boundingRect.width * 2) + 'px',
+                        height: (boundingRect.height * 2) + 'px',
+                        borderRadius: '50%'
+                    });
+                    timeoutHandle = setTimeout(removeHighlight, 2500);
+                }
+                element.addEventListener('touchstart', onTouchEvent);
+                element.addEventListener('touchmove', onTouchEvent);
+                element.addEventListener('touchend', removeHighlight);
+            },
+            unmounted: function (element) {
+                element.removeEventListener('touchstart', null);
+                element.removeEventListener('touchmove', null);
+                element.removeEventListener('touchend', null);
+            }
+        });
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
             template: "\n<i v-if=\"player.metadata.avatar.type=='css-class'\"\n    :class=\"player.metadata.avatar.value\"\n    :style=\"{ 'color': player.metadata.color }\"></i>\n    \n<div v-else-if=\"player.metadata.avatar.type=='piece'\"\n     class=\"avatar__piece-wrap\"\n     :class=\"{ 'avatar__piece-wrap--customizable': customize }\"\n     v-on=\"customize ? { \n        'click': $root.customization.domEvents.pieceClick,\n        'mousedown': $root.customization.domEvents.pieceDrag,\n        'mousemove': $root.customization.domEvents.pieceDrag,\n        'wheel': $root.customization.domEvents.pieceWheel\n    } : {}\">\n     \n    <div class=\"avatar__piece-piece\"\n         :style=\"{ \n            'background-image': 'url(' + player.metadata.avatar.value.piece.url + ')' \n         }\"></div>\n         \n    <div class=\"avatar__piece-piece-mask\"\n         :style=\"{ \n            'mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            '-webkit-mask-image': 'url(' + player.metadata.avatar.value.piece.url + ')',\n            'background-color': player.metadata.color,\n            'opacity': 0.5\n         }\"></div>\n         \n    <div class=\"avatar__piece-face\"\n         v-if=\"player.metadata.avatar.value.face\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.face.url + ')',\n             'top': player.metadata.avatar.value.face.top,\n             'left': player.metadata.avatar.value.face.left,\n             'width': player.metadata.avatar.value.face.width,\n             'height': player.metadata.avatar.value.face.height\n         }\"></div>\n         \n    <div class=\"avatar__piece-accessory\"\n         v-if=\"player.metadata.avatar.value.accessory\"\n         :style=\"{ \n             'background-image': 'url(' + player.metadata.avatar.value.accessory.url + ')',\n             'top': player.metadata.avatar.value.accessory.top,\n             'left': player.metadata.avatar.value.accessory.left,\n             'width': player.metadata.avatar.value.accessory.width,\n             'height': player.metadata.avatar.value.accessory.height\n         }\"></div>\n</div>\n\n<i v-else class=\"fas fa-question\"\n    :style=\"{ 'color': player.metadata.color }\"></i>"

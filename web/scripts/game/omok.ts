@@ -18,7 +18,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                 };
             },
             template: `
-<div class="game__board">
+<div class="game__board" 
+     v-touch-highlight>
     <div class="game__row" v-for="(row, rowIndex) in $data.$vm.gameState.game.boardCells" :key="rowIndex">
         <div v-for="(cell, cellIndex) in row" :key="cellIndex"
              @click.prevent="$data.$game.events.cellClicked(cell)"

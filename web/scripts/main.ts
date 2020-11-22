@@ -1647,18 +1647,73 @@ app.main = (function () {
         }
         
         page.pageVue = Vue.createApp({
-            data: () => page.viewModel,
-            directives: {
-                focus: {
-                    mounted: (el) => el.focus()
-                }
-            }
+            data: () => page.viewModel
         });
 
         // Expose lodash to Vue
         Object.defineProperty(window, '_lodash', { value: _ });
         Object.defineProperty(window, '_numeral', { value: numeral });
 
+        page.pageVue.directive('focus', {
+            mounted (element: HTMLElement) { element.focus() }
+        });
+        page.pageVue.directive('touch-highlight', {
+            mounted (element: HTMLElement) {
+                let highlightElement: HTMLElement = null,
+                    timeoutHandle: number = null;
+
+                function removeHighlight() {
+                    if (highlightElement !== null) {
+                        highlightElement.parentNode.removeChild(highlightElement);
+                        highlightElement = null;
+                    }
+
+                    if (timeoutHandle !== null) {
+                        clearTimeout(timeoutHandle);
+                        timeoutHandle = null;
+                    }
+                }
+
+                function onTouchEvent(event: TouchEvent) {
+                    let touch: Touch = event.touches[0],
+                        target: HTMLElement = <HTMLElement>touch.target,
+                        boundingRect: DOMRect = target.getBoundingClientRect();
+
+                    removeHighlight();
+
+                    highlightElement = document.createElement('div');
+                    highlightElement.className = 'touch__highlight__element';
+                    document.body.appendChild(highlightElement);
+                    
+                    _.merge(highlightElement.style, {
+                        position: 'fixed',
+                        top: boundingRect.top + (boundingRect.height / 2) + 'px',
+                        left: boundingRect.left + (boundingRect.width / 2) + 'px',
+                        transform: 'translate(-50%,-50%)',
+                        zIndex: 9999,
+                        pointerEvents: 'none'
+                    });
+
+                    _.merge(highlightElement.style, {
+                        border: '4px solid #E74C3C',
+                        width: (boundingRect.width * 2) + 'px',
+                        height: (boundingRect.height * 2) + 'px',
+                        borderRadius: '50%'
+                    });
+                    
+                    timeoutHandle = setTimeout(removeHighlight, 2500);
+                }
+
+                element.addEventListener('touchstart', onTouchEvent);
+                element.addEventListener('touchmove', onTouchEvent);
+                element.addEventListener('touchend', removeHighlight)
+            },
+            unmounted (element: HTMLElement) {
+                element.removeEventListener('touchstart', null);
+                element.removeEventListener('touchmove', null);
+                element.removeEventListener('touchend', null);
+            }
+        });
         page.pageVue.component('player-avatar', {
             props: ['player', 'customize'],
             template: `
