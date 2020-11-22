@@ -24,7 +24,12 @@ app.makeGameObject = function (connection, app, viewModel) {
     <div class="game__row" v-for="row in $data.$vm.gameState.game.boardCells">
         <div v-for="cell in row"
              @click.prevent="$data.$game.events.cellClicked(cell)"
-             :class="{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }">
+             :class="{ 
+                 'game__cell': true, 
+                 'game__cell--owned': cell.ownedBy !== null, 
+                 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 ,
+                 'game__cell--can-promote': $data.$game.canPromote(cell)
+             }">
 
             <div v-if="cell.ownedBy !== null && cell.piece"
                  v-for="player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]"
@@ -100,11 +105,10 @@ app.makeGameObject = function (connection, app, viewModel) {
             </div>
         </div>
     </div>
-    <h2>Not Implemented Yet:</h2>
     <div class="mt-3">
         <div class="form-check">
             <label class="form-check-label">
-                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowPromotion" disabled>
+                <input class="form-check-input" type="checkbox" v-model="$data.$vm.gameState.game.configuration.allowPromotion">
                 Allow Pawn Promotion
             </label>
         </div>
@@ -113,6 +117,7 @@ app.makeGameObject = function (connection, app, viewModel) {
             <a href="https://en.wikipedia.org/wiki/Promotion_(chess)" target="_blank">Wikipedia: Pawn Promotion</a>
         </small>
     </div>
+    <h2 class="mt-3">Not Implemented Yet:</h2>
     <div class="mt-3">
         <div class="form-check">
             <label class="form-check-label">
@@ -144,9 +149,23 @@ app.makeGameObject = function (connection, app, viewModel) {
 
     gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
-            let fromCell, toCell;
+            let fromCell, toCell,
+                gameState = viewModel.gameState,
+                game = gameState.game,
+                config = game.configurationAtStart;
 
             switch (_.trim(data.type).toLowerCase()) {
+                case 'promote-pawn':
+                    fromCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
+
+                    if (gameViewModel.canPromote(fromCell)) {
+                        fromCell.piece = data.to;
+                    }
+                    else {                        
+                        viewModel.helpers.addMessage(null, fromPlayer.name + " tried to promote an invalid cell", 'red');
+                        fromPlayer.metadata.totalStats.timesHacked += 1;
+                    }
+                    break;
                 case 'end-turn':
                     gameViewModel.selectedCell = null;
 
@@ -167,6 +186,12 @@ app.makeGameObject = function (connection, app, viewModel) {
                             fromCell.ownedBy = null;
                             fromCell.piece = null;
                             fromCell.pieceId = null;
+
+                            if (config.allowEnpasse) {
+                                if (toCell.piece === 'pawn') {
+                                    // TODO : Check for en passe
+                                }
+                            }
 
                             viewModel.gameState.game.lastPlacedCell = toCell;
 
@@ -384,10 +409,50 @@ app.makeGameObject = function (connection, app, viewModel) {
 
             fromCell = gameViewModel.selectedCell;
 
-            // If it's already clicked
+            // If it belongs to us
             if (cell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
-                // select it
-                gameViewModel.selectedCell = cell;
+                if (gameViewModel.canPromote(cell)) {
+                    app.helpers.makeDialog({
+                        promote(to: string) {
+                            connection.send({
+                                type: 'promote-pawn',
+                                cellX: cell.x,
+                                cellY: cell.y,
+                                to: to
+                            }, true);
+                        },
+                        title: 'Promote Pawn',
+                        contentHtml: `
+<div>
+    <button type="button" 
+            class="btn btn-block btn-lg btn-primary"
+            @click="$root.close(function () { $root.options.promote('queen'); })">
+        Queen
+    </button>
+    <button type="button" 
+            class="btn btn-block btn-lg btn-primary mt-3"
+            @click="$root.close(function () { $root.options.promote('knight'); })">
+        Knight
+    </button>
+    <button type="button" 
+            class="btn btn-block btn-lg btn-primary mt-3"
+            @click="$root.close(function () { $root.options.promote('rook'); })">
+        Rook
+    </button>
+    <button type="button" 
+            class="btn btn-block btn-lg btn-primary mt-3"
+            @click="$root.close(function () { $root.options.promote('bishop'); })">
+        Bishop
+    </button>
+</div>
+`,
+                        buttons: []
+                    })
+                }
+                else {
+                    // Select it
+                    gameViewModel.selectedCell = cell;
+                }
                 return;
             }
             else if (fromCell && fromCell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
@@ -435,7 +500,7 @@ app.makeGameObject = function (connection, app, viewModel) {
             switch (_.trim(presetName).toLowerCase()) {
                 case 'chess':
                     config.allowCastling = true;
-                    config.allowEnpasse = true;
+                    //config.allowEnpasse = true;
                     break;
                 case 'simple-chess':
                 default:
@@ -529,8 +594,7 @@ app.makeGameObject = function (connection, app, viewModel) {
             moves, x, y;
 
         moves = {
-            cells: [],
-            canPromotePawn: false
+            cells: []
         };
 
         if (cell) {
@@ -600,9 +664,6 @@ app.makeGameObject = function (connection, app, viewModel) {
                             addCell(cell.x, cell.y + 2);
                         }
                     }
-                    if (cell.y === config.gridHeight - 1) {
-                        moves.canPromotePawn = true;
-                    }
                 }
                 else {
                     // go up
@@ -618,9 +679,6 @@ app.makeGameObject = function (connection, app, viewModel) {
                         if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
                             addCell(cell.x, cell.y - 2);
                         }
-                    }
-                    if (cell.y === 0) {
-                        moves.canPromotePawn = true;
                     }
                 }
                 break;
@@ -668,6 +726,15 @@ app.makeGameObject = function (connection, app, viewModel) {
         }
 
         return moves;
+    };
+
+    gameViewModel.canPromote = function (cell) {
+        return viewModel.gameState.game.configurationAtStart.allowPromotion && 
+            cell.piece === 'pawn' && 
+            (
+                (cell.ownedBy === 1 && cell.y <= 0) || 
+                (cell.ownedBy === 0 && cell.y >= viewModel.gameState.game.configurationAtStart.gridHeight - 1)
+            );
     };
 
     return gameObject;

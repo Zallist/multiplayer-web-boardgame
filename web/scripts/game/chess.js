@@ -12,7 +12,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                     $game: gameViewModel
                 };
             },
-            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]\"\n     v-touch-highlight>\n    <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]\"\n                 class=\"chess__piece text--border\"\n                 :class=\"{ \n                    'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,\n                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 200, \n                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 200\n                 }\"\n                 :style=\"{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + (player && player.name)\"\n                 v-move-when-mounted=\"{ \n                     'key': 's:' + $data.$vm.gameState.started + '~' + cell.pieceId\n                 }\">\n\n                <!-- chess piece -->\n                <i class=\"fas\" :class=\"['fa-chess-' + cell.piece]\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
+            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]\"\n     v-touch-highlight>\n    <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n             :class=\"{ \n                 'game__cell': true, \n                 'game__cell--owned': cell.ownedBy !== null, \n                 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 ,\n                 'game__cell--can-promote': $data.$game.canPromote(cell)\n             }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]\"\n                 class=\"chess__piece text--border\"\n                 :class=\"{ \n                    'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,\n                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 200, \n                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 200\n                 }\"\n                 :style=\"{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + (player && player.name)\"\n                 v-move-when-mounted=\"{ \n                     'key': 's:' + $data.$vm.gameState.started + '~' + cell.pieceId\n                 }\">\n\n                <!-- chess piece -->\n                <i class=\"fas\" :class=\"['fa-chess-' + cell.piece]\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
         },
         'config-panel': {
             data: function () {
@@ -21,13 +21,23 @@ app.makeGameObject = function (connection, app, viewModel) {
                     $game: gameViewModel
                 };
             },
-            template: "\n<fieldset :disabled=\"$data.$vm.isConnecting || ($data.$vm.isConnected && !$data.$vm.isHost) || ($data.$vm.isConnected && $data.$vm.isHost && $data.$vm.gameState.started)\">\n    <div class=\"mb-3\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('simple-chess')\">Simple Chess</button>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('chess')\">Chess</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model.number=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Height</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"4\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"4\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Width</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"8\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"8\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n        </div>\n    </div>\n    <h2>Not Implemented Yet:</h2>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowPromotion\" disabled>\n                Allow Pawn Promotion\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Promotion_(chess)\" target=\"_blank\">Wikipedia: Pawn Promotion</a>\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowCastling\" disabled>\n                Allow Castling\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Castling\" target=\"_blank\">Wikipedia: Castling</a>\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowEnpasse\" disabled>\n                Allow Enpasse\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/En_passant\" target=\"_blank\">Wikipedia: En passant</a>\n        </small>\n    </div>\n</fieldset>\n"
+            template: "\n<fieldset :disabled=\"$data.$vm.isConnecting || ($data.$vm.isConnected && !$data.$vm.isHost) || ($data.$vm.isConnected && $data.$vm.isHost && $data.$vm.gameState.started)\">\n    <div class=\"mb-3\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('simple-chess')\">Simple Chess</button>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('chess')\">Chess</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model.number=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Height</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"4\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"4\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Width</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"8\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"8\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowPromotion\">\n                Allow Pawn Promotion\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Promotion_(chess)\" target=\"_blank\">Wikipedia: Pawn Promotion</a>\n        </small>\n    </div>\n    <h2 class=\"mt-3\">Not Implemented Yet:</h2>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowCastling\" disabled>\n                Allow Castling\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Castling\" target=\"_blank\">Wikipedia: Castling</a>\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowEnpasse\" disabled>\n                Allow Enpasse\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/En_passant\" target=\"_blank\">Wikipedia: En passant</a>\n        </small>\n    </div>\n</fieldset>\n"
         }
     };
     gameObject.hooks = {
         handleData: function (fromPlayerId, data, fromPlayer) {
-            var fromCell, toCell;
+            var fromCell, toCell, gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart;
             switch (_.trim(data.type).toLowerCase()) {
+                case 'promote-pawn':
+                    fromCell = viewModel.gameState.game.boardCells[data.cellY][data.cellX];
+                    if (gameViewModel.canPromote(fromCell)) {
+                        fromCell.piece = data.to;
+                    }
+                    else {
+                        viewModel.helpers.addMessage(null, fromPlayer.name + " tried to promote an invalid cell", 'red');
+                        fromPlayer.metadata.totalStats.timesHacked += 1;
+                    }
+                    break;
                 case 'end-turn':
                     gameViewModel.selectedCell = null;
                     if (_.isNumber(data.fromCellX) && _.isNumber(data.fromCellY) &&
@@ -44,6 +54,11 @@ app.makeGameObject = function (connection, app, viewModel) {
                             fromCell.ownedBy = null;
                             fromCell.piece = null;
                             fromCell.pieceId = null;
+                            if (config.allowEnpasse) {
+                                if (toCell.piece === 'pawn') {
+                                    // TODO : Check for en passe
+                                }
+                            }
                             viewModel.gameState.game.lastPlacedCell = toCell;
                         }
                         if (fromPlayerId === viewModel.player.id) {
@@ -221,10 +236,27 @@ app.makeGameObject = function (connection, app, viewModel) {
                 return;
             }
             fromCell = gameViewModel.selectedCell;
-            // If it's already clicked
+            // If it belongs to us
             if (cell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
-                // select it
-                gameViewModel.selectedCell = cell;
+                if (gameViewModel.canPromote(cell)) {
+                    app.helpers.makeDialog({
+                        promote: function (to) {
+                            connection.send({
+                                type: 'promote-pawn',
+                                cellX: cell.x,
+                                cellY: cell.y,
+                                to: to
+                            }, true);
+                        },
+                        title: 'Promote Pawn',
+                        contentHtml: "\n<div>\n    <button type=\"button\" \n            class=\"btn btn-block btn-lg btn-primary\"\n            @click=\"$root.close(function () { $root.options.promote('queen'); })\">\n        Queen\n    </button>\n    <button type=\"button\" \n            class=\"btn btn-block btn-lg btn-primary mt-3\"\n            @click=\"$root.close(function () { $root.options.promote('knight'); })\">\n        Knight\n    </button>\n    <button type=\"button\" \n            class=\"btn btn-block btn-lg btn-primary mt-3\"\n            @click=\"$root.close(function () { $root.options.promote('rook'); })\">\n        Rook\n    </button>\n    <button type=\"button\" \n            class=\"btn btn-block btn-lg btn-primary mt-3\"\n            @click=\"$root.close(function () { $root.options.promote('bishop'); })\">\n        Bishop\n    </button>\n</div>\n",
+                        buttons: []
+                    });
+                }
+                else {
+                    // Select it
+                    gameViewModel.selectedCell = cell;
+                }
                 return;
             }
             else if (fromCell && fromCell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
@@ -264,7 +296,7 @@ app.makeGameObject = function (connection, app, viewModel) {
             switch (_.trim(presetName).toLowerCase()) {
                 case 'chess':
                     config.allowCastling = true;
-                    config.allowEnpasse = true;
+                    //config.allowEnpasse = true;
                     break;
                 case 'simple-chess':
                 default:
@@ -348,8 +380,7 @@ app.makeGameObject = function (connection, app, viewModel) {
     gameViewModel.getPossibleMoves = function (cell, player, piece) {
         var gameState = viewModel.gameState, game = gameState.game, config = game.configurationAtStart, moves, x, y;
         moves = {
-            cells: [],
-            canPromotePawn: false
+            cells: []
         };
         if (cell) {
             if (!piece) {
@@ -407,9 +438,6 @@ app.makeGameObject = function (connection, app, viewModel) {
                             addCell(cell.x, cell.y + 2);
                         }
                     }
-                    if (cell.y === config.gridHeight - 1) {
-                        moves.canPromotePawn = true;
-                    }
                 }
                 else {
                     // go up
@@ -424,9 +452,6 @@ app.makeGameObject = function (connection, app, viewModel) {
                         if (cell.y === config.gridHeight - 2 && isCell(cell.x, cell.y - 2) && game.boardCells[cell.y - 2][cell.x].ownedBy === null) {
                             addCell(cell.x, cell.y - 2);
                         }
-                    }
-                    if (cell.y === 0) {
-                        moves.canPromotePawn = true;
                     }
                 }
                 break;
@@ -473,6 +498,12 @@ app.makeGameObject = function (connection, app, viewModel) {
                 break;
         }
         return moves;
+    };
+    gameViewModel.canPromote = function (cell) {
+        return viewModel.gameState.game.configurationAtStart.allowPromotion &&
+            cell.piece === 'pawn' &&
+            ((cell.ownedBy === 1 && cell.y <= 0) ||
+                (cell.ownedBy === 0 && cell.y >= viewModel.gameState.game.configurationAtStart.gridHeight - 1));
     };
     return gameObject;
 };

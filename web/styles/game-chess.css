@@ -32,7 +32,21 @@
   border-right: 1px solid #CCC;
 }
 .game__cell.game__cell--placable {
-  background-color: #2980b9;
+  background-color: #2980B9;
+}
+.game__cell.game__cell--can-promote {
+  animation: pulse 2s infinite linear;
+}
+@keyframes pulse {
+  0% {
+    background-color: #F1C40F;
+  }
+  50% {
+    background-color: #D35400;
+  }
+  100% {
+    background-color: #F1C40F;
+  }
 }
 .game__cell .chess__piece {
   position: absolute;
