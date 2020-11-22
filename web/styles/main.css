@@ -213,6 +213,13 @@ html {
     clear: both;
   }
 }
+.text--border.light {
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000;
+}
+.text--border.dark {
+  text-shadow: 0 0 0 transparent, -1px -1px 0 #FFF, 0px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 0px 0 #FFF, 0px 0px 0 #FFF, 1px 0px 0 #FFF, -1px 1px 0 #FFF, 0px 1px 0 #FFF, 1px 1px 0 #FFF;
+}
+
 .ratio-square:before {
   content: "";
   display: block;

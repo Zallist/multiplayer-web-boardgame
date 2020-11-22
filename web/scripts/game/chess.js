@@ -11,7 +11,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                     $game: gameViewModel
                 };
             },
-            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]\">\n    <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]\"\n                 :class=\"{ 'chess__piece': true, 'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell }\"\n                 :style=\"{ 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + player.name\">\n\n                <!-- chess piece -->\n                <i :class=\"['fas', 'fa-chess-' + cell.piece]\"\n                   :style=\"{ 'color': player.metadata.color }\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
+            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]\">\n    <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]\"\n                 class=\"chess__piece text--border\"\n                 :class=\"{ \n                    'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,\n                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 127, \n                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 127\n                 }\"\n                 :style=\"{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + (player && player.name)\">\n\n                <!-- chess piece -->\n                <i class=\"fas\" :class=\"['fa-chess-' + cell.piece]\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
         },
         'config-panel': {
             data: function () {
@@ -28,7 +28,7 @@ app.makeGameObject = function (connection, app, viewModel) {
             var fromCell, toCell;
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
-                    gameObject.selectedCell = null;
+                    gameViewModel.selectedCell = null;
                     if (_.isNumber(data.fromCellX) && _.isNumber(data.fromCellY) &&
                         _.isNumber(data.toCellX) && _.isNumber(data.toCellY)) {
                         fromCell = viewModel.gameState.game.boardCells[data.fromCellY][data.fromCellX];
@@ -213,11 +213,11 @@ app.makeGameObject = function (connection, app, viewModel) {
                 viewModel.helpers.addMessage(null, 'Not your turn');
                 return;
             }
-            fromCell = gameObject.selectedCell;
+            fromCell = gameViewModel.selectedCell;
             // If it's already clicked
             if (cell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
                 // select it
-                gameObject.selectedCell = cell;
+                gameViewModel.selectedCell = cell;
                 return;
             }
             else if (fromCell && fromCell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {

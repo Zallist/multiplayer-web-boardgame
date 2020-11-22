@@ -390,13 +390,6 @@ h1 {
     }
 }
 
-.chat__message, .chat__message-name, .chat__message-message {
-    @include stroke(1,#000);
-
-    &.dark {
-        text-shadow: none !important;
-    }
-}
 .chat__box {
     background:
         radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, $lightBackgroundColor 25%),

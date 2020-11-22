@@ -219,6 +219,16 @@ body {
     }
 }
 
+// Misc helpers
+.text--border {
+    &.light {
+        @include stroke(1,#000);
+    }
+    &.dark {
+        @include stroke(1,#FFF);
+    }
+}
+
 .ratio-square {
     @include responsive-ratio(1,1, $pseudo: true);
 }

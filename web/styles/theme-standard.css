@@ -488,13 +488,6 @@ h1 {
   content: "";
 }
 
-.chat__message, .chat__message-name, .chat__message-message {
-  text-shadow: 0 0 0 transparent, -1px -1px 0 #000, 0px -1px 0 #000, 1px -1px 0 #000, -1px 0px 0 #000, 0px 0px 0 #000, 1px 0px 0 #000, -1px 1px 0 #000, 0px 1px 0 #000, 1px 1px 0 #000;
-}
-.chat__message.dark, .chat__message-name.dark, .chat__message-message.dark {
-  text-shadow: none !important;
-}
-
 .chat__box {
   background: radial-gradient(ellipse at center top, #FFF 0%, #FFF 25%, #ebf9fe 25%), #ebf9fe;
   background-size: 500% 200%;

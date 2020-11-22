@@ -26,13 +26,17 @@ app.makeGameObject = function (connection, app, viewModel) {
 
             <div v-if="cell.ownedBy !== null && cell.piece"
                  v-for="player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]"
-                 :class="{ 'chess__piece': true, 'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell }"
-                 :style="{ 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
-                 :title="'Owned by ' + player.name">
+                 class="chess__piece text--border"
+                 :class="{ 
+                    'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,
+                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 127, 
+                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 127
+                 }"
+                 :style="{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
+                 :title="'Owned by ' + (player && player.name)">
 
                 <!-- chess piece -->
-                <i :class="['fas', 'fa-chess-' + cell.piece]"
-                   :style="{ 'color': player.metadata.color }"></i>
+                <i class="fas" :class="['fa-chess-' + cell.piece]"></i>
             </div>
         </div>
     </div>
@@ -102,7 +106,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
             switch (_.trim(data.type).toLowerCase()) {
                 case 'end-turn':
-                    gameObject.selectedCell = null;
+                    gameViewModel.selectedCell = null;
 
                     if (_.isNumber(data.fromCellX) && _.isNumber(data.fromCellY) &&
                         _.isNumber(data.toCellX) && _.isNumber(data.toCellY)) {
@@ -329,12 +333,12 @@ app.makeGameObject = function (connection, app, viewModel) {
                 return;
             }
 
-            fromCell = gameObject.selectedCell;
+            fromCell = gameViewModel.selectedCell;
 
             // If it's already clicked
             if (cell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
                 // select it
-                gameObject.selectedCell = cell;
+                gameViewModel.selectedCell = cell;
                 return;
             }
             else if (fromCell && fromCell.ownedBy === gameViewModel.getPlayerIndexFromId(viewModel.player.id)) {
