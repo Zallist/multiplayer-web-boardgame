@@ -5,13 +5,14 @@ app.makeGameObject = function (connection, app, viewModel) {
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
+            directives: app.vueHelpers.directives.getDefault(),
             data: function () {
                 return {
                     $vm: viewModel,
                     $game: gameViewModel
                 };
             },
-            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]\"\n     v-touch-highlight>\n    <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]\"\n                 class=\"chess__piece text--border\"\n                 :class=\"{ \n                    'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,\n                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 200, \n                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 200\n                 }\"\n                 :style=\"{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + (player && player.name)\">\n\n                <!-- chess piece -->\n                <i class=\"fas\" :class=\"['fa-chess-' + cell.piece]\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
+            template: "\n<div class=\"game__board\" v-for=\"availableMoves in [$data.$game.getPossibleMoves($data.$game.selectedCell)]\"\n     v-touch-highlight>\n    <div class=\"game__row\" v-for=\"row in $data.$vm.gameState.game.boardCells\">\n        <div v-for=\"cell in row\"\n             @click.prevent=\"$data.$game.events.cellClicked(cell)\"\n             :class=\"{ 'game__cell': true, 'game__cell--owned': cell.ownedBy !== null, 'game__cell--placable': availableMoves.cells.indexOf(cell) > -1 }\">\n\n            <div v-if=\"cell.ownedBy !== null && cell.piece\"\n                 v-for=\"player in [$data.$game.getPlayerFromIndex(cell.ownedBy)]\"\n                 class=\"chess__piece text--border\"\n                 :class=\"{ \n                    'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,\n                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 200, \n                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 200\n                 }\"\n                 :style=\"{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }\"\n                 :title=\"'Owned by ' + (player && player.name)\"\n                 v-move-when-mounted=\"{ \n                     'key': 's:' + $data.$vm.gameState.started + '~' + cell.pieceId\n                 }\">\n\n                <!-- chess piece -->\n                <i class=\"fas\" :class=\"['fa-chess-' + cell.piece]\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n"
         },
         'config-panel': {
             data: function () {
@@ -39,8 +40,10 @@ app.makeGameObject = function (connection, app, viewModel) {
                             // TODO : Probably check if this IS a legal move
                             toCell.ownedBy = fromCell.ownedBy;
                             toCell.piece = fromCell.piece;
+                            toCell.pieceId = fromCell.pieceId;
                             fromCell.ownedBy = null;
                             fromCell.piece = null;
+                            fromCell.pieceId = null;
                             viewModel.gameState.game.lastPlacedCell = toCell;
                         }
                         if (fromPlayerId === viewModel.player.id) {
@@ -156,12 +159,14 @@ app.makeGameObject = function (connection, app, viewModel) {
                 case 0:
                 default:
                     setPieces = function () {
-                        var i, x;
+                        var i, x, y, row;
                         for (i = 0; i < Math.min(_.size(gameState.turnOrder), 2); i++) {
-                            row = game.boardCells[i * (_.size(game.boardCells) - 1)]; // first or last row
+                            y = i * (_.size(game.boardCells) - 1);
+                            row = game.boardCells[y]; // first or last row
                             for (x = 0; x < _.size(row); x++) {
                                 cell = row[x];
                                 cell.ownedBy = i;
+                                cell.pieceId = 'p:' + i + '~x:' + x + '~y:' + y;
                                 if (x === 0 || x === _.size(row) - 1) {
                                     cell.piece = 'rook';
                                 }
@@ -181,11 +186,13 @@ app.makeGameObject = function (connection, app, viewModel) {
                                     cell.piece = 'pawn';
                                 }
                             }
-                            row = game.boardCells[(i * (_.size(game.boardCells) - 3)) + 1]; // n+1 or n-1 row
+                            y = (i * (_.size(game.boardCells) - 3)) + 1;
+                            row = game.boardCells[y]; // n+1 or n-1 row
                             for (x = 0; x < _.size(row); x++) {
                                 cell = row[x];
                                 cell.ownedBy = i;
                                 cell.piece = 'pawn';
+                                cell.pieceId = 'p:' + i + '~x:' + x + '~y:' + y;
                             }
                         }
                     };

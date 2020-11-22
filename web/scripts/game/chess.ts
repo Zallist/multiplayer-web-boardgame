@@ -11,6 +11,7 @@ app.makeGameObject = function (connection, app, viewModel) {
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
         'game-panel': {
+            directives: app.vueHelpers.directives.getDefault(),
             data: () => {
                 return {
                     $vm: viewModel,
@@ -34,7 +35,10 @@ app.makeGameObject = function (connection, app, viewModel) {
                     'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 200
                  }"
                  :style="{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
-                 :title="'Owned by ' + (player && player.name)">
+                 :title="'Owned by ' + (player && player.name)"
+                 v-move-when-mounted="{ 
+                     'key': 's:' + $data.$vm.gameState.started + '~' + cell.pieceId
+                 }">
 
                 <!-- chess piece -->
                 <i class="fas" :class="['fa-chess-' + cell.piece]"></i>
@@ -159,8 +163,10 @@ app.makeGameObject = function (connection, app, viewModel) {
 
                             toCell.ownedBy = fromCell.ownedBy;
                             toCell.piece = fromCell.piece;
+                            toCell.pieceId = fromCell.pieceId;
                             fromCell.ownedBy = null;
                             fromCell.piece = null;
+                            fromCell.pieceId = null;
 
                             viewModel.gameState.game.lastPlacedCell = toCell;
 
@@ -295,14 +301,17 @@ app.makeGameObject = function (connection, app, viewModel) {
                 case 0:
                 default:
                     setPieces = function () {
-                        let i, x;
+                        let i: number, x: number, y: number,
+                            row: any;
 
                         for (i = 0; i < Math.min(_.size(gameState.turnOrder), 2); i++) {
-                            row = game.boardCells[i * (_.size(game.boardCells) - 1)]; // first or last row
+                            y = i * (_.size(game.boardCells) - 1);
+                            row = game.boardCells[y]; // first or last row
 
                             for (x = 0; x < _.size(row); x++) {
                                 cell = row[x];
                                 cell.ownedBy = i;
+                                cell.pieceId = 'p:' + i + '~x:' + x + '~y:' + y;
 
                                 if (x === 0 || x === _.size(row) - 1) {
                                     cell.piece = 'rook';
@@ -325,12 +334,14 @@ app.makeGameObject = function (connection, app, viewModel) {
                                 }
                             }
 
-                            row = game.boardCells[(i * (_.size(game.boardCells) - 3)) + 1]; // n+1 or n-1 row
+                            y = (i * (_.size(game.boardCells) - 3)) + 1;
+                            row = game.boardCells[y]; // n+1 or n-1 row
 
                             for (x = 0; x < _.size(row); x++) {
                                 cell = row[x];
                                 cell.ownedBy = i;
                                 cell.piece = 'pawn';
+                                cell.pieceId = 'p:' + i + '~x:' + x + '~y:' + y;
                             }
                         }
                     };
