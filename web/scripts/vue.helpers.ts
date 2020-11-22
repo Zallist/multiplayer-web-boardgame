@@ -88,13 +88,15 @@ app.vueHelpers = (function () {
 
                         // Let's translate from A to B
                         element.style.transform = `translate(${previous.left - current.left}px,${previous.top - current.top}px) ${style.transform}`;
-                        
+                        element.style.animation = 'none';
+
                         Vue.nextTick(() => {
                             element.style.transition = `transform 0.5s ease-in-out`;
                             element.style.transform = null; 
 
                             setTimeout(() => {
                                 element.style.transition = null;
+                                element.style.animation = null;
                             }, 500);
                         });
                     }

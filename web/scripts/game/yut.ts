@@ -10,6 +10,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
     // Components get injected into the right place, so this is where we write custom HTML
     gameObject.vueComponents = {
+        directives: app.vueHelpers.directives.getDefault(),
         'game-panel': {
             data: () => {
                 return {
@@ -37,8 +38,7 @@ app.makeGameObject = function (connection, app, viewModel) {
 
                     <div class="cell__piece" v-for="pieceGroup in pieceGroups"
                          v-move-when-mounted="{ 
-                             'key': 's:' + $data.$vm.gameState.started + '~' + pieceGroup.pieces[0].pieceId,
-                             'ignoreUpdate': true
+                             'key': 's:' + $data.$vm.gameState.started + '~' + pieceGroup.pieces[0].pieceId
                          }">
                         <player-avatar :player="pieceGroup.player"></player-avatar>
                         <div class="cell__piece-count" v-if="pieceGroup.pieces.length > 1">{{ pieceGroup.pieces.length }}</div>
