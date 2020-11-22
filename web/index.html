@@ -372,11 +372,11 @@
                                         <div v-for="message in _lodash.takeRight($root.messages, 1000)" :key="message.created.getTime() + ' ' + message.message" v-bind:title="message.created" class="chat__message">
                                             <template v-for="player in [$root.helpers.getPlayer(message.playerId)]" :key="message.created">
                                                 <span v-if="player.name" class="chat__message-name text--border" :style="{ 'color': player.metadata.color }" 
-                                                      :class="{ 'light': $root.helpers.brightnessByColor(player.metadata.color) >= 127, 'dark': $root.helpers.brightnessByColor(player.metadata.color) < 127 }">
+                                                      :class="{ 'light': $root.helpers.brightnessByColor(player.metadata.color) >= 200, 'dark': $root.helpers.brightnessByColor(player.metadata.color) < 200 }">
                                                     {{ player.name }}
                                                 </span>
                                                 <span class="chat__message-message text--border" :style="{ 'color': message.color }" 
-                                                      :class="{ 'light': $root.helpers.brightnessByColor(message.color) >= 127, 'dark': $root.helpers.brightnessByColor(message.color) < 127 }">
+                                                      :class="{ 'light': $root.helpers.brightnessByColor(message.color) >= 200, 'dark': $root.helpers.brightnessByColor(message.color) < 200 }">
                                                     {{ message.message }}
                                                 </span>
                                             </template>

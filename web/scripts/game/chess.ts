@@ -30,8 +30,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                  class="chess__piece text--border"
                  :class="{ 
                     'chess__piece--last-placed': cell === $data.$vm.gameState.game.lastPlacedCell,
-                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 127, 
-                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 127
+                    'light': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) >= 200, 
+                    'dark': player && player.metadata && $root.helpers.brightnessByColor(player.metadata.color) < 200
                  }"
                  :style="{ 'color': player && player.metadata && player.metadata.color, 'font-size': (Math.min($data.$vm.gamePanelHeight / $data.$vm.gameState.game.configurationAtStart.gridHeight,$data.$vm.gamePanelWidth / $data.$vm.gameState.game.configurationAtStart.gridWidth) * 0.75) + 'px' }"
                  :title="'Owned by ' + (player && player.name)">
