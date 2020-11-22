@@ -52,7 +52,7 @@
 }
 
 @mixin stroke($width, $color) {
-    $width: $width + 0;
+    $width: ($width + 0) * 4;
     $shadow: 0 0 0 transparent;
     $i: 0;
     $w: 1;
@@ -67,7 +67,7 @@
                 $x: $c - ceil($w / 2);
                 $y: $r - ceil($w / 2);
 
-                $shadow: #{$shadow}, #{$x}px #{$y}px 0 $color;
+                $shadow: #{$shadow}, #{$x/40}em #{$y/40}em 0 $color;
             }
         }
     }

@@ -161,7 +161,7 @@ body {
 
 // Secondary styling
 h1 {
-    @include stroke(4,$backgroundColor);
+    @include stroke(1,$backgroundColor);
     color: #FFF;
 }
 
@@ -176,7 +176,7 @@ h1 {
         background-color: $panelBackgroundColor;
         color: #FFF;
         border: none;
-        @include stroke(2, $backgroundColor);
+        @include stroke(1, $backgroundColor);
     }
 }
 
@@ -190,11 +190,10 @@ h1 {
         padding-top: 0;
         padding-bottom: 0;
 
-        @include stroke(2, $backgroundColor);
+        @include stroke(1, $backgroundColor);
 
         &.btn-lg {
             font-size: 2.5rem;
-            @include stroke(3, $backgroundColor);
         }
 
         &.btn-primary {
@@ -372,7 +371,7 @@ h1 {
 
         opacity: 0.65;
         color: #FFF;
-        @include stroke(2, #000);
+        @include stroke(1, #000);
     }
     
 
@@ -437,7 +436,7 @@ h1 {
     border: none;
     
     .modal-title, .close {
-        @include stroke(2,#000);
+        @include stroke(1,#000);
         color: #FFF;
         font-size: 2rem;
     }
