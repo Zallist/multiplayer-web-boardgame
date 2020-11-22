@@ -1675,9 +1675,14 @@ app.main = (function () {
                 }
 
                 function onTouchEvent(event: TouchEvent) {
-                    let touch: Touch = event.touches[0],
-                        target: HTMLElement = <HTMLElement>touch.target,
-                        boundingRect: DOMRect = target.getBoundingClientRect();
+                    let touch: Touch = event.touches[0] || event.changedTouches[0],
+                        target: HTMLElement,
+                        boundingRect: DOMRect;
+
+                    target = <HTMLElement>document.elementFromPoint(touch.pageX, touch.pageY);
+                    // target = <HTMLElement>touch.target;
+
+                    boundingRect = target.getBoundingClientRect();
 
                     removeHighlight();
 
@@ -1706,7 +1711,7 @@ app.main = (function () {
 
                 element.addEventListener('touchstart', onTouchEvent);
                 element.addEventListener('touchmove', onTouchEvent);
-                element.addEventListener('touchend', removeHighlight)
+                element.addEventListener('touchend', removeHighlight);
             },
             unmounted (element: HTMLElement) {
                 element.removeEventListener('touchstart', null);

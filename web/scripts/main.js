@@ -1300,7 +1300,10 @@ app.main = (function () {
                     }
                 }
                 function onTouchEvent(event) {
-                    var touch = event.touches[0], target = touch.target, boundingRect = target.getBoundingClientRect();
+                    var touch = event.touches[0] || event.changedTouches[0], target, boundingRect;
+                    target = document.elementFromPoint(touch.pageX, touch.pageY);
+                    // target = <HTMLElement>touch.target;
+                    boundingRect = target.getBoundingClientRect();
                     removeHighlight();
                     highlightElement = document.createElement('div');
                     highlightElement.className = 'touch__highlight__element';
