@@ -31,21 +31,24 @@
 .game__cell:last-child {
   border-right: 1px solid #CCC;
 }
+.game__row:nth-child(2n+1) .game__cell:nth-child(2n), .game__row:nth-child(2n) .game__cell:nth-child(2n+1) {
+  background-color: rgba(0, 0, 0, 0.8);
+}
 .game__cell.game__cell--placable {
-  background-color: #2980B9;
+  box-shadow: 0 0 8px 8px inset #2980B9;
 }
 .game__cell.game__cell--can-promote {
   animation: pulse 2s infinite linear;
 }
 @keyframes pulse {
   0% {
-    background-color: #F1C40F;
+    box-shadow: 0 0 8px 8px inset #F1C40F;
   }
   50% {
-    background-color: #D35400;
+    box-shadow: 0 0 8px 8px inset #D35400;
   }
   100% {
-    background-color: #F1C40F;
+    box-shadow: 0 0 8px 8px inset #F1C40F;
   }
 }
 .game__cell .chess__piece {
@@ -57,6 +60,7 @@
   flex-flow: row;
   align-items: center;
   text-align: center;
+  z-index: 1;
 }
 .game__cell .chess__piece > i {
   flex: 1;

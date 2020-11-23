@@ -21,7 +21,7 @@ app.makeGameObject = function (connection, app, viewModel) {
                     $game: gameViewModel
                 };
             },
-            template: "\n<fieldset :disabled=\"$data.$vm.isConnecting || ($data.$vm.isConnected && !$data.$vm.isHost) || ($data.$vm.isConnected && $data.$vm.isHost && $data.$vm.gameState.started)\">\n    <div class=\"mb-3\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('simple-chess')\">Simple Chess</button>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('chess')\">Chess</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model.number=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Height</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"4\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"4\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Width</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"8\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"8\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowPromotion\">\n                Allow Pawn Promotion\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Promotion_(chess)\" target=\"_blank\">Wikipedia: Pawn Promotion</a>\n        </small>\n    </div>\n    <h2 class=\"mt-3\">Not Implemented Yet:</h2>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowCastling\" disabled>\n                Allow Castling\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Castling\" target=\"_blank\">Wikipedia: Castling</a>\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowEnpasse\" disabled>\n                Allow Enpasse\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/En_passant\" target=\"_blank\">Wikipedia: En passant</a>\n        </small>\n    </div>\n</fieldset>\n"
+            template: "\n<fieldset :disabled=\"$data.$vm.isConnecting || ($data.$vm.isConnected && !$data.$vm.isHost) || ($data.$vm.isConnected && $data.$vm.isHost && $data.$vm.gameState.started)\">\n    <div class=\"mb-3\">\n        <label>Use a preset</label>\n        <div>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('simple-chess')\">Simple Chess</button>\n            <button type=\"button\" class=\"btn btn-primary mr-1\" @click=\"$data.$game.events.setPreset('chess')\">Chess</button>\n        </div>\n    </div>\n    <div>\n        <label>Turn Time (seconds)</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"5\" max=\"180\" :step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"5\" max=\"180\" :step=\"5\" v-model.number=\"$data.$vm.gameState.game.configuration.turnTime\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Height</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"4\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"4\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridHeight\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Grid Width</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"8\" max=\"24\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"8\" max=\"24\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.gridWidth\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <label>Randomization</label>\n\n        <div class=\"form-row\">\n            <select class=\"form-control form-control-sm\" v-model=\"$data.$vm.gameState.game.configuration.randomLevel\">\n                <optgroup label=\"Mirrored\">\n                    <option value=\"0\">No Randomization</option>\n                    <option value=\"1\">Random starting positions (in the first 2 rows)</option>\n                    <option value=\"2\">Random pieces (in the first 2 rows)</option>\n                    <option value=\"3\">Random pieces (anywhere on board)</option>\n                </optgroup>\n                <optgroup label=\"Not mirrored\">\n                    <option value=\"4\">Random pieces (anywhere on board, but the same pieces between players)</option>\n                    <option value=\"5\">Random pieces (anywhere on board, any pieces)</option>\n                </optgroup>\n            </select>\n        </div>\n    </div>\n    <div class=\"mt-3\" v-if=\"$data.$vm.gameState.game.configuration.randomLevel >= 4\">\n        <label>Number of pieces</label>\n\n        <div class=\"form-row\">\n            <div class=\"col-8\">\n                <input type=\"range\" class=\"custom-range\" min=\"8\" max=\"50\" step=\"1\" v-model=\"$data.$vm.gameState.game.configuration.numberOfPieces\" />\n            </div>\n            <div class=\"col-4\">\n                <input type=\"number\" class=\"form-control form-control-sm\" min=\"8\" max=\"50\" step=\"1\" v-model.number=\"$data.$vm.gameState.game.configuration.numberOfPieces\" />\n            </div>\n        </div>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowPromotion\">\n                Allow Pawn Promotion\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Promotion_(chess)\" target=\"_blank\">Wikipedia: Pawn Promotion</a>\n        </small>\n    </div>\n    <h2 class=\"mt-3\">Not Implemented Yet:</h2>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowCastling\" disabled>\n                Allow Castling\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/Castling\" target=\"_blank\">Wikipedia: Castling</a>\n        </small>\n    </div>\n    <div class=\"mt-3\">\n        <div class=\"form-check\">\n            <label class=\"form-check-label\">\n                <input class=\"form-check-input\" type=\"checkbox\" v-model=\"$data.$vm.gameState.game.configuration.allowEnpasse\" disabled>\n                Allow Enpasse\n            </label>\n        </div>\n\n        <small class=\"form-text text-secondary config__help-text\">\n            <a href=\"https://en.wikipedia.org/wiki/En_passant\" target=\"_blank\">Wikipedia: En passant</a>\n        </small>\n    </div>\n</fieldset>\n"
         }
     };
     gameObject.hooks = {
@@ -107,12 +107,8 @@ app.makeGameObject = function (connection, app, viewModel) {
                     gridHeight: 8,
                     // In seconds
                     turnTime: 60,
-                    // 1 = Normal pieces, randomised starts in the normal area
-                    // 2 = Random pieces, in the normal area
-                    // 3 = Random pieces, mirrored for sanity
-                    // 4 = Random pieces, random placement
-                    // 5 = Random pieces, random placement, probably be completely one sided
                     randomLevel: 0,
+                    numberOfPieces: 16,
                     // If not enabled we'll change player as we go
                     // Because it's fun that way
                     limitToTwoPlayers: true,
@@ -170,46 +166,57 @@ app.makeGameObject = function (connection, app, viewModel) {
                     row.push(cell);
                 }
             }
-            switch (config.randomLevel) {
-                case 0:
-                default:
-                    setPieces = function () {
-                        var i, x, y, row;
-                        for (i = 0; i < Math.min(_.size(gameState.turnOrder), 2); i++) {
-                            y = i * (_.size(game.boardCells) - 1);
-                            row = game.boardCells[y]; // first or last row
-                            for (x = 0; x < _.size(row); x++) {
-                                cell = row[x];
-                                cell.ownedBy = i;
-                                cell.pieceId = 'p:' + i + '~x:' + x + '~y:' + y;
-                                if (x === 0 || x === _.size(row) - 1) {
-                                    cell.piece = 'rook';
-                                }
-                                if (x === 1 || x === _.size(row) - 2) {
-                                    cell.piece = 'bishop';
-                                }
-                                if (x === 2 || x === _.size(row) - 3) {
-                                    cell.piece = 'knight';
-                                }
-                                if (x === 3) {
-                                    cell.piece = 'king';
-                                }
-                                if (x === _.size(row) - 4) {
-                                    cell.piece = 'queen';
-                                }
-                                if (!cell.piece) {
-                                    cell.piece = 'pawn';
-                                }
-                            }
-                            y = (i * (_.size(game.boardCells) - 3)) + 1;
-                            row = game.boardCells[y]; // n+1 or n-1 row
-                            for (x = 0; x < _.size(row); x++) {
-                                cell = row[x];
-                                cell.ownedBy = i;
-                                cell.piece = 'pawn';
+            function fillMirroredPieces(pieces) {
+                var i, x, y, row;
+                for (i = 0; i < Math.min(_.size(gameState.turnOrder), 2); i++) {
+                    for (y = 0; y < Math.min(pieces.length, _.size(game.boardCells)); y++) {
+                        row = i === 0 ?
+                            game.boardCells[y] :
+                            game.boardCells[(_.size(game.boardCells) - 1) - y];
+                        for (x = 0; x < Math.min(pieces[y].length, _.size(row)); x++) {
+                            cell = row[x];
+                            cell.ownedBy = i;
+                            cell.piece = pieces[y][x];
+                            if (cell.piece) {
                                 cell.pieceId = 'p:' + i + '~x:' + x + '~y:' + y;
                             }
                         }
+                    }
+                }
+            }
+            /*
+                <optgroup label="Mirrored">
+                    <option value="0">No Randomization</option>
+                    <option value="1">Random starting positions (in the first 2 rows)</option>
+                    <option value="2">Random pieces (in the first 2 rows)</option>
+                    <option value="3">Random pieces (anywhere on board)</option>
+                </optgroup>
+                <optgroup label="Not mirrored">
+                    <option value="4">Random pieces (anywhere on board, but the same pieces between players)</option>
+                    <option value="5">Random pieces (anywhere on board, any pieces)</option>
+                </optgroup>
+            */
+            switch (parseInt(config.randomLevel)) {
+                case 1:
+                    setPieces = function () {
+                        var pieces = [];
+                        pieces.push(_.map(_.range(config.gridWidth), function () { return null; }));
+                        pieces.push(_.map(_.range(config.gridWidth), function () { return null; }));
+                        _.merge(pieces[0], _.concat(['rook', 'bishop', 'knight', 'king'], _.map(_.range(config.gridWidth - 8), function () { return null; }), ['queen', 'knight', 'bishop', 'rook']));
+                        pieces[0] = _.shuffle(pieces[0]);
+                        _.merge(pieces[1], _.map(_.range(config.gridWidth), function () { return 'pawn'; }));
+                        fillMirroredPieces(pieces);
+                    };
+                    break;
+                case 0:
+                default:
+                    setPieces = function () {
+                        var pieces = [];
+                        pieces.push(_.map(_.range(config.gridWidth), function () { return null; }));
+                        pieces.push(_.map(_.range(config.gridWidth), function () { return null; }));
+                        _.merge(pieces[0], _.concat(['rook', 'bishop', 'knight', 'king'], _.map(_.range(config.gridWidth - 8), function () { return null; }), ['queen', 'knight', 'bishop', 'rook']));
+                        _.merge(pieces[1], _.map(_.range(config.gridWidth), function () { return 'pawn'; }));
+                        fillMirroredPieces(pieces);
                     };
                     break;
             }

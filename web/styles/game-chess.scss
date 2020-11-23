@@ -31,15 +31,16 @@
     border-left: 1px solid #CCC;
     &:last-child { border-right: 1px solid #CCC; }
 
-    &.game__cell--placable {
-        background-color: $flat-belize-hole;
-    }
+    .game__row:nth-child(2n+1) &:nth-child(2n),
+    .game__row:nth-child(2n) &:nth-child(2n+1) { background-color: rgba(0,0,0,0.8); }
+
+    &.game__cell--placable { box-shadow: 0 0 8px 8px inset $flat-belize-hole; }
 
     &.game__cell--can-promote {
         @keyframes pulse {
-            0% { background-color: $flat-sunflower; }
-            50% { background-color: $flat-pumpkin; }
-            100% { background-color: $flat-sunflower;}
+            0% { box-shadow: 0 0 8px 8px inset $flat-sunflower; }
+            50% { box-shadow: 0 0 8px 8px inset $flat-pumpkin; }
+            100% { box-shadow: 0 0 8px 8px inset $flat-sunflower; }
         }
 
         animation: pulse 2s infinite linear;
@@ -54,6 +55,7 @@
         flex-flow: row;
         align-items: center;
         text-align: center;
+        z-index: 1; // zIndex so we don't appear behind cells
 
         & > i { flex: 1; }
 
