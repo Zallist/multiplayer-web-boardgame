@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es5",
+    //"outDir": "./scripts/",
+    "typeRoots": [
+      "./scripts/types/*.d.ts",
+      "./scripts/types/**/*.d.ts"
+    ]
+  },
+  "compileOnSave": true,
+  "include": [
+    "./scripts/*.ts",
+    "./scripts/**/*.ts"
+  ],
+  "exclude": [],
+  "typeAcquisition": {
+    "enable": true,
+    "include": ["lodash"]
+  }
+}
