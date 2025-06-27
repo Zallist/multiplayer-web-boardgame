@@ -2,6 +2,6 @@
 
 var app = app || {};
 
-app.serverUrl = 'http://localhost:5000';
-app.serverType = 'server-dotnet';
-
+var host = window.location.origin.replace(/\/$/, '') + '/';
+app.serverUrl = host + 'hub';
+app.serverType = 'signalr';

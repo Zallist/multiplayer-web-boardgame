@@ -1,22 +1,43 @@
 /// <reference path="types/anyObj.d.ts" />
 /// <reference path="types/player.d.ts" />
-/// <reference path="customization-config.js" />
-/// <reference path="game-config.js" />
 /// <reference path="helpers.ts" />
 /// <reference path="vue.helpers.ts" />
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+// Backup code in case the customization config file is bad and has errors
+if (!this.customizationConfig) {
+    this.customizationConfig = {
+        avatarPieces: [
+            { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70 },
+            { url: "assets/avatar/pieces/balloon.svg", faceTop: 15, faceLeft: 15, faceWidth: 50, faceHeight: 50 },
+            { url: "assets/avatar/pieces/barrel.svg", faceTop: 35, faceLeft: 25, faceWidth: 50, faceHeight: 50 },
+        ],
+        avatarFaces: [
+            { url: "assets/avatar/faces/angry.svg" },
+            { url: "assets/avatar/faces/cray.svg" },
+        ],
+        avatarAccessories: [
+            { url: "assets/avatar/pieces/tophat.svg" },
+            { url: "assets/avatar/pieces/witch.svg" },
+        ],
+    };
+}
+if (!this.availableGames) {
+    this.availableGames = [];
+}
 var app = app || {};
 app.main = (function () {
     var viewModel;
@@ -41,8 +62,8 @@ app.main = (function () {
     var connection = {
         // Populated by /scripts/server.url.js
         // Can also be populated by ?serverUrl and &serverType
-        serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || 'http://localhost:5000/',
-        serverType: app.serverType || page.helpers.getUrlParameter('serverType') || 'server-dotnet',
+        serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || window.location.origin.replace(/\/$/, '') + '/hub',
+        serverType: app.serverType || page.helpers.getUrlParameter('serverType') || 'signalr',
         hub: null,
         userId: null,
         setUserId: function (userId) {
@@ -103,7 +124,8 @@ app.main = (function () {
                 }, connection.getApiConfig())
                     .then(function (resp) {
                     connected();
-                })["catch"](throwError);
+                })
+                    .catch(throwError);
             }
             function startHub(info) {
                 viewModel.connectionStatus = 'Connecting...';
@@ -123,12 +145,14 @@ app.main = (function () {
                     viewModel.helpers.addMessage(null, "Game disconnected.", 'red');
                 });
                 connection.hub.start()
-                    .then(joinRoom)["catch"](throwError);
+                    .then(joinRoom)
+                    .catch(throwError);
             }
             function negotiate() {
                 viewModel.connectionStatus = 'Negotiating...';
                 axios.post(connection.serverUrl + '/api/negotiate?userid=' + encodeURIComponent(connection.getUserId()) + '&hubname=game', null, connection.getApiConfig())
-                    .then(function (resp) { startHub(resp.data); })["catch"](throwError);
+                    .then(function (resp) { startHub(resp.data); })
+                    .catch(throwError);
             }
             viewModel.isConnected = false;
             viewModel.isConnecting = true;
@@ -169,7 +193,8 @@ app.main = (function () {
                 connection.hub.invoke('AddToRoom', viewModel.roomId)
                     .then(function (resp) {
                     connected();
-                })["catch"](throwError);
+                })
+                    .catch(throwError);
             }
             function startHub() {
                 viewModel.connectionStatus = 'Connecting...';
@@ -190,7 +215,8 @@ app.main = (function () {
                 connection.hub.start()
                     .then(function () {
                     viewModel.connectionStatus = 'Waiting for id...';
-                })["catch"](throwError);
+                })
+                    .catch(throwError);
             }
             viewModel.isConnected = false;
             viewModel.isConnecting = true;
@@ -244,14 +270,16 @@ app.main = (function () {
                 roomId: viewModel.roomId,
                 data: data
             }, connection.getApiConfig())
-                .then(function (resp) { })["catch"](function (error) { return console.error('An error occurred in network request'); });
+                .then(function (resp) { })
+                .catch(function (error) { return console.error('An error occurred in network request'); });
         },
         sendUsingSignalR: function (data) {
             return connection.hub.invoke('SendMessage', viewModel.roomId, {
                 from: connection.getUserId(),
                 data: data
             })
-                .then(function (resp) { })["catch"](function (error) { return console.error('An error occurred in network request'); });
+                .then(function (resp) { })
+                .catch(function (error) { return console.error('An error occurred in network request'); });
         },
         send: function (data, toSelf) {
             if (toSelf) {
@@ -270,7 +298,7 @@ app.main = (function () {
                     // Don't need to handle our own calls since we do that magically
                     connection.handleData(dataWrap.from, dataWrap.data);
                 }
-            }
+            },
         },
         handleData: function (fromPlayerId, data) {
             var fromPlayer, playerIndex;
@@ -950,18 +978,18 @@ app.main = (function () {
                     need.stat = key;
                     switch (key) {
                         case 'timeInGame':
-                            need.message = "In Game (minutes): " + numeral(need.have / 60000).format('0,0') + " / " + numeral(need.need / 60000).format('0,0');
+                            need.message = "In Game (minutes): ".concat(numeral(need.have / 60000).format('0,0'), " / ").concat(numeral(need.need / 60000).format('0,0'));
                             break;
                         case 'timeMyTurn':
-                            need.message = "My Turn (minutes): " + numeral(need.have / 60000).format('0,0') + " / " + numeral(need.need / 60000).format('0,0');
+                            need.message = "My Turn (minutes): ".concat(numeral(need.have / 60000).format('0,0'), " / ").concat(numeral(need.need / 60000).format('0,0'));
                             break;
                         case 'piecesPlaced':
-                            need.message = "Pieces Placed: " + numeral(need.have).format('0,0') + " / " + numeral(need.need).format('0,0');
+                            need.message = "Pieces Placed: ".concat(numeral(need.have).format('0,0'), " / ").concat(numeral(need.need).format('0,0'));
                             break;
                         case 'wins':
                         case 'losses':
                         default:
-                            need.message = _.capitalize(key) + ": " + numeral(need.have).format('0,0') + " / " + numeral(need.need).format('0,0');
+                            need.message = "".concat(_.capitalize(key), ": ").concat(numeral(need.have).format('0,0'), " / ").concat(numeral(need.need).format('0,0'));
                             break;
                     }
                     return need;
@@ -1063,24 +1091,6 @@ app.main = (function () {
             ;
             return CustomizationAvatarItem;
         }(CustomizationAvatarItemBase));
-        // Backup code in case the customization config file is bad and has errors
-        if (!window.customizationConfig) {
-            window.customizationConfig = {
-                avatarPieces: [
-                    { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70 },
-                    { url: "assets/avatar/pieces/balloon.svg", faceTop: 15, faceLeft: 15, faceWidth: 50, faceHeight: 50 },
-                    { url: "assets/avatar/pieces/barrel.svg", faceTop: 35, faceLeft: 25, faceWidth: 50, faceHeight: 50 },
-                ],
-                avatarFaces: [
-                    { url: "assets/avatar/faces/angry.svg" },
-                    { url: "assets/avatar/faces/cray.svg" },
-                ],
-                avatarAccessories: [
-                    { url: "assets/avatar/pieces/tophat.svg" },
-                    { url: "assets/avatar/pieces/witch.svg" },
-                ]
-            };
-        }
         viewModel.customization = {
             pickers: [
                 { id: 'color', buttonClass: 'btn-color-wheel', iconClass: 'fas fa-palette', name: 'Color' },
@@ -1099,9 +1109,9 @@ app.main = (function () {
             },
             getCurrentPicker: function () { return viewModel.customization.getPickerAt(0); },
             picker: 'piece',
-            allPieces: _.map(customizationConfig.avatarPieces, function (obj) { return new CustomizationAvatarItemPiece(obj); }),
-            allFaces: _.map(customizationConfig.avatarFaces, function (obj) { return new CustomizationAvatarItem(obj, 'face'); }),
-            allAccessories: _.map(customizationConfig.avatarAccessories, function (obj) { return new CustomizationAvatarItem(obj, 'accessory', '35%', '10%', '30%', '20%'); }),
+            allPieces: _.map(window.customizationConfig.avatarPieces, function (obj) { return new CustomizationAvatarItemPiece(obj); }),
+            allFaces: _.map(window.customizationConfig.avatarFaces, function (obj) { return new CustomizationAvatarItem(obj, 'face'); }),
+            allAccessories: _.map(window.customizationConfig.avatarAccessories, function (obj) { return new CustomizationAvatarItem(obj, 'accessory', '35%', '10%', '30%', '20%'); }),
             availableColors: [],
             availablePieces: [],
             availableFaces: [],
@@ -1241,9 +1251,6 @@ app.main = (function () {
                 });
             }
         };
-        if (!window.availableGames) {
-            window.availableGames = [];
-        }
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
         return viewModel;
     }
@@ -1297,3 +1304,4 @@ app.main = (function () {
     return page;
 })();
 app.helpers.pageReady(app.main.initialise);
+//# sourceMappingURL=main.js.map

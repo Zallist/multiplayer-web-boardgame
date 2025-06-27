@@ -1,7 +1,5 @@
 /// <reference path="types/anyObj.d.ts" />
 /// <reference path="types/player.d.ts" />
-/// <reference path="../customization-config.js" />
-/// <reference path="../game-config.js" />
 /// <reference path="helpers.ts" />
 /// <reference path="vue.helpers.ts" />
 
@@ -13,6 +11,31 @@ declare var signalR: anyObj;
 declare var numeral: any;
 declare var randomColor: any;
 declare var Howler: any;
+declare var customizationConfig: anyObj;
+declare var availableGames: anyObj;
+
+// Backup code in case the customization config file is bad and has errors
+if (!this.customizationConfig) {
+    this.customizationConfig = {
+        avatarPieces: [
+            { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70 },
+            { url: "assets/avatar/pieces/balloon.svg", faceTop: 15, faceLeft: 15, faceWidth: 50, faceHeight: 50 },
+            { url: "assets/avatar/pieces/barrel.svg", faceTop: 35, faceLeft: 25, faceWidth: 50, faceHeight: 50 },
+        ],
+        avatarFaces: [
+            { url: "assets/avatar/faces/angry.svg" },
+            { url: "assets/avatar/faces/cray.svg" },
+        ],
+        avatarAccessories: [
+            { url: "assets/avatar/pieces/tophat.svg" },
+            { url: "assets/avatar/pieces/witch.svg" },
+        ],
+    };
+}
+
+if (!this.availableGames) {
+    this.availableGames = [];
+}
 
 var app = app || {};
 
@@ -45,8 +68,8 @@ app.main = (function () {
     const connection = {
         // Populated by /scripts/server.url.js
         // Can also be populated by ?serverUrl and &serverType
-        serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || 'http://localhost:5000/',
-        serverType: app.serverType || page.helpers.getUrlParameter('serverType') || 'server-dotnet',
+        serverUrl: app.serverUrl || page.helpers.getUrlParameter('serverUrl') || window.location.origin.replace(/\/$/, '') + '/hub',
+        serverType: app.serverType || page.helpers.getUrlParameter('serverType') || 'signalr',
 
         hub: null,
         userId: null,
@@ -1379,25 +1402,6 @@ app.main = (function () {
             }
         }
         
-        // Backup code in case the customization config file is bad and has errors
-        if (!window.customizationConfig) {
-            window.customizationConfig = {
-                avatarPieces: [
-                    { url: "assets/avatar/pieces/apple.svg", faceTop: 20, faceLeft: 25, faceWidth: 50, faceHeight: 70 },
-                    { url: "assets/avatar/pieces/balloon.svg", faceTop: 15, faceLeft: 15, faceWidth: 50, faceHeight: 50 },
-                    { url: "assets/avatar/pieces/barrel.svg", faceTop: 35, faceLeft: 25, faceWidth: 50, faceHeight: 50 },
-                ],
-                avatarFaces: [
-                    { url: "assets/avatar/faces/angry.svg" },
-                    { url: "assets/avatar/faces/cray.svg" },
-                ],
-                avatarAccessories: [
-                    { url: "assets/avatar/pieces/tophat.svg" },
-                    { url: "assets/avatar/pieces/witch.svg" },
-                ],
-            };
-        }
-
         viewModel.customization = {
             pickers: [
                 { id: 'color', buttonClass: 'btn-color-wheel', iconClass: 'fas fa-palette', name: 'Color' },
@@ -1421,9 +1425,9 @@ app.main = (function () {
             getCurrentPicker: () => viewModel.customization.getPickerAt(0),
 
             picker: 'piece',
-            allPieces: _.map(customizationConfig.avatarPieces, (obj: anyObj) => new CustomizationAvatarItemPiece(obj)) as CustomizationAvatarItemPiece[],
-            allFaces: _.map(customizationConfig.avatarFaces, (obj: anyObj) => new CustomizationAvatarItem(obj, 'face')) as CustomizationAvatarItem[],
-            allAccessories: _.map(customizationConfig.avatarAccessories, (obj: anyObj) => new CustomizationAvatarItem(obj, 'accessory', '35%', '10%', '30%', '20%')) as CustomizationAvatarItem[],
+            allPieces: _.map(window.customizationConfig.avatarPieces, (obj: anyObj) => new CustomizationAvatarItemPiece(obj)) as CustomizationAvatarItemPiece[],
+            allFaces: _.map(window.customizationConfig.avatarFaces, (obj: anyObj) => new CustomizationAvatarItem(obj, 'face')) as CustomizationAvatarItem[],
+            allAccessories: _.map(window.customizationConfig.avatarAccessories, (obj: anyObj) => new CustomizationAvatarItem(obj, 'accessory', '35%', '10%', '30%', '20%')) as CustomizationAvatarItem[],
 
             availableColors: [] as string[],
             availablePieces: [] as CustomizationAvatarItemPiece[],
@@ -1598,10 +1602,6 @@ app.main = (function () {
                 });
             }
         };
-
-        if (!window.availableGames) {
-            window.availableGames = [];
-        }
 
         _.merge(viewModel.computed, viewModelFunctions.getComputed(viewModel));
 
